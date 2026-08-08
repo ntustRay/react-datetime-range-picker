@@ -20,7 +20,6 @@ interface LocalDateTimeResolution {
   candidates: readonly LocalDateTimeCandidate[];
 }
 
-const OFFSET_SEARCH_WINDOW_HOURS = 36;
 const MILLISECONDS_PER_HOUR = 3_600_000;
 const MILLISECONDS_PER_MINUTE = 60_000;
 
@@ -127,11 +126,7 @@ export function resolveLocalDateTime(
   const localTimestamp = localAsUtc(parts);
   const offsets = new Set<number>();
 
-  for (
-    let hour = -OFFSET_SEARCH_WINDOW_HOURS;
-    hour <= OFFSET_SEARCH_WINDOW_HOURS;
-    hour += 1
-  ) {
+  for (const hour of [-36, 0, 36]) {
     offsets.add(
       getTimezoneOffsetMinutes(
         localTimestamp + hour * MILLISECONDS_PER_HOUR,

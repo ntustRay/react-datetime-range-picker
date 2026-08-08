@@ -6,6 +6,7 @@ import {
   getEditableDateTimeFormat,
   parseEditableDateTime,
 } from "./internal/date-time-text.js";
+import { CalendarView } from "./internal/calendar-view.js";
 import type {
   DateTimeRangePickerProps,
   DateTimeRangeValidationError,
@@ -18,6 +19,11 @@ import { validateDateTimeRange } from "./validate-date-time-range.js";
 
 const DEFAULT_TRIGGER_LABEL = "Select date and time range";
 const EMPTY_RANGE = { startTimestamp: null, endTimestamp: null };
+const DEFAULT_CONSTRAINTS = {
+  minTimestamp: null,
+  maxTimestamp: null,
+  maxDurationMilliseconds: null,
+};
 
 function getDefaultValidationMessage(code: DateTimeRangeValidationErrorCode): string {
   const messages: Record<DateTimeRangeValidationErrorCode, string> = {
@@ -241,6 +247,17 @@ export function DateTimeRangePicker(
           tabIndex={-1}
           data-testid={props.testIds?.popover ?? "dtrp-popover"}
         >
+          {props.features?.calendar !== false ? (
+            <CalendarView
+              value={draft}
+              timezone={timezone}
+              locale={props.locale ?? "en"}
+              firstWeekday={props.firstWeekday}
+              constraints={props.constraints ?? DEFAULT_CONSTRAINTS}
+              testIds={props.testIds}
+              onChange={updateDraft}
+            />
+          ) : null}
           {props.features?.textInput !== false ? (
             <div>
               <label>

@@ -273,26 +273,26 @@ the current clock when a deterministic relative preset requires it.
 
 ## 8. Develop Calendar Logic in Vertical Slices
 
-- [ ] Generate a calendar month without DOM dependencies.
-- [ ] Include leading and trailing days needed for a complete grid.
-- [ ] Derive the locale-default first weekday.
-- [ ] Apply an explicit weekday-name override.
-- [ ] Calculate previous-month navigation.
-- [ ] Calculate next-month navigation.
-- [ ] Mark the selected start date.
-- [ ] Mark the selected end date.
-- [ ] Mark dates inside the selected range.
-- [ ] Apply half-open visual range semantics consistently.
-- [ ] Disable dates before the minimum timestamp.
-- [ ] Disable dates after the maximum timestamp.
-- [ ] Disable end dates that cannot follow the start.
-- [ ] Disable dates that exceed maximum duration.
-- [ ] Preserve focus when navigating months.
-- [ ] Unit-test months beginning on every weekday.
-- [ ] Unit-test February in leap and non-leap years.
-- [ ] Unit-test year-boundary navigation.
-- [ ] Unit-test locale and override week starts.
-- [ ] Unit-test disabled-date calculations.
+- [x] Generate a calendar month without DOM dependencies.
+- [x] Include leading and trailing days needed for a complete grid.
+- [x] Derive the locale-default first weekday.
+- [x] Apply an explicit weekday-name override.
+- [x] Calculate previous-month navigation.
+- [x] Calculate next-month navigation.
+- [x] Mark the selected start date.
+- [x] Mark the selected end date.
+- [x] Mark dates inside the selected range.
+- [x] Apply half-open visual range semantics consistently.
+- [x] Disable dates before the minimum timestamp.
+- [x] Disable dates after the maximum timestamp.
+- [x] Disable end dates that cannot follow the start.
+- [x] Disable dates that exceed maximum duration.
+- [x] Preserve focus when navigating months.
+- [x] Unit-test months beginning on every weekday.
+- [x] Unit-test February in leap and non-leap years.
+- [x] Unit-test year-boundary navigation.
+- [x] Unit-test locale and override week starts.
+- [x] Unit-test disabled-date calculations.
 
 ## 9. Develop Calendar UI in Vertical Slices
 
