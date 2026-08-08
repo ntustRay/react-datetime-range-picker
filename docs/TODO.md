@@ -155,24 +155,24 @@ the current clock when a deterministic relative preset requires it.
 
 ## 3. Develop Precision and Normalization in Vertical Slices
 
-- [ ] Define the ordered precision list in one source of truth.
-- [ ] Implement a pure check for whether a unit is visible at a precision.
-- [ ] Implement a pure check for units below a precision.
-- [ ] Implement UTC normalization for year precision.
-- [ ] Implement UTC normalization for month precision.
-- [ ] Implement UTC normalization for day precision.
-- [ ] Implement UTC normalization for hour precision.
-- [ ] Implement UTC normalization for minute precision.
-- [ ] Implement UTC normalization for second precision.
-- [ ] Implement UTC normalization for millisecond precision.
-- [ ] Ensure normalization never infers timestamp units from digit count.
-- [ ] Unit-test leap-year normalization.
-- [ ] Unit-test month-end normalization.
-- [ ] Unit-test negative epoch timestamps.
-- [ ] Unit-test timestamps beyond the year 2038.
-- [ ] Unit-test every precision boundary.
-- [ ] Unit-test that disabled lower units become zero.
-- [ ] Unit-test that enabled units remain unchanged.
+- [x] Define the ordered precision list in one source of truth.
+- [x] Implement a pure check for whether a unit is visible at a precision.
+- [x] Implement a pure check for units below a precision.
+- [x] Implement UTC normalization for year precision.
+- [x] Implement UTC normalization for month precision.
+- [x] Implement UTC normalization for day precision.
+- [x] Implement UTC normalization for hour precision.
+- [x] Implement UTC normalization for minute precision.
+- [x] Implement UTC normalization for second precision.
+- [x] Implement UTC normalization for millisecond precision.
+- [x] Ensure normalization never infers timestamp units from digit count.
+- [x] Unit-test leap-year normalization.
+- [x] Unit-test month-end normalization.
+- [x] Unit-test negative epoch timestamps.
+- [x] Unit-test timestamps beyond the year 2038.
+- [x] Unit-test every precision boundary.
+- [x] Unit-test that disabled lower units become zero.
+- [x] Unit-test that enabled units remain unchanged.
 
 ## 4. Develop Time-Zone Conversion in Vertical Slices
 

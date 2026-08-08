@@ -1,3 +1,5 @@
+export { normalizeTimestamp } from "./normalize-timestamp.js";
+
 export type {
   DateTimeRangeChangeHandler,
   DateTimeRangeCommitHandler,
