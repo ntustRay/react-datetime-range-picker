@@ -3,6 +3,13 @@ import { describe, expect, test } from "vitest";
 import { normalizeTimestamp } from "../src/index.js";
 
 describe("normalizeTimestamp", () => {
+  test("defaults to UTC when timezone is omitted", () => {
+    expect(
+      normalizeTimestamp(Date.UTC(2026, 7, 9, 12, 34, 56, 789), {
+        precision: "day",
+      }),
+    ).toBe(Date.UTC(2026, 7, 9, 0, 0, 0, 0));
+  });
   test("second precision clears milliseconds in UTC", () => {
     const timestamp = Date.UTC(2026, 7, 9, 12, 34, 56, 789);
 
@@ -61,5 +68,87 @@ describe("normalizeTimestamp", () => {
         timezone: "UTC",
       }),
     ).toBe(Date.UTC(2042, 5, 15, 8, 0, 0, 0));
+  });
+
+  test("day precision uses the selected IANA timezone", () => {
+    const afternoonInTaipei = Date.UTC(2026, 7, 9, 7, 30, 0, 0);
+
+    expect(
+      normalizeTimestamp(afternoonInTaipei, {
+        precision: "day",
+        timezone: "Asia/Taipei",
+      }),
+    ).toBe(Date.UTC(2026, 7, 8, 16, 0, 0, 0));
+  });
+
+  test.each([
+    ["America/New_York", Date.UTC(2026, 0, 15, 5, 0, 0, 0)],
+    ["Asia/Kathmandu", Date.UTC(2026, 0, 14, 18, 15, 0, 0)],
+  ] as const)("day precision supports the %s offset", (timezone, expected) => {
+    expect(
+      normalizeTimestamp(Date.UTC(2026, 0, 15, 12, 0, 0, 0), {
+        precision: "day",
+        timezone,
+      }),
+    ).toBe(expected);
+  });
+
+  test("millisecond precision keeps the instant across display timezones", () => {
+    const timestamp = Date.UTC(2026, 7, 9, 12, 34, 56, 789);
+
+    expect(
+      normalizeTimestamp(timestamp, {
+        precision: "millisecond",
+        timezone: "America/New_York",
+      }),
+    ).toBe(timestamp);
+  });
+
+  test("rejects an invalid IANA timezone", () => {
+    expect(() =>
+      normalizeTimestamp(0, {
+        precision: "day",
+        timezone: "Not/A_Timezone",
+      }),
+    ).toThrow(RangeError);
+  });
+
+  test.each([
+    [Date.UTC(2024, 10, 3, 5, 30, 45), Date.UTC(2024, 10, 3, 5, 30, 0)],
+    [Date.UTC(2024, 10, 3, 6, 30, 45), Date.UTC(2024, 10, 3, 6, 30, 0)],
+  ] as const)(
+    "preserves the selected offset in a repeated local time",
+    (timestamp, expected) => {
+      expect(
+        normalizeTimestamp(timestamp, {
+          precision: "minute",
+          timezone: "America/New_York",
+        }),
+      ).toBe(expected);
+    },
+  );
+
+  test.each([
+    [Date.UTC(2024, 2, 10, 6, 30), Date.UTC(2024, 2, 10, 6, 0)],
+    [Date.UTC(2024, 2, 10, 7, 30), Date.UTC(2024, 2, 10, 7, 0)],
+  ] as const)(
+    "normalizes valid hours around a daylight-saving gap",
+    (timestamp, expected) => {
+      expect(
+        normalizeTimestamp(timestamp, {
+          precision: "hour",
+          timezone: "America/New_York",
+        }),
+      ).toBe(expected);
+    },
+  );
+
+  test("rejects a normalized local time inside a non-hour DST gap", () => {
+    expect(() =>
+      normalizeTimestamp(Date.UTC(2024, 9, 5, 15, 45), {
+        precision: "hour",
+        timezone: "Australia/Lord_Howe",
+      }),
+    ).toThrow("Normalized local time does not exist.");
   });
 });

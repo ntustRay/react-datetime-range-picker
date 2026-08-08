@@ -170,7 +170,7 @@ export interface DateTimeRangePickerProps {
 
 export interface NormalizeTimestampOptions {
   precision: Precision;
-  timezone: Timezone;
+  timezone?: Timezone;
 }
 
 export interface ValidateDateTimeRangeOptions {

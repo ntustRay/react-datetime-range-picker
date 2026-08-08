@@ -176,25 +176,25 @@ the current clock when a deterministic relative preset requires it.
 
 ## 4. Develop Time-Zone Conversion in Vertical Slices
 
-- [ ] Validate IANA time-zone names at the system boundary.
-- [ ] Treat UTC as the default when no time zone is supplied.
-- [ ] Format an instant into local date-time parts for an IANA time zone.
-- [ ] Convert editable local parts into candidate epoch milliseconds.
-- [ ] Keep display-time-zone changes from changing the represented instant.
-- [ ] Detect nonexistent local times during forward DST transitions.
-- [ ] Detect ambiguous local times during backward DST transitions.
-- [ ] Return both candidate offsets for ambiguous local times.
-- [ ] Define a stable representation for offset choices.
+- [x] Validate IANA time-zone names at the system boundary.
+- [x] Treat UTC as the default when no time zone is supplied.
+- [x] Format an instant into local date-time parts for an IANA time zone.
+- [x] Convert editable local parts into candidate epoch milliseconds.
+- [x] Keep display-time-zone changes from changing the represented instant.
+- [x] Detect nonexistent local times during forward DST transitions.
+- [x] Detect ambiguous local times during backward DST transitions.
+- [x] Return both candidate offsets for ambiguous local times.
+- [x] Define a stable representation for offset choices.
 - [ ] Format offsets consistently in the ambiguity UI.
-- [ ] Avoid direct `window` or `document` access in time-zone utilities.
-- [ ] Unit-test UTC conversion.
-- [ ] Unit-test `Asia/Taipei` conversion.
-- [ ] Unit-test a negative UTC offset.
-- [ ] Unit-test a positive UTC offset.
-- [ ] Unit-test a DST spring-forward gap.
-- [ ] Unit-test a DST fall-back overlap.
-- [ ] Unit-test a zone with a non-hour offset.
-- [ ] Unit-test an invalid IANA zone.
+- [x] Avoid direct `window` or `document` access in time-zone utilities.
+- [x] Unit-test UTC conversion.
+- [x] Unit-test `Asia/Taipei` conversion.
+- [x] Unit-test a negative UTC offset.
+- [x] Unit-test a positive UTC offset.
+- [x] Unit-test a DST spring-forward gap.
+- [x] Unit-test a DST fall-back overlap.
+- [x] Unit-test a zone with a non-hour offset.
+- [x] Unit-test an invalid IANA zone.
 - [ ] Verify behavior against modern browser `Intl` implementations.
 
 ## 5. Develop Range Validation in Vertical Slices

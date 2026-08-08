@@ -234,7 +234,7 @@ validation and deterministic date calculations:
 ```ts
 export interface NormalizeTimestampOptions {
   precision: Precision;
-  timezone: Timezone;
+  timezone?: Timezone;
 }
 
 export declare function normalizeTimestamp(
