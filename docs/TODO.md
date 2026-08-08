@@ -128,30 +128,30 @@ the current clock when a deterministic relative preset requires it.
 
 ## 2. Establish Domain Types with Compile-Time TDD
 
-- [ ] Add the `Timestamp` domain alias without unsafe branding assertions.
-- [ ] Add `DateTimeRangeValue` with two required nullable fields.
-- [ ] Add an internal complete-range type.
-- [ ] Add an internal draft-range type if it improves narrowing.
-- [ ] Add the `Precision` union.
-- [ ] Add the `Weekday` union.
-- [ ] Add the display-time-zone type boundary.
-- [ ] Add the range-constraint interface.
-- [ ] Add the time-step interface.
-- [ ] Add the feature-visibility interface.
-- [ ] Add the preset interface.
-- [ ] Add the localization-label interface.
-- [ ] Add the test-ID interface.
-- [ ] Add the validation-error-code union.
-- [ ] Add the validation-error interface.
-- [ ] Add the validation-result interface.
-- [ ] Add callback function types.
-- [ ] Add the complete controlled component props interface.
-- [ ] Export only intentional consumer-facing types from `src/index.ts`.
-- [ ] Add compile-time tests for required and nullable fields.
-- [ ] Add compile-time tests rejecting `Date` values.
-- [ ] Add compile-time tests rejecting seconds-specific configuration.
-- [ ] Add compile-time tests for all precision values.
-- [ ] Add compile-time tests for all weekday values.
+- [x] Add the `Timestamp` domain alias without unsafe branding assertions.
+- [x] Add `DateTimeRangeValue` with two required nullable fields.
+- [x] Add an internal complete-range type.
+- [x] Add an internal draft-range type if it improves narrowing.
+- [x] Add the `Precision` union.
+- [x] Add the `Weekday` union.
+- [x] Add the display-time-zone type boundary.
+- [x] Add the range-constraint interface.
+- [x] Add the time-step interface.
+- [x] Add the feature-visibility interface.
+- [x] Add the preset interface.
+- [x] Add the localization-label interface.
+- [x] Add the test-ID interface.
+- [x] Add the validation-error-code union.
+- [x] Add the validation-error interface.
+- [x] Add the validation-result interface.
+- [x] Add callback function types.
+- [x] Add the complete controlled component props interface.
+- [x] Export only intentional consumer-facing types from `src/index.ts`.
+- [x] Add compile-time tests for required and nullable fields.
+- [x] Add compile-time tests rejecting `Date` values.
+- [x] Add compile-time tests rejecting seconds-specific configuration.
+- [x] Add compile-time tests for all precision values.
+- [x] Add compile-time tests for all weekday values.
 
 ## 3. Develop Precision and Normalization in Vertical Slices
 
