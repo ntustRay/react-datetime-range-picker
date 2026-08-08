@@ -1,3 +1,4 @@
+export { DateTimeRangePicker } from "./date-time-range-picker.js";
 export { normalizeTimestamp } from "./normalize-timestamp.js";
 export { validateDateTimeRange } from "./validate-date-time-range.js";
 

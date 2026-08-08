@@ -226,26 +226,26 @@ the current clock when a deterministic relative preset requires it.
 
 ## 6. Develop the Controlled State Model in Vertical Slices
 
-- [ ] Define the closed-popover state.
-- [ ] Define the open-popover draft state.
-- [ ] Initialize a draft from the controlled value on open.
-- [ ] Preserve a start-only draft.
-- [ ] Update the draft without committing it.
-- [ ] Emit `onChange` for draft edits.
-- [ ] Never emit `onCommit` for incomplete values.
-- [ ] Never emit `onCommit` for invalid values.
-- [ ] Emit `onCommit` only after Apply.
-- [ ] Discard draft edits after Cancel.
-- [ ] Discard draft edits after Escape.
-- [ ] Define outside-click behavior as Cancel.
-- [ ] Clear to two explicit null fields.
-- [ ] Sync external controlled updates while closed.
-- [ ] Define behavior for external updates while open.
-- [ ] Emit validation changes only when the result changes.
-- [ ] Avoid side effects during render.
-- [ ] Keep state local to the picker.
-- [ ] Unit-test every state transition as a pure reducer or model.
-- [ ] Unit-test rapid controlled-value updates.
+- [x] Define the closed-popover state.
+- [x] Define the open-popover draft state.
+- [x] Initialize a draft from the controlled value on open.
+- [x] Preserve a start-only draft.
+- [x] Update the draft without committing it.
+- [x] Emit `onChange` for draft edits.
+- [x] Never emit `onCommit` for incomplete values.
+- [x] Never emit `onCommit` for invalid values.
+- [x] Emit `onCommit` only after Apply.
+- [x] Discard draft edits after Cancel.
+- [x] Discard draft edits after Escape.
+- [x] Define outside-click behavior as Cancel.
+- [x] Clear to two explicit null fields.
+- [x] Sync external controlled updates while closed.
+- [x] Define behavior for external updates while open.
+- [x] Emit validation changes only when the result changes.
+- [x] Avoid side effects during render.
+- [x] Keep state local to the picker.
+- [x] Unit-test every state transition as a pure reducer or model.
+- [x] Unit-test rapid controlled-value updates.
 
 ## 7. Develop Text Input in Vertical Slices
 
