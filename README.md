@@ -8,7 +8,8 @@ selectable IANA time zone, and default to UTC.
 
 The project is currently in the product-definition stage. The agreed behavior
 is documented in [docs/CONTEXT.md](docs/CONTEXT.md); implementation has not
-started.
+started. See [docs/TODO.md](docs/TODO.md) for the implementation backlog and
+[docs/WORKFLOW.md](docs/WORKFLOW.md) for the autonomous TDD loop.
 
 The planned public npm package name is:
 
