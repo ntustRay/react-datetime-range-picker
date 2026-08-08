@@ -9,7 +9,8 @@ selectable IANA time zone, and default to UTC.
 The project is currently in the implementation stage. The package scaffold and
 test harness are in place; product behavior has not been implemented yet. The
 agreed behavior is documented in [docs/CONTEXT.md](docs/CONTEXT.md). See
-[docs/TODO.md](docs/TODO.md) for the implementation backlog and
+[docs/PUBLIC_API.md](docs/PUBLIC_API.md) for the reviewed Version 1 interface,
+[docs/TODO.md](docs/TODO.md) for the implementation backlog, and
 [docs/WORKFLOW.md](docs/WORKFLOW.md) for the autonomous TDD loop.
 
 The planned public npm package name is:

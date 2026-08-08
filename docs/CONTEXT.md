@@ -117,8 +117,12 @@ _Avoid_: Built-in range
   not.
 - Rendering is safe in server-side React environments.
 
+## Public API Decisions
+
+The initial public names, configuration shapes, validation identifiers, test
+IDs, CSS custom properties, and responsive breakpoint are fixed in
+[PUBLIC_API.md](PUBLIC_API.md).
+
 ## Deferred Decisions
 
 - npm publishing and GitHub trusted-publishing automation
-- Final public prop and validation-error type names
-- Exact responsive container thresholds and visual design tokens

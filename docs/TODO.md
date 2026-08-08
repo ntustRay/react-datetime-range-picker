@@ -54,35 +54,35 @@ the current clock when a deterministic relative preset requires it.
 
 ## 0. Confirm Deferred Decisions
 
-- [ ] Draft the public `DateTimeRangeValue` interface.
-- [ ] Confirm `startTimestamp` and `endTimestamp` as the public field names.
-- [ ] Draft the controlled `timezone` and `onTimezoneChange` props.
-- [ ] Draft the `onChange`, `onCommit`, and `onValidationChange` signatures.
-- [ ] Define whether callbacks receive a second metadata argument.
-- [ ] Define the complete `Precision` string union.
-- [ ] Define the complete `Weekday` string union.
-- [ ] Define the feature-visibility configuration shape.
-- [ ] Define the constraint configuration shape.
-- [ ] Define the step configuration shape.
-- [ ] Define the preset interface and evaluation callback.
-- [ ] Define the stable validation error-code union.
-- [ ] Define the validation error object shape.
-- [ ] Define the validation result shape.
-- [ ] Define the stable test-ID keys and default values.
-- [ ] Define the localization-label interface.
-- [ ] Decide how consumers customize validation messages.
-- [ ] Decide whether the package exports validation helpers publicly.
-- [ ] Decide whether the package exports normalization helpers publicly.
-- [ ] Record the initial CSS custom-property names.
-- [ ] Choose the one-month/two-month container breakpoint.
-- [ ] Review all proposed public names before implementation.
+- [x] Draft the public `DateTimeRangeValue` interface.
+- [x] Confirm `startTimestamp` and `endTimestamp` as the public field names.
+- [x] Draft the controlled `timezone` and `onTimezoneChange` props.
+- [x] Draft the `onChange`, `onCommit`, and `onValidationChange` signatures.
+- [x] Define whether callbacks receive a second metadata argument.
+- [x] Define the complete `Precision` string union.
+- [x] Define the complete `Weekday` string union.
+- [x] Define the feature-visibility configuration shape.
+- [x] Define the constraint configuration shape.
+- [x] Define the step configuration shape.
+- [x] Define the preset interface and evaluation callback.
+- [x] Define the stable validation error-code union.
+- [x] Define the validation error object shape.
+- [x] Define the validation result shape.
+- [x] Define the stable test-ID keys and default values.
+- [x] Define the localization-label interface.
+- [x] Decide how consumers customize validation messages.
+- [x] Decide whether the package exports validation helpers publicly.
+- [x] Decide whether the package exports normalization helpers publicly.
+- [x] Record the initial CSS custom-property names.
+- [x] Choose the one-month/two-month container breakpoint.
+- [x] Review all proposed public names before implementation.
 
 ### Decision gate
 
-- [ ] Confirm every public field is required unless absence is meaningful.
-- [ ] Confirm empty values use `null`, not missing optional fields.
-- [ ] Confirm no public API accepts `Date` or seconds-based timestamps.
-- [ ] Confirm no first-release feature contradicts [CONTEXT.md](CONTEXT.md).
+- [x] Confirm every public field is required unless absence is meaningful.
+- [x] Confirm empty values use `null`, not missing optional fields.
+- [x] Confirm no public API accepts `Date` or seconds-based timestamps.
+- [x] Confirm no first-release feature contradicts [CONTEXT.md](CONTEXT.md).
 
 ## 1. Initialize the Package
 
