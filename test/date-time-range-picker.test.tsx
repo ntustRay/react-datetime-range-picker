@@ -236,4 +236,151 @@ describe("DateTimeRangePicker", () => {
     await user.click(screen.getByRole("button", { name: "Select date and time range" }));
     expect(onValidationChange).toHaveBeenCalledTimes(1);
   });
+
+  test("valid text edits emit normalized epoch-millisecond drafts", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <DateTimeRangePicker
+        value={{ startTimestamp: null, endTimestamp: null }}
+        onChange={onChange}
+        onCommit={vi.fn()}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Select date and time range" }));
+
+    const start = screen.getByRole("textbox", { name: "Start" });
+    const end = screen.getByRole("textbox", { name: "End" });
+    await user.type(start, "2026-08-09 12:34:56");
+    await user.tab();
+    expect(onChange).toHaveBeenLastCalledWith({
+      startTimestamp: Date.UTC(2026, 7, 9, 12, 34, 56),
+      endTimestamp: null,
+    });
+
+    await user.type(end, "2026-08-09 13:34:56");
+    await user.tab();
+    expect(onChange).toHaveBeenLastCalledWith({
+      startTimestamp: Date.UTC(2026, 7, 9, 12, 34, 56),
+      endTimestamp: Date.UTC(2026, 7, 9, 13, 34, 56),
+    });
+  });
+
+  test("temporarily incomplete and malformed text remains visible", async () => {
+    const user = userEvent.setup();
+    render(
+      <DateTimeRangePicker
+        value={{ startTimestamp: null, endTimestamp: null }}
+        onChange={vi.fn()}
+        onCommit={vi.fn()}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Select date and time range" }));
+    const start = screen.getByRole("textbox", { name: "Start" });
+
+    await user.type(start, "2026-08-");
+    expect(start.getAttribute("value")).toBe("2026-08-");
+    expect(start.getAttribute("aria-invalid")).toBe("true");
+    await user.tab();
+    expect(start.getAttribute("value")).toBe("2026-08-");
+    expect(screen.getByRole("button", { name: "Apply" }).hasAttribute("disabled")).toBe(true);
+    expect(screen.getByText("Enter a valid date and time.").id).toBe(
+      "dtrp-start-invalid-text-error",
+    );
+    expect(start.getAttribute("aria-describedby")).toContain(
+      "dtrp-start-invalid-text-error",
+    );
+  });
+
+  test("pasted date-time text parses at the blur boundary", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <DateTimeRangePicker
+        value={{ startTimestamp: null, endTimestamp: null }}
+        onChange={onChange}
+        onCommit={vi.fn()}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Select date and time range" }));
+    const start = screen.getByRole("textbox", { name: "Start" });
+    await user.click(start);
+    await user.paste("2026-08-09 12:34:56");
+    await user.tab();
+
+    expect(onChange).toHaveBeenLastCalledWith({
+      startTimestamp: Date.UTC(2026, 7, 9, 12, 34, 56),
+      endTimestamp: null,
+    });
+  });
+
+  test("precision controls the editable format and lower-unit normalization", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <DateTimeRangePicker
+        precision="minute"
+        value={{ startTimestamp: null, endTimestamp: null }}
+        onChange={onChange}
+        onCommit={vi.fn()}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Select date and time range" }));
+    const start = screen.getByRole("textbox", { name: "Start" });
+
+    await user.type(start, "2026-08-09 12:34");
+    await user.tab();
+
+    expect(onChange).toHaveBeenLastCalledWith({
+      startTimestamp: Date.UTC(2026, 7, 9, 12, 34, 0, 0),
+      endTimestamp: null,
+    });
+    expect(screen.getAllByText("YYYY-MM-DD HH:mm")).toHaveLength(2);
+  });
+
+  test.each([
+    ["2024-03-10 02:30:00", "nonexistent-local-time"],
+    ["2024-11-03 01:30:00", "ambiguous-local-time"],
+  ] as const)("DST-invalid text reports %s", async (text, errorCode) => {
+    const user = userEvent.setup();
+    const onValidationChange = vi.fn();
+    render(
+      <DateTimeRangePicker
+        timezone="America/New_York"
+        value={{ startTimestamp: null, endTimestamp: null }}
+        onChange={vi.fn()}
+        onCommit={vi.fn()}
+        onValidationChange={onValidationChange}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Select date and time range" }));
+    const start = screen.getByRole("textbox", { name: "Start" });
+    await user.type(start, text);
+    await user.tab();
+
+    expect(onValidationChange).toHaveBeenLastCalledWith({
+      status: "invalid",
+      errors: [{ code: errorCode, target: "start" }],
+    });
+  });
+
+  test("the closed summary uses the selected locale and display timezone", () => {
+    render(
+      <DateTimeRangePicker
+        locale="zh-TW"
+        timezone="Asia/Taipei"
+        value={{
+          startTimestamp: Date.UTC(2026, 7, 9, 12, 0, 0),
+          endTimestamp: Date.UTC(2026, 7, 9, 13, 0, 0),
+        }}
+        onChange={vi.fn()}
+        onCommit={vi.fn()}
+      />,
+    );
+
+    expect(
+      screen.getByRole("button", { name: "Select date and time range" })
+        .textContent,
+    ).toBe("2026/08/09\u200920:00:00 – 2026/08/09\u200921:00:00");
+  });
 });

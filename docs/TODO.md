@@ -211,10 +211,10 @@ the current clock when a deterministic relative preset requires it.
 - [x] Validate second-step alignment.
 - [x] Validate millisecond-step alignment.
 - [x] Validate required empty ranges.
-- [ ] Validate invalid text input.
+- [x] Validate invalid text input.
 - [x] Validate invalid display time zones.
-- [ ] Validate nonexistent local times.
-- [ ] Require an offset choice for ambiguous local times.
+- [x] Validate nonexistent local times.
+- [x] Require an offset choice for ambiguous local times.
 - [x] Return stable error codes in deterministic order.
 - [x] Associate each error with start, end, range, or time zone.
 - [x] Keep localized text out of validation identity.
@@ -249,27 +249,27 @@ the current clock when a deterministic relative preset requires it.
 
 ## 7. Develop Text Input in Vertical Slices
 
-- [ ] Define locale-aware display formatting.
-- [ ] Define an unambiguous editable text format.
-- [ ] Display only units enabled by precision.
-- [ ] Implement the start text input.
-- [ ] Implement the end text input.
-- [ ] Allow temporarily incomplete text while typing.
-- [ ] Parse text only at an explicit boundary.
-- [ ] Preserve invalid text instead of silently rewriting it.
-- [ ] Normalize valid parsed values to precision.
-- [ ] Validate parsed values against steps and constraints.
-- [ ] Associate errors with the correct input.
-- [ ] Support selecting and copying read-only text.
-- [ ] Disable editing in disabled mode.
-- [ ] Prevent editing in read-only mode.
-- [ ] Add visible labels for both inputs.
-- [ ] Add accessible descriptions for formatting expectations.
-- [ ] Unit-test typing a valid range.
-- [ ] Unit-test pasting timestamps represented as text.
-- [ ] Unit-test incomplete input.
-- [ ] Unit-test malformed input.
-- [ ] Unit-test localized display output.
+- [x] Define locale-aware display formatting.
+- [x] Define an unambiguous editable text format.
+- [x] Display only units enabled by precision.
+- [x] Implement the start text input.
+- [x] Implement the end text input.
+- [x] Allow temporarily incomplete text while typing.
+- [x] Parse text only at an explicit boundary.
+- [x] Preserve invalid text instead of silently rewriting it.
+- [x] Normalize valid parsed values to precision.
+- [x] Validate parsed values against steps and constraints.
+- [x] Associate errors with the correct input.
+- [x] Support selecting and copying read-only text.
+- [x] Disable editing in disabled mode.
+- [x] Prevent editing in read-only mode.
+- [x] Add visible labels for both inputs.
+- [x] Add accessible descriptions for formatting expectations.
+- [x] Unit-test typing a valid range.
+- [x] Unit-test pasting timestamps represented as text.
+- [x] Unit-test incomplete input.
+- [x] Unit-test malformed input.
+- [x] Unit-test localized display output.
 
 ## 8. Develop Calendar Logic in Vertical Slices
 
