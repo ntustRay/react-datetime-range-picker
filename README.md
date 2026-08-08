@@ -6,9 +6,10 @@ selectable IANA time zone, and default to UTC.
 
 ## Status
 
-The project is currently in the product-definition stage. The agreed behavior
-is documented in [docs/CONTEXT.md](docs/CONTEXT.md); implementation has not
-started. See [docs/TODO.md](docs/TODO.md) for the implementation backlog and
+The project is currently in the implementation stage. The package scaffold and
+test harness are in place; product behavior has not been implemented yet. The
+agreed behavior is documented in [docs/CONTEXT.md](docs/CONTEXT.md). See
+[docs/TODO.md](docs/TODO.md) for the implementation backlog and
 [docs/WORKFLOW.md](docs/WORKFLOW.md) for the autonomous TDD loop.
 
 The planned public npm package name is:
@@ -28,7 +29,7 @@ The planned public npm package name is:
 - Stable, customizable `data-testid` attributes
 - No runtime dependencies; React 18 and 19 as peer dependencies
 
-## Planned Tooling
+## Tooling
 
 - npm for package management
 - tsdown for the publishable ESM library build
@@ -37,8 +38,8 @@ The planned public npm package name is:
 - Vitest and React Testing Library for unit and component tests
 - Playwright for end-to-end tests
 
-Tooling will be introduced in a separate change after the product contract is
-reviewed.
+Use Node 24 and npm 11. Run `npm run check` for type checking, tests, and the
+publishable library build.
 
 ## License
 

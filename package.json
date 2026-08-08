@@ -1,0 +1,64 @@
+{
+  "name": "@ntustray/react-datetime-range-picker",
+  "version": "0.0.0",
+  "description": "An accessible React date-time range picker for timestamp-based chart filters.",
+  "type": "module",
+  "license": "MIT",
+  "author": "ntustRay",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ntustRay/react-datetime-range-picker.git"
+  },
+  "homepage": "https://github.com/ntustRay/react-datetime-range-picker#readme",
+  "bugs": {
+    "url": "https://github.com/ntustRay/react-datetime-range-picker/issues"
+  },
+  "keywords": [
+    "react",
+    "date-time-picker",
+    "date-range-picker",
+    "accessibility",
+    "timezone"
+  ],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    },
+    "./styles.css": "./dist/style.css"
+  },
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "check": "npm run typecheck && npm test && npm run build"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@tsdown/css": "^0.22.14",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "tsdown": "^0.22.14",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.10"
+  },
+  "engines": {
+    "node": ">=22.18.0 <23 || >=24.11.0"
+  },
+  "packageManager": "npm@11.17.0"
+}

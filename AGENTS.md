@@ -4,11 +4,14 @@
 
 Build a reusable, accessible React date-time range picker component library.
 
-## Current Status
+## Current Tooling
 
-The repository is intentionally unscaffolded. Do not assume a package manager,
-build tool, styling system, date library, test runner, or publishing workflow
-until those choices are recorded in the repository.
+- Use the Node version in `.node-version` and npm with the committed lockfile.
+- Use TypeScript in strict mode with `noUncheckedIndexedAccess` and
+  `exactOptionalPropertyTypes`.
+- Use Vitest for unit tests and tsdown for the ESM library build.
+- Keep React and React DOM as peer dependencies and avoid runtime dependencies.
+- Import package CSS through `@ntustray/react-datetime-range-picker/styles.css`.
 
 ## Working Rules
 

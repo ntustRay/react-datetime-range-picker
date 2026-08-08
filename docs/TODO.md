@@ -86,45 +86,45 @@ the current clock when a deterministic relative preset requires it.
 
 ## 1. Initialize the Package
 
-- [ ] Run `npm init` and set the package name to
+- [x] Run `npm init` and set the package name to
       `@ntustray/react-datetime-range-picker`.
-- [ ] Mark the package as ESM with `"type": "module"`.
-- [ ] Set the initial package version to `0.0.0` until release planning begins.
-- [ ] Add the MIT license metadata.
-- [ ] Add the repository, homepage, and issue-tracker metadata.
-- [ ] Add useful npm keywords without keyword stuffing.
-- [ ] Declare React 18 and React 19 peer dependency ranges.
-- [ ] Declare React and React DOM as development dependencies for tests/demo.
-- [ ] Confirm the runtime `dependencies` object is empty.
-- [ ] Install TypeScript in development dependencies.
-- [ ] Install Vitest before writing the first domain behavior.
-- [ ] Add a focused `test` script before writing the first domain behavior.
-- [ ] Add one test-harness smoke test and verify it can fail and pass.
-- [ ] Enable TypeScript strict mode.
-- [ ] Enable `noUncheckedIndexedAccess`.
-- [ ] Enable `exactOptionalPropertyTypes` if compatible with the public API.
-- [ ] Configure JSX for the supported React toolchain.
-- [ ] Add tsdown as the library build tool.
-- [ ] Configure tsdown for an ESM-only build.
-- [ ] Configure declaration-file generation.
-- [ ] Externalize React and React DOM from the bundle.
-- [ ] Add source maps to published JavaScript and declarations.
-- [ ] Create `src/index.ts` as the explicit public entry point.
-- [ ] Add package `exports` for JavaScript, types, and CSS.
-- [ ] Add a restrictive `files` allowlist for npm publishing.
-- [ ] Add `build`, `typecheck`, and `check` scripts.
-- [ ] Add a `.gitignore` for dependencies, output, reports, and local files.
-- [ ] Add an `.npmignore` only if the `files` allowlist is insufficient.
-- [ ] Run the first empty library build.
-- [ ] Inspect the generated package contents with `npm pack --dry-run`.
+- [x] Mark the package as ESM with `"type": "module"`.
+- [x] Set the initial package version to `0.0.0` until release planning begins.
+- [x] Add the MIT license metadata.
+- [x] Add the repository, homepage, and issue-tracker metadata.
+- [x] Add useful npm keywords without keyword stuffing.
+- [x] Declare React 18 and React 19 peer dependency ranges.
+- [x] Declare React and React DOM as development dependencies for tests/demo.
+- [x] Confirm the runtime `dependencies` object is empty.
+- [x] Install TypeScript in development dependencies.
+- [x] Install Vitest before writing the first domain behavior.
+- [x] Add a focused `test` script before writing the first domain behavior.
+- [x] Add one test-harness smoke test and verify it can fail and pass.
+- [x] Enable TypeScript strict mode.
+- [x] Enable `noUncheckedIndexedAccess`.
+- [x] Enable `exactOptionalPropertyTypes` if compatible with the public API.
+- [x] Configure JSX for the supported React toolchain.
+- [x] Add tsdown as the library build tool.
+- [x] Configure tsdown for an ESM-only build.
+- [x] Configure declaration-file generation.
+- [x] Externalize React and React DOM from the bundle.
+- [x] Add source maps to published JavaScript and declarations.
+- [x] Create `src/index.ts` as the explicit public entry point.
+- [x] Add package `exports` for JavaScript, types, and CSS.
+- [x] Add a restrictive `files` allowlist for npm publishing.
+- [x] Add `build`, `typecheck`, and `check` scripts.
+- [x] Add a `.gitignore` for dependencies, output, reports, and local files.
+- [x] Add an `.npmignore` only if the `files` allowlist is insufficient.
+- [x] Run the first empty library build.
+- [x] Inspect the generated package contents with `npm pack --dry-run`.
 
 ### Package gate
 
-- [ ] Verify `npm.cmd run typecheck` passes.
-- [ ] Verify `npm.cmd run build` passes.
-- [ ] Verify React is not bundled into the output.
-- [ ] Verify generated declarations resolve from the package export.
-- [ ] Verify no credentials or machine-specific paths are publishable.
+- [x] Verify `npm.cmd run typecheck` passes.
+- [x] Verify `npm.cmd run build` passes.
+- [x] Verify React is not bundled into the output.
+- [x] Verify generated declarations resolve from the package export.
+- [x] Verify no credentials or machine-specific paths are publishable.
 
 ## 2. Establish Domain Types with Compile-Time TDD
 
