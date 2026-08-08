@@ -1,4 +1,5 @@
 export { normalizeTimestamp } from "./normalize-timestamp.js";
+export { validateDateTimeRange } from "./validate-date-time-range.js";
 
 export type {
   DateTimeRangeChangeHandler,

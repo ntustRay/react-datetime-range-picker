@@ -199,30 +199,30 @@ the current clock when a deterministic relative preset requires it.
 
 ## 5. Develop Range Validation in Vertical Slices
 
-- [ ] Implement empty-range validation.
-- [ ] Implement valid draft-range detection.
-- [ ] Reject an end without a start.
-- [ ] Reject an end equal to the start.
-- [ ] Reject an end before the start.
-- [ ] Enforce the optional minimum timestamp.
-- [ ] Enforce the optional maximum timestamp.
-- [ ] Enforce the optional maximum duration.
-- [ ] Validate minute-step alignment.
-- [ ] Validate second-step alignment.
-- [ ] Validate millisecond-step alignment.
-- [ ] Validate required empty ranges.
+- [x] Implement empty-range validation.
+- [x] Implement valid draft-range detection.
+- [x] Reject an end without a start.
+- [x] Reject an end equal to the start.
+- [x] Reject an end before the start.
+- [x] Enforce the optional minimum timestamp.
+- [x] Enforce the optional maximum timestamp.
+- [x] Enforce the optional maximum duration.
+- [x] Validate minute-step alignment.
+- [x] Validate second-step alignment.
+- [x] Validate millisecond-step alignment.
+- [x] Validate required empty ranges.
 - [ ] Validate invalid text input.
-- [ ] Validate invalid display time zones.
+- [x] Validate invalid display time zones.
 - [ ] Validate nonexistent local times.
 - [ ] Require an offset choice for ambiguous local times.
-- [ ] Return stable error codes in deterministic order.
-- [ ] Associate each error with start, end, range, or time zone.
-- [ ] Keep localized text out of validation identity.
+- [x] Return stable error codes in deterministic order.
+- [x] Associate each error with start, end, range, or time zone.
+- [x] Keep localized text out of validation identity.
 - [ ] Unit-test every validation code independently.
-- [ ] Unit-test multiple simultaneous errors.
-- [ ] Unit-test that optional constraints default to no limit.
-- [ ] Unit-test that step values default to integer `1`.
-- [ ] Unit-test half-open range semantics.
+- [x] Unit-test multiple simultaneous errors.
+- [x] Unit-test that optional constraints default to no limit.
+- [x] Unit-test that step values default to integer `1`.
+- [x] Unit-test half-open range semantics.
 
 ## 6. Develop the Controlled State Model in Vertical Slices
 
