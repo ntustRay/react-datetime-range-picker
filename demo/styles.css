@@ -120,6 +120,12 @@ h1 {
   white-space: nowrap;
   font-size: 0.85rem;
 }
+.install-action {
+  color: #f4f4f8;
+}
+.install-package {
+  color: #b9b3ff;
+}
 .package-facts {
   display: grid;
   position: relative;
@@ -272,9 +278,13 @@ h1 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: clamp(2rem, 8vw, 7rem);
+  align-items: center;
   padding: clamp(4rem, 8vw, 7rem) max(1.5rem, calc((100vw - 76rem) / 2));
   background: #5b4fd6;
   color: #fff;
+}
+.quick-start .section-kicker {
+  color: #c9c4ff;
 }
 .quick-start h2 {
   color: #fff;
@@ -287,16 +297,80 @@ h1 {
 .quick-start code {
   color: inherit;
 }
-.quick-start pre {
+.code-window {
+  min-width: 0;
   margin: 0;
-  padding: 1.5rem;
-  overflow-x: auto;
-  border: 1px solid #8d83e7;
-  border-radius: 0.8rem;
-  background: #4d42be;
+  overflow: hidden;
+  border: 1px solid #777080;
+  border-radius: 0.9rem;
+  background: #1c1b24;
   box-shadow: 0 18px 40px rgb(39 28 134 / 25%);
+}
+.code-window figcaption {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #3a3745;
+  color: #f7f7fa;
+  font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+.code-language {
+  color: #9a95a6;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.code-window pre {
+  margin: 0;
+  padding: 1.25rem 0;
+  overflow-x: auto;
   font-size: 0.8rem;
-  line-height: 1.7;
+  line-height: 1.75;
+  tab-size: 2;
+}
+.code-window code {
+  display: block;
+  min-width: max-content;
+  counter-reset: code-line;
+}
+.code-line {
+  display: block;
+  min-height: 1.75em;
+  padding-right: 1.5rem;
+  color: #e8e6ec;
+  counter-increment: code-line;
+}
+.code-line::before {
+  content: counter(code-line);
+  display: inline-block;
+  width: 2.9rem;
+  margin-right: 1rem;
+  border-right: 1px solid #34313d;
+  color: #6f6a79;
+  text-align: right;
+  padding-right: 0.8rem;
+  user-select: none;
+}
+.code-keyword {
+  color: #c4b5fd;
+}
+.code-variable {
+  color: #e8e6ec;
+}
+.code-function {
+  color: #7dd3fc;
+}
+.code-component {
+  color: #f0abfc;
+}
+.code-property {
+  color: #93c5fd;
+}
+.code-string {
+  color: #fcd34d;
 }
 
 .scenarios {

@@ -93,6 +93,20 @@ test("range inputs have no default outline", async ({ page }) => {
   );
 });
 
+test("quick start example exposes readable TSX syntax tokens", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const codeWindow = page.locator(".code-window");
+
+  await expect(codeWindow.getByText("App.tsx")).toBeVisible();
+  await expect(codeWindow.locator(".code-keyword")).toHaveText("const");
+  await expect(codeWindow.locator(".code-component").first()).toHaveText(
+    "<DateTimeRangePicker",
+  );
+  await expect(codeWindow.locator(".code-string")).toHaveText('"UTC"');
+});
+
 test("feature examples expose text-only and calendar-only modes", async ({
   page,
 }) => {

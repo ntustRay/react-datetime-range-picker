@@ -31,6 +31,16 @@ test("mobile demo page", async ({ page }) => {
   });
 });
 
+test("highlighted quick start code", async ({ page }) => {
+  await page.setViewportSize({ width: 1000, height: 800 });
+  await openStableDemo(page);
+
+  await expect(page.locator(".code-window")).toHaveScreenshot(
+    "demo-code-example.png",
+    { animations: "disabled" },
+  );
+});
+
 test("desktop picker open", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await openStableDemo(page);

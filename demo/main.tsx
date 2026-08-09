@@ -116,7 +116,12 @@ function Hero(): React.JSX.Element {
         </p>
         <div className="install-command" aria-label="Install command">
           <span aria-hidden="true">$</span>
-          <code>npm install @ntustray/react-datetime-range-picker</code>
+          <code>
+            <span className="install-action">npm install</span>{" "}
+            <span className="install-package">
+              @ntustray/react-datetime-range-picker
+            </span>
+          </code>
         </div>
       </div>
       <dl className="package-facts">
@@ -308,16 +313,58 @@ function QuickStart(): React.JSX.Element {
           complete, valid range.
         </p>
       </div>
-      <pre>
-        <code>{`const [draft, setDraft] = useState(emptyRange);
-
-<DateTimeRangePicker
-  value={draft}
-  onChange={setDraft}
-  onCommit={applyChartFilter}
-  timezone="UTC"
-/>`}</code>
-      </pre>
+      <figure className="code-window">
+        <figcaption>
+          <span>App.tsx</span>
+          <span className="code-language">Controlled example · TSX</span>
+        </figcaption>
+        <pre aria-label="Controlled React date-time range picker example">
+          <code>
+            <span className="code-line">
+              <span className="code-token code-keyword">const</span>{" "}
+              <span className="code-token code-variable">
+                [draft, setDraft]
+              </span>{" "}
+              = <span className="code-token code-function">useState</span>(
+              <span className="code-token code-variable">emptyRange</span>);
+            </span>
+            <span className="code-line" aria-hidden="true">
+              {" "}
+            </span>
+            <span className="code-line">
+              <span className="code-token code-component">
+                {"<DateTimeRangePicker"}
+              </span>
+            </span>
+            <span className="code-line">
+              {"  "}
+              <span className="code-token code-property">value</span>={"{"}
+              <span className="code-token code-variable">draft</span>
+              {"}"}
+            </span>
+            <span className="code-line">
+              {"  "}
+              <span className="code-token code-property">onChange</span>={"{"}
+              <span className="code-token code-variable">setDraft</span>
+              {"}"}
+            </span>
+            <span className="code-line">
+              {"  "}
+              <span className="code-token code-property">onCommit</span>={"{"}
+              <span className="code-token code-function">applyChartFilter</span>
+              {"}"}
+            </span>
+            <span className="code-line">
+              {"  "}
+              <span className="code-token code-property">timezone</span>=
+              <span className="code-token code-string">&quot;UTC&quot;</span>
+            </span>
+            <span className="code-line">
+              <span className="code-token code-component">{"/>"}</span>
+            </span>
+          </code>
+        </pre>
+      </figure>
     </section>
   );
 }
