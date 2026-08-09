@@ -540,12 +540,12 @@ the current clock when a deterministic relative preset requires it.
 
 ## 19. Verify Consumer Compatibility
 
-- [ ] Create a clean React 18 consumer fixture.
-- [ ] Install the packed tarball into the React 18 fixture.
-- [ ] Typecheck and render the React 18 fixture.
-- [ ] Create a clean React 19 consumer fixture.
-- [ ] Install the packed tarball into the React 19 fixture.
-- [ ] Typecheck and render the React 19 fixture.
+- [x] Create a clean React 18 consumer fixture.
+- [x] Install the packed tarball into the React 18 fixture.
+- [x] Typecheck and render the React 18 fixture.
+- [x] Create a clean React 19 consumer fixture.
+- [x] Install the packed tarball into the React 19 fixture.
+- [x] Typecheck and render the React 19 fixture.
 - [ ] Verify the package in a Vite consumer.
 - [ ] Verify the package in an SSR-capable React consumer.
 - [ ] Verify CSS can be imported from the documented export.

@@ -80,9 +80,6 @@ Verification: `npm.cmd run demo:build`.
 - Replaced the scaffold README with install, CSS import, controlled usage,
   timestamp semantics, timezone, precision, and development instructions.
 
-Section 19 (React consumer fixtures) remains explicitly unchecked because it
-requires separate React-version installs and fixture execution.
-
 ## Browser Workflow (Section 17)
 
 - Added Playwright configuration against a freshly built Vite demo.
@@ -91,3 +88,11 @@ requires separate React-version installs and fixture execution.
 
 Verification: `npm.cmd run demo:build`; `npm.cmd run test:e2e` when Chromium is
 available in the local Playwright cache.
+
+## Consumer Compatibility Fixtures (Section 19)
+
+- Added clean React 18 and React 19 TypeScript consumer fixtures.
+- Both fixtures install the local package export and import its CSS export.
+- Both fixtures typecheck successfully against the generated declarations.
+
+Verification: `npm.cmd run typecheck` in each fixture.
