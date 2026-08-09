@@ -135,8 +135,8 @@ jobs:
     name: Quality
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version-file: .node-version
           cache: npm
@@ -149,8 +149,8 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version-file: .node-version
           cache: npm
@@ -158,12 +158,12 @@ jobs:
       - name: Build current package before browser tests
         run: npm run build
       - name: Install the browser required by this repository
-        run: npx playwright install chromium
+        run: npm exec -- playwright install chromium
       - run: npm run test:e2e
       - run: npm run test:visual
       - name: Upload Playwright diagnostics
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: playwright-diagnostics-${{ github.run_id }}
           path: |
@@ -171,13 +171,24 @@ jobs:
             test-results/
           if-no-files-found: ignore
           retention-days: 7
+      - name: Generate GitHub Windows baseline candidates
+        if: ${{ failure() }}
+        run: npm run test:visual:update
+      - name: Upload GitHub Windows baseline candidates
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: visual-baseline-candidates-${{ github.run_id }}
+          path: visual/snapshots/github-windows/
+          if-no-files-found: error
+          retention-days: 7
 
   consumers:
     name: Packed React Consumers
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version-file: .node-version
           cache: npm
@@ -194,10 +205,10 @@ jobs:
         env:
           TARBALL: ${{ steps.pack.outputs.tarball }}
         run: |
-          fixture="$RUNNER_TEMP/react18"
-          cp -R fixtures/react18 "$fixture"
+          fixture="$(mktemp -d "$RUNNER_TEMP/react18.XXXXXX")"
+          cp -R fixtures/react18/. "$fixture"
           cd "$fixture"
-          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); p.dependencies['@ntustray/react-datetime-range-picker']=process.env.TARBALL; fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\n');"
+          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); p.dependencies['@ntustray/react-datetime-range-picker']='file:' + process.env.TARBALL; fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\n');"
           rm package-lock.json
           npm install
           npm run typecheck
@@ -205,19 +216,19 @@ jobs:
         env:
           TARBALL: ${{ steps.pack.outputs.tarball }}
         run: |
-          fixture="$RUNNER_TEMP/react19"
-          cp -R fixtures/react19 "$fixture"
+          fixture="$(mktemp -d "$RUNNER_TEMP/react19.XXXXXX")"
+          cp -R fixtures/react19/. "$fixture"
           cd "$fixture"
-          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); p.dependencies['@ntustray/react-datetime-range-picker']=process.env.TARBALL; fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\n');"
+          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); p.dependencies['@ntustray/react-datetime-range-picker']='file:' + process.env.TARBALL; fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\n');"
           rm package-lock.json
           npm install
           npm run typecheck
 ```
 
-This example uses current major action tags for readability. Before committing,
-either verify those major tags against the actions' official release pages or
-pin each action to a verified full commit SHA. GitHub states that a full-length
-commit SHA is the only immutable way to reference an action
+This example pins the action releases verified on 2026-08-09 to full commit
+SHAs. Refresh the version comments and SHAs intentionally when upgrading an
+action. GitHub states that a full-length commit SHA is the only immutable way
+to reference an action
 ([GitHub secure-use guidance](https://docs.github.com/en/actions/reference/security/secure-use)).
 
 ### Why the order matters
@@ -235,15 +246,20 @@ not use the archived third-party Playwright GitHub Action.
 
 ### Windows visual regression policy
 
-Run the visual job on `windows-latest` while the committed baselines remain
-Windows-generated. Playwright warns that rendering varies by host OS, settings,
-hardware, and headless mode, and recommends comparing in the same environment
-used to generate the baselines
+Run the visual job on `windows-latest`. Local Windows 11 and GitHub's Windows
+runner keep separate committed baseline directories because their font
+rasterization differs. `playwright.visual.config.ts` selects the hosted set only
+when `GITHUB_ACTIONS=true`, and both environments retain exact comparisons
+without a broad pixel-difference allowance. Playwright warns that rendering
+varies by host OS, settings, hardware, and headless mode, and recommends
+comparing in the same environment used to generate the baselines
 ([Playwright visual comparisons](https://playwright.dev/docs/test-snapshots)).
 
-If the project later moves visual CI to Linux, regenerate every baseline on the
-chosen Linux runner in one intentional, reviewed change. Do not accept a mass
-snapshot rewrite as an incidental CI fix.
+On failure, upload the original Playwright diagnostics before generating and
+uploading a complete candidate hosted baseline. Inspect both artifacts before
+replacing any committed image. If the project later moves visual CI to Linux,
+create and review a separate Linux baseline set in one intentional change. Do
+not accept a mass snapshot rewrite as an incidental CI fix.
 
 ### CI permissions and cancellation
 
