@@ -431,11 +431,11 @@ the current clock when a deterministic relative preset requires it.
 
 ## 15. Add the Demo Application
 
-- [ ] Create a Vite React demo without turning the repository into a monorepo.
-- [ ] Import the package through its public entry point.
-- [ ] Add a controlled basic UTC example.
-- [ ] Add a `zh-TW` and `Asia/Taipei` example.
-- [ ] Add a precision selector example.
+- [x] Create a Vite React demo without turning the repository into a monorepo.
+- [x] Import the package through its public entry point.
+- [x] Add a controlled basic UTC example.
+- [x] Add a `zh-TW` and `Asia/Taipei` example.
+- [x] Add a precision selector example.
 - [ ] Add a constraints example.
 - [ ] Add a custom steps example.
 - [ ] Add a custom presets example.
@@ -447,10 +447,10 @@ the current clock when a deterministic relative preset requires it.
 - [ ] Add an invalid controlled-value example.
 - [ ] Add a DST gap example.
 - [ ] Add a DST overlap example.
-- [ ] Display draft changes separately from committed chart-filter values.
-- [ ] Add a lightweight mock chart-filter result panel.
-- [ ] Ensure the demo works at narrow and wide widths.
-- [ ] Ensure the demo can run as the Playwright test target.
+- [x] Display draft changes separately from committed chart-filter values.
+- [x] Add a lightweight mock chart-filter result panel.
+- [x] Ensure the demo works at narrow and wide widths.
+- [x] Ensure the demo can run as the Playwright test target.
 
 ## 16. Expand Unit and Component Coverage Slice by Slice
 

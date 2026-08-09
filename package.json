@@ -39,6 +39,8 @@
   ],
   "scripts": {
     "build": "tsdown",
+    "demo": "vite demo --host 127.0.0.1",
+    "demo:build": "vite build demo --base ./",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "check": "npm run typecheck && npm test && npm run build"
@@ -53,11 +55,13 @@
     "@tsdown/css": "^0.22.14",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
+    "@vitejs/plugin-react": "^6.0.5",
     "jsdom": "^30.0.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "tsdown": "^0.22.14",
     "typescript": "^6.0.3",
+    "vite": "^8.2.1",
     "vitest": "^4.1.10"
   },
   "engines": {

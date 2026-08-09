@@ -61,3 +61,12 @@ Verification: picker component tests (29 tests) and TypeScript typecheck.
 - Kept selectors scoped to the picker root and independent of CSS resets.
 
 Verification: full package build and test check.
+
+## Demo Application (Section 15)
+
+- Added a standalone Vite React demo under `demo/`.
+- Demonstrated controlled UTC editing, timezone options, precision selection,
+  draft-versus-committed values, and a responsive presentation.
+- Added `demo` and `demo:build` scripts and excluded generated demo output.
+
+Verification: `npm.cmd run demo:build`.
