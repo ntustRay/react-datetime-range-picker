@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test("opens the picker and exposes the responsive calendar", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Select date and time range" }).click();
+  await page.getByRole("button", { name: "選擇日期與時間範圍" }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await expect(page.getByRole("grid").first()).toBeVisible();
   await expect(page.getByTestId("dtrp-start-input")).toBeVisible();
@@ -31,6 +31,21 @@ test("playground exposes every public precision and controls the timezone", asyn
   await page.getByTestId("dtrp-trigger").first().click();
   await page.getByTestId("dtrp-timezone").selectOption("Asia/Taipei");
   await expect(page.getByText("Asia/Taipei", { exact: true }).first()).toBeVisible();
+});
+
+test("demo language selection supplies Japanese formatting and wording", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByLabel("Locale").selectOption("ja-JP");
+
+  await page.getByRole("button", { name: "日時範囲を選択" }).click();
+
+  await expect(page.getByRole("region", { name: "カレンダー" })).toBeVisible();
+  await expect(
+    page.getByRole("textbox", { name: "開始", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "適用" })).toBeVisible();
 });
 
 test("public CSS custom properties remain available to consumers", async ({ page }) => {
@@ -77,7 +92,9 @@ test("playground reports required validation and invalid case explains failure",
   await page.goto("/");
   await page.getByLabel("Required").check();
   await page.getByTestId("dtrp-trigger").first().click();
-  await expect(page.getByTestId("dtrp-validation").first()).toContainText("required");
+  await expect(page.getByTestId("dtrp-validation").first()).toContainText(
+    "請選擇日期與時間範圍。",
+  );
   await page.getByTestId("dtrp-cancel").first().click();
 
   await page.getByRole("button", { name: "Invalid controlled value" }).click();

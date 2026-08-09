@@ -79,9 +79,9 @@ describe("calendar", () => {
 
   test("month navigation uses the caller's accessible labels", async () => {
     await renderOpenCalendar(AUGUST_RANGE, {
-      labels: {
-        previousMonth: "Previous billing month",
-        nextMonth: "Next billing month",
+      localeText: {
+        previousMonthLabel: "Previous billing month",
+        nextMonthLabel: "Next billing month",
       },
     });
 
@@ -91,6 +91,27 @@ describe("calendar", () => {
     expect(
       screen.getByRole("button", { name: "Next billing month" }),
     ).not.toBeNull();
+  });
+
+  test("locale text replaces selected range status wording", async () => {
+    await renderOpenCalendar(AUGUST_RANGE, {
+      localeText: {
+        startDateStatusLabel: "起始日期",
+        endDateStatusLabel: "結束日期",
+      },
+    });
+    const august = screen.getByRole("grid", { name: "August 2026" });
+
+    expect(
+      within(august).getByRole("gridcell", {
+        name: "Saturday, August 1, 2026",
+      }).textContent,
+    ).toContain("起始日期");
+    expect(
+      within(august).getByRole("gridcell", {
+        name: "Sunday, August 2, 2026",
+      }).textContent,
+    ).toContain("結束日期");
   });
 
   test("leap-year February includes February 29", async () => {

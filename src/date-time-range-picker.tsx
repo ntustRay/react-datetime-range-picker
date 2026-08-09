@@ -2,14 +2,13 @@ import { useEffect, useId, useRef, useState } from "react";
 
 import { formatDisplayTimestamp } from "./internal/date-time-text.js";
 import { PickerPopover } from "./internal/picker-popover.js";
+import { resolveLocaleText } from "./internal/locale-text.js";
 import { getTestId } from "./internal/test-id.js";
 import { useDateTimeRangeDraft } from "./internal/use-date-time-range-draft.js";
 import type {
   DateTimeRangePickerProps,
   DateTimeRangeValue,
 } from "./types.js";
-
-const DEFAULT_TRIGGER_LABEL = "Select date and time range";
 
 function rangesEqual(
   first: DateTimeRangeValue,
@@ -42,11 +41,12 @@ export function DateTimeRangePicker(
     onChange: props.onChange,
     onValidationChange: props.onValidationChange,
   });
+  const localeText = resolveLocaleText(props.localeText, precision);
 
   const calendarEnabled = props.features?.calendar !== false;
   const textInputEnabled =
     props.features?.textInput !== false || calendarEnabled === false;
-  const triggerLabel = props.labels?.trigger ?? DEFAULT_TRIGGER_LABEL;
+  const triggerLabel = localeText.triggerLabel;
   const rangeSummary =
     props.value.startTimestamp === null
       ? triggerLabel
@@ -143,6 +143,7 @@ export function DateTimeRangePicker(
       {isOpen ? (
         <PickerPopover
           pickerProps={props}
+          localeText={localeText}
           draft={draft}
           timezone={timezone}
           precision={precision}

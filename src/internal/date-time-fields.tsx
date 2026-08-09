@@ -1,4 +1,3 @@
-import { getEditableDateTimeFormat } from "./date-time-text.js";
 import { isUnitVisible } from "./precision.js";
 import { formatTimezoneOffset } from "./timezone.js";
 import { getTestId } from "./test-id.js";
@@ -8,7 +7,7 @@ import type {
   DateTimeRangeDraftTarget,
 } from "./use-date-time-range-draft.js";
 import type {
-  DateTimeRangeLabels,
+  DateTimeRangeLocaleText,
   DateTimeRangeSteps,
   DateTimeRangeTestIds,
   Precision,
@@ -18,7 +17,7 @@ interface DateTimeFieldsProps {
   draft: DateTimeRangeDraftController;
   precision: Precision;
   steps: DateTimeRangeSteps | undefined;
-  labels: Partial<DateTimeRangeLabels> | undefined;
+  localeText: DateTimeRangeLocaleText;
   testIds: Partial<DateTimeRangeTestIds> | undefined;
   startDescriptionIds: string;
   endDescriptionIds: string;
@@ -27,8 +26,8 @@ interface DateTimeFieldsProps {
 interface AmbiguousOffsetFieldProps {
   target: DateTimeRangeDraftTarget;
   field: DateTimeRangeDraftField;
-  targetLabel: string;
-  labels: Partial<DateTimeRangeLabels> | undefined;
+  offsetLabel: string;
+  localeText: DateTimeRangeLocaleText;
   onChoose: (target: DateTimeRangeDraftTarget, index: number) => void;
 }
 
@@ -52,22 +51,22 @@ function AmbiguousOffsetField(
   if (props.field.ambiguousCandidates.length === 0) return null;
   return (
     <label className="dtrp-field">
-      {props.targetLabel} offset
+      {props.offsetLabel}
       <select
-        aria-label={`${props.targetLabel} offset`}
+        aria-label={props.offsetLabel}
         value=""
         onChange={(event) =>
           props.onChoose(props.target, Number(event.currentTarget.value))
         }
       >
         <option value="">
-          {props.labels?.earlierOffset ?? "Choose an offset"}
+          {props.localeText.chooseOffsetLabel}
         </option>
         {props.field.ambiguousCandidates.map((candidate, index) => (
           <option key={candidate.timestamp} value={index}>
             {index === 0
-              ? props.labels?.earlierOffset ?? "Earlier"
-              : props.labels?.laterOffset ?? "Later"}{" "}
+              ? props.localeText.earlierOffsetLabel
+              : props.localeText.laterOffsetLabel}{" "}
             ({formatTimezoneOffset(candidate.offsetMinutes)})
           </option>
         ))}
@@ -77,8 +76,8 @@ function AmbiguousOffsetField(
 }
 
 export function DateTimeFields(props: DateTimeFieldsProps): React.JSX.Element {
-  const startLabel = props.labels?.start ?? "Start";
-  const endLabel = props.labels?.end ?? "End";
+  const startLabel = props.localeText.startLabel;
+  const endLabel = props.localeText.endLabel;
   const showTime = isUnitVisible("hour", props.precision);
   const timeType = isUnitVisible("millisecond", props.precision) ? "text" : "time";
   const step = timeInputStep(
@@ -103,8 +102,7 @@ export function DateTimeFields(props: DateTimeFieldsProps): React.JSX.Element {
             onBlur={() => props.draft.commitText("start")}
           />
           <span className="dtrp-format-hint" id="dtrp-start-format">
-            {props.labels?.startFormatHint ??
-              getEditableDateTimeFormat(props.precision)}
+            {props.localeText.startFormatHint}
           </span>
         </label>
         <label className="dtrp-field dtrp-field-end">
@@ -121,14 +119,13 @@ export function DateTimeFields(props: DateTimeFieldsProps): React.JSX.Element {
             onBlur={() => props.draft.commitText("end")}
           />
           <span className="dtrp-format-hint" id="dtrp-end-format">
-            {props.labels?.endFormatHint ??
-              getEditableDateTimeFormat(props.precision)}
+            {props.localeText.endFormatHint}
           </span>
         </label>
         {showTime ? (
           <div className="dtrp-time-fields">
             <label className="dtrp-field">
-              {startLabel} time
+              {props.localeText.startTimeLabel}
               <input
                 type={timeType}
                 step={step}
@@ -140,7 +137,7 @@ export function DateTimeFields(props: DateTimeFieldsProps): React.JSX.Element {
               />
             </label>
             <label className="dtrp-field">
-              {endLabel} time
+              {props.localeText.endTimeLabel}
               <input
                 type={timeType}
                 step={step}
@@ -157,15 +154,15 @@ export function DateTimeFields(props: DateTimeFieldsProps): React.JSX.Element {
       <AmbiguousOffsetField
         target="start"
         field={props.draft.start}
-        targetLabel={startLabel}
-        labels={props.labels}
+        offsetLabel={props.localeText.startOffsetLabel}
+        localeText={props.localeText}
         onChoose={props.draft.chooseOffset}
       />
       <AmbiguousOffsetField
         target="end"
         field={props.draft.end}
-        targetLabel={endLabel}
-        labels={props.labels}
+        offsetLabel={props.localeText.endOffsetLabel}
+        localeText={props.localeText}
         onChoose={props.draft.chooseOffset}
       />
     </>

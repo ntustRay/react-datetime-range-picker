@@ -3,7 +3,7 @@ import { describe, expectTypeOf, test } from "vitest";
 import type {
   DateTimeRangeConstraints,
   DateTimeRangeFeatures,
-  DateTimeRangeLabels,
+  DateTimeRangeLocaleText,
   DateTimeRangePickerProps,
   DateTimeRangePreset,
   DateTimeRangeSteps,
@@ -139,7 +139,10 @@ describe("public domain types", () => {
     };
     expectTypeOf(preset).toMatchTypeOf<DateTimeRangePreset>();
 
-    expectTypeOf<DateTimeRangeLabels["apply"]>().toEqualTypeOf<string>();
+    expectTypeOf<DateTimeRangeLocaleText["applyButtonLabel"]>().toEqualTypeOf<string>();
+    expectTypeOf<NonNullable<DateTimeRangePickerProps["localeText"]>>().toEqualTypeOf<
+      Partial<DateTimeRangeLocaleText>
+    >();
     expectTypeOf<DateTimeRangeTestIds["root"]>().toEqualTypeOf<string>();
   });
 

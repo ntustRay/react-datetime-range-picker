@@ -127,23 +127,45 @@ Stable codes and targets identify errors; localized text never does. A required
 empty range is `invalid`, a start-only range is `draft`, and only a complete
 range may be committed.
 
-## Labels and Test IDs
+## Locale Text and Test IDs
 
 ```ts
-export interface DateTimeRangeLabels {
-  trigger: string;
-  start: string;
-  end: string;
-  previousMonth: string;
-  nextMonth: string;
-  timezone: string;
-  apply: string;
-  cancel: string;
-  clear: string;
+export interface DateTimeRangeLocaleText {
+  triggerLabel: string;
+  calendarLabel: string;
+  startLabel: string;
+  endLabel: string;
+  previousMonthLabel: string;
+  nextMonthLabel: string;
+  timezoneLabel: string;
+  applyButtonLabel: string;
+  cancelButtonLabel: string;
+  clearButtonLabel: string;
   startFormatHint: string;
   endFormatHint: string;
-  earlierOffset: string;
-  laterOffset: string;
+  startTimeLabel: string;
+  endTimeLabel: string;
+  startOffsetLabel: string;
+  endOffsetLabel: string;
+  chooseOffsetLabel: string;
+  earlierOffsetLabel: string;
+  laterOffsetLabel: string;
+  startDateStatusLabel: string;
+  endDateStatusLabel: string;
+  inRangeStatusLabel: string;
+  validationEndWithoutStart: string;
+  validationEndNotAfterStart: string;
+  validationBeforeMinimum: string;
+  validationAfterMaximum: string;
+  validationMaximumDurationExceeded: string;
+  validationMinuteStepMismatch: string;
+  validationSecondStepMismatch: string;
+  validationMillisecondStepMismatch: string;
+  validationRequired: string;
+  validationInvalidText: string;
+  validationInvalidTimezone: string;
+  validationNonexistentLocalTime: string;
+  validationAmbiguousLocalTime: string;
 }
 
 export interface DateTimeRangeTestIds {
@@ -168,20 +190,27 @@ export interface DateTimeRangeTestIds {
 }
 ```
 
-`labels` and `testIds` are partial overrides because omission intentionally
-retains a package default. Empty custom test IDs are invalid. Default IDs use
-the `dtrp-` prefix, including `dtrp-date-{timestamp}` and
-`dtrp-preset-{presetId}` for dynamic controls.
+`locale` controls only `Intl` date formatting. `localeText` controls only UI
+wording, including visible labels, accessible names, range statuses, and
+validation messages. It is a partial override: every omitted key independently
+falls back to the package's English default. This keeps formatting locale and
+product wording separate while allowing consumers to provide either a complete
+language mapping or a single replacement:
 
-Validation messages are customized with a formatter that receives both the
-structured error and the package's localized fallback:
-
-```ts
-export type DateTimeRangeValidationMessageFormatter = (
-  error: DateTimeRangeValidationError,
-  defaultMessage: string,
-) => string;
+```tsx
+<DateTimeRangePicker
+  locale="zh-TW"
+  localeText={{
+    triggerLabel: "選擇日期與時間範圍",
+    applyButtonLabel: "套用",
+    validationRequired: "請選擇日期與時間範圍。",
+  }}
+/>
 ```
+
+`testIds` is also a partial override. Empty custom test IDs are invalid. Default
+IDs use the `dtrp-` prefix, including `dtrp-date-{timestamp}` and
+`dtrp-preset-{presetId}` for dynamic controls.
 
 ## Component Props and Callbacks
 
@@ -203,8 +232,7 @@ export interface DateTimeRangePickerProps {
   features?: DateTimeRangeFeatures;
   timezoneOptions?: readonly Timezone[];
   presets?: readonly DateTimeRangePreset[];
-  labels?: Partial<DateTimeRangeLabels>;
-  formatValidationMessage?: DateTimeRangeValidationMessageFormatter;
+  localeText?: Partial<DateTimeRangeLocaleText>;
   testIds?: Partial<DateTimeRangeTestIds>;
 
   clearable?: boolean;
@@ -219,7 +247,8 @@ export declare function DateTimeRangePicker(
 ```
 
 Omitted optional props select documented defaults; they do not represent
-missing domain fields. Defaults are UTC, second precision, English locale,
+missing domain fields. Defaults are UTC, second precision, English locale and
+English locale text,
 locale-derived first weekday, no constraints, unit steps of `1`, no presets,
 and enabled Clear. The range remains controlled. `onChange` reports draft
 edits, while `onCommit` fires only after Apply accepts a complete valid range.
@@ -257,6 +286,14 @@ export declare function validateDateTimeRange(
 
 Calendar generation, local-part conversion, draft reducers, parsing, focus
 management, and individual UI elements remain internal.
+
+## Pre-release Migration
+
+The former `labels` and `formatValidationMessage` props were replaced by the
+single `localeText` wording interface. Rename label keys to their explicit
+`*Label` counterparts and move validation strings to the corresponding
+`validation*` keys. `locale` remains unchanged and never selects wording by
+itself.
 
 ## Initial CSS Contract
 

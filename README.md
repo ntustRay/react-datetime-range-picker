@@ -51,6 +51,18 @@ complete valid range. Ranges use half-open semantics:
 `startTimestamp <= timestamp < endTimestamp`. Clearing produces two explicit
 `null` fields.
 
+Formatting and wording are separate. Pass a BCP 47 tag through `locale`, and
+replace any UI wording key through `localeText`; omitted wording keys keep the
+English defaults:
+
+```tsx
+<DateTimeRangePicker
+  locale="zh-TW"
+  localeText={{ triggerLabel: "選擇日期與時間範圍", applyButtonLabel: "套用" }}
+  // value, onChange, and onCommit omitted here for brevity
+/>
+```
+
 The default display timezone is UTC. Changing the controlled timezone changes
 display and editing only; it does not change represented instants. Precision
 defaults to seconds and supports year, month, day, hour, minute, second, and

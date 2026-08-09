@@ -92,20 +92,42 @@ export interface DateTimeRangeValidationResult {
   errors: readonly DateTimeRangeValidationError[];
 }
 
-export interface DateTimeRangeLabels {
-  trigger: string;
-  start: string;
-  end: string;
-  previousMonth: string;
-  nextMonth: string;
-  timezone: string;
-  apply: string;
-  cancel: string;
-  clear: string;
+export interface DateTimeRangeLocaleText {
+  triggerLabel: string;
+  calendarLabel: string;
+  startLabel: string;
+  endLabel: string;
+  previousMonthLabel: string;
+  nextMonthLabel: string;
+  timezoneLabel: string;
+  applyButtonLabel: string;
+  cancelButtonLabel: string;
+  clearButtonLabel: string;
   startFormatHint: string;
   endFormatHint: string;
-  earlierOffset: string;
-  laterOffset: string;
+  startTimeLabel: string;
+  endTimeLabel: string;
+  startOffsetLabel: string;
+  endOffsetLabel: string;
+  chooseOffsetLabel: string;
+  earlierOffsetLabel: string;
+  laterOffsetLabel: string;
+  startDateStatusLabel: string;
+  endDateStatusLabel: string;
+  inRangeStatusLabel: string;
+  validationEndWithoutStart: string;
+  validationEndNotAfterStart: string;
+  validationBeforeMinimum: string;
+  validationAfterMaximum: string;
+  validationMaximumDurationExceeded: string;
+  validationMinuteStepMismatch: string;
+  validationSecondStepMismatch: string;
+  validationMillisecondStepMismatch: string;
+  validationRequired: string;
+  validationInvalidText: string;
+  validationInvalidTimezone: string;
+  validationNonexistentLocalTime: string;
+  validationAmbiguousLocalTime: string;
 }
 
 export interface DateTimeRangeTestIds {
@@ -128,11 +150,6 @@ export interface DateTimeRangeTestIds {
   dateCell: (timestamp: Timestamp) => string;
   preset: (presetId: string) => string;
 }
-
-export type DateTimeRangeValidationMessageFormatter = (
-  error: DateTimeRangeValidationError,
-  defaultMessage: string,
-) => string;
 
 export type DateTimeRangeChangeHandler = (value: DateTimeRangeValue) => void;
 
@@ -159,8 +176,7 @@ export interface DateTimeRangePickerProps {
   features?: DateTimeRangeFeatures;
   timezoneOptions?: readonly Timezone[];
   presets?: readonly DateTimeRangePreset[];
-  labels?: Partial<DateTimeRangeLabels>;
-  formatValidationMessage?: DateTimeRangeValidationMessageFormatter;
+  localeText?: Partial<DateTimeRangeLocaleText>;
   testIds?: Partial<DateTimeRangeTestIds>;
   clearable?: boolean;
   disabled?: boolean;

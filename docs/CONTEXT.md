@@ -74,7 +74,9 @@ _Avoid_: Built-in range
   weekday name such as `"monday"`.
 - Locale defaults to English and can be set to a BCP 47 language tag such as
   `"zh-TW"`.
-- Labels and validation messages can be localized by the consumer.
+- `locale` controls date formatting and locale-derived weekdays only.
+- `localeText` independently replaces visible wording, accessible names, range
+  statuses, and validation messages; omitted keys use English defaults.
 
 ## Validation Contract
 

@@ -33,6 +33,9 @@ interface CalendarPresentation {
   responsive: boolean;
   calendarTestId: string | null;
   dateTestId: ((timestamp: Timestamp) => string) | null;
+  startDateStatusLabel: string;
+  endDateStatusLabel: string;
+  inRangeStatusLabel: string;
 }
 
 interface CalendarMonthGridProps {
@@ -151,9 +154,15 @@ export function CalendarMonthGrid(
                   }}
                 >
                   {day.day}
-                  {selectedStart ? <span> Start</span> : null}
-                  {selectedEnd ? <span> End</span> : null}
-                  {inRange ? <span> In range</span> : null}
+                  {selectedStart ? (
+                    <span> {props.presentation.startDateStatusLabel}</span>
+                  ) : null}
+                  {selectedEnd ? (
+                    <span> {props.presentation.endDateStatusLabel}</span>
+                  ) : null}
+                  {inRange ? (
+                    <span> {props.presentation.inRangeStatusLabel}</span>
+                  ) : null}
                 </button>
               );
             })}

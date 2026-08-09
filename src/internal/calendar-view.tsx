@@ -11,6 +11,7 @@ import { getTestId } from "./test-id.js";
 import { normalizeTimestamp } from "../normalize-timestamp.js";
 import type {
   DateTimeRangeConstraints,
+  DateTimeRangeLocaleText,
   DateTimeRangeTestIds,
   DateTimeRangeValue,
   Timestamp,
@@ -25,8 +26,7 @@ interface CalendarViewProps {
   locale: string;
   firstWeekday: Weekday | undefined;
   constraints: DateTimeRangeConstraints;
-  previousMonthLabel: string;
-  nextMonthLabel: string;
+  localeText: DateTimeRangeLocaleText;
   testIds: Partial<DateTimeRangeTestIds> | undefined;
   onChange: (value: DateTimeRangeValue) => void;
 }
@@ -176,13 +176,13 @@ export function CalendarView(props: CalendarViewProps): React.JSX.Element {
   return (
     <section
       ref={calendarRegionRef}
-      aria-label="Calendar"
+      aria-label={props.localeText.calendarLabel}
       className="dtrp-calendar-region"
     >
       <div className="dtrp-calendar-navigation">
         <button
           type="button"
-          aria-label={props.previousMonthLabel}
+          aria-label={props.localeText.previousMonthLabel}
           data-testid={getTestId(
             props.testIds?.previousMonth,
             "dtrp-previous-month",
@@ -197,7 +197,7 @@ export function CalendarView(props: CalendarViewProps): React.JSX.Element {
         </div>
         <button
           type="button"
-          aria-label={props.nextMonthLabel}
+          aria-label={props.localeText.nextMonthLabel}
           data-testid={getTestId(props.testIds?.nextMonth, "dtrp-next-month")}
           onClick={() => changeMonth(1)}
         >
@@ -220,6 +220,9 @@ export function CalendarView(props: CalendarViewProps): React.JSX.Element {
               props.testIds?.dateCell?.(timestamp),
               `dtrp-date-${timestamp}`,
             ),
+          startDateStatusLabel: props.localeText.startDateStatusLabel,
+          endDateStatusLabel: props.localeText.endDateStatusLabel,
+          inRangeStatusLabel: props.localeText.inRangeStatusLabel,
         }}
         selection={selection}
         focus={{
@@ -243,6 +246,9 @@ export function CalendarView(props: CalendarViewProps): React.JSX.Element {
           responsive: true,
           calendarTestId: null,
           dateTestId: null,
+          startDateStatusLabel: props.localeText.startDateStatusLabel,
+          endDateStatusLabel: props.localeText.endDateStatusLabel,
+          inRangeStatusLabel: props.localeText.inRangeStatusLabel,
         }}
         selection={selection}
         focus={{

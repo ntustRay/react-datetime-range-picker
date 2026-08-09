@@ -7,6 +7,119 @@ import { DateTimeRangePicker } from "../src/index.js";
 import type { DateTimeRangeValue } from "../src/index.js";
 
 describe("DateTimeRangePicker", () => {
+  test("locale text overrides one wording key and falls back for the rest", async () => {
+    const user = userEvent.setup();
+    render(
+      <DateTimeRangePicker
+        value={{ startTimestamp: null, endTimestamp: null }}
+        localeText={{
+          triggerLabel: "選擇日期與時間範圍",
+          applyButtonLabel: "套用",
+        }}
+        onChange={vi.fn()}
+        onCommit={vi.fn()}
+      />,
+    );
+
+    await user.click(
+      screen.getByRole("button", { name: "選擇日期與時間範圍" }),
+    );
+
+    expect(screen.getByRole("button", { name: "套用" })).not.toBeNull();
+    expect(screen.getByRole("button", { name: "Cancel" })).not.toBeNull();
+    expect(screen.getByRole("textbox", { name: "Start" })).not.toBeNull();
+  });
+
+  test("locale text controls visible and accessible picker wording", async () => {
+    const user = userEvent.setup();
+    render(
+      <DateTimeRangePicker
+        value={{
+          startTimestamp: Date.UTC(2026, 7, 1, 12),
+          endTimestamp: Date.UTC(2026, 7, 2, 12),
+        }}
+        localeText={{
+          triggerLabel: "選擇範圍",
+          calendarLabel: "日曆",
+          startLabel: "開始",
+          endLabel: "結束",
+          timezoneLabel: "時區",
+          clearButtonLabel: "清除",
+          startTimeLabel: "開始時間",
+          endTimeLabel: "結束時間",
+        }}
+        onChange={vi.fn()}
+        onCommit={vi.fn()}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "選擇範圍" }));
+
+    expect(screen.getByRole("region", { name: "日曆" })).not.toBeNull();
+    expect(screen.getByRole("textbox", { name: "開始" })).not.toBeNull();
+    expect(screen.getByRole("textbox", { name: "結束" })).not.toBeNull();
+    expect(screen.getByRole("combobox", { name: "時區" })).not.toBeNull();
+    expect(screen.getByRole("button", { name: "清除" })).not.toBeNull();
+    expect(
+      screen.getByTestId("dtrp-start-time").closest("label")?.textContent,
+    ).toBe("開始時間");
+    expect(
+      screen.getByTestId("dtrp-end-time").closest("label")?.textContent,
+    ).toBe("結束時間");
+  });
+
+  test("locale text overrides validation wording", async () => {
+    const user = userEvent.setup();
+    render(
+      <DateTimeRangePicker
+        required
+        value={{ startTimestamp: null, endTimestamp: null }}
+        localeText={{
+          validationRequired: "請選擇日期與時間範圍。",
+        }}
+        onChange={vi.fn()}
+        onCommit={vi.fn()}
+      />,
+    );
+
+    await user.click(
+      screen.getByRole("button", { name: "Select date and time range" }),
+    );
+
+    expect(screen.getByText("請選擇日期與時間範圍。")).not.toBeNull();
+  });
+
+  test("locale text replaces ambiguous offset wording without concatenation", async () => {
+    const user = userEvent.setup();
+    render(
+      <DateTimeRangePicker
+        timezone="America/New_York"
+        value={{ startTimestamp: null, endTimestamp: null }}
+        localeText={{
+          startOffsetLabel: "開始時間的 UTC 偏移",
+          chooseOffsetLabel: "請選擇偏移",
+          earlierOffsetLabel: "較早",
+          laterOffsetLabel: "較晚",
+        }}
+        onChange={vi.fn()}
+        onCommit={vi.fn()}
+      />,
+    );
+    await user.click(
+      screen.getByRole("button", { name: "Select date and time range" }),
+    );
+    const start = screen.getByRole("textbox", { name: "Start" });
+    await user.type(start, "2024-11-03 01:30:00");
+    await user.tab();
+
+    const offset = screen.getByRole("combobox", {
+      name: "開始時間的 UTC 偏移",
+    });
+    expect(offset.textContent).toContain("請選擇偏移");
+    expect(offset.textContent).toContain("較早");
+    expect(offset.textContent).toContain("較晚");
+  });
+
   test("opens an accessible date-time range dialog", async () => {
     const user = userEvent.setup();
     render(
@@ -567,7 +680,7 @@ describe("DateTimeRangePicker", () => {
     });
   });
 
-  test("the closed summary uses the selected locale and display timezone", () => {
+  test("locale formats the summary without changing locale text", () => {
     render(
       <DateTimeRangePicker
         locale="zh-TW"

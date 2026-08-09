@@ -10,6 +10,11 @@ import {
   type Weekday,
 } from "@ntustray/react-datetime-range-picker";
 import "@ntustray/react-datetime-range-picker/styles.css";
+import {
+  LOCALE_OPTIONS,
+  LOCALE_TEXT,
+  type DemoLocale,
+} from "./locale-text.js";
 import "./styles.css";
 
 const EMPTY_RANGE: DateTimeRangeValue = {
@@ -41,19 +46,6 @@ const TIMEZONES: readonly Timezone[] = [
   "UTC",
   "Asia/Taipei",
   "America/New_York",
-];
-
-type DemoLocale = "zh-TW" | "en-US" | "ja-JP";
-
-interface LocaleOption {
-  value: DemoLocale;
-  label: string;
-}
-
-const LOCALE_OPTIONS: readonly LocaleOption[] = [
-  { value: "zh-TW", label: "繁體中文" },
-  { value: "en-US", label: "English (US)" },
-  { value: "ja-JP", label: "日本語" },
 ];
 
 interface ScenarioProps {
@@ -253,6 +245,7 @@ function Playground(): React.JSX.Element {
             timezone={timezone}
             onTimezoneChange={setTimezone}
             locale={locale}
+            localeText={LOCALE_TEXT[locale]}
             firstWeekday={firstWeekday}
             required={required}
             clearable={clearable}
@@ -343,7 +336,10 @@ function ProductionScenarios(): React.JSX.Element {
                 }),
               },
             ]}
-            labels={{ trigger: "Constrained range", apply: "Use range" }}
+            localeText={{
+              triggerLabel: "Constrained range",
+              applyButtonLabel: "Use range",
+            }}
             testIds={{ root: "dtrp-constrained" }}
           />
         </Scenario>
@@ -360,7 +356,7 @@ function ProductionScenarios(): React.JSX.Element {
               textInput: true,
               timezoneSelector: false,
             }}
-            labels={{ trigger: "Enter exact range" }}
+            localeText={{ triggerLabel: "Enter exact range" }}
           />
         </Scenario>
         <Scenario
@@ -377,7 +373,7 @@ function ProductionScenarios(): React.JSX.Element {
               textInput: false,
               timezoneSelector: false,
             }}
-            labels={{ trigger: "Choose reporting days" }}
+            localeText={{ triggerLabel: "Choose reporting days" }}
           />
         </Scenario>
         <Scenario
@@ -389,14 +385,14 @@ function ProductionScenarios(): React.JSX.Element {
               value={EMPTY_RANGE}
               onChange={ignoreRangeChange}
               onCommit={ignoreRangeChange}
-              labels={{ trigger: "Disabled range" }}
+              localeText={{ triggerLabel: "Disabled range" }}
               disabled
             />
             <DateTimeRangePicker
               value={EMPTY_RANGE}
               onChange={ignoreRangeChange}
               onCommit={ignoreRangeChange}
-              labels={{ trigger: "Read-only range" }}
+              localeText={{ triggerLabel: "Read-only range" }}
               readOnly
             />
           </div>
@@ -430,7 +426,7 @@ function EdgeCases(): React.JSX.Element {
             onChange={setGapValue}
             onCommit={setGapValue}
             timezone="America/New_York"
-            labels={{ trigger: "DST gap example" }}
+            localeText={{ triggerLabel: "DST gap example" }}
           />
         </Scenario>
         <Scenario
@@ -444,7 +440,7 @@ function EdgeCases(): React.JSX.Element {
             }}
             onChange={ignoreRangeChange}
             onCommit={ignoreRangeChange}
-            labels={{ trigger: "Invalid controlled value" }}
+            localeText={{ triggerLabel: "Invalid controlled value" }}
           />
         </Scenario>
         <Scenario
@@ -456,7 +452,7 @@ function EdgeCases(): React.JSX.Element {
             onChange={setOverlapValue}
             onCommit={setOverlapValue}
             timezone="America/New_York"
-            labels={{ trigger: "DST overlap example" }}
+            localeText={{ triggerLabel: "DST overlap example" }}
           />
         </Scenario>
       </div>
