@@ -80,6 +80,14 @@ Verification: `npm.cmd run demo:build`.
 - Replaced the scaffold README with install, CSS import, controlled usage,
   timestamp semantics, timezone, precision, and development instructions.
 
-Sections 17 (Playwright E2E infrastructure) and 19 (React consumer fixtures)
-remain explicitly unchecked because they require additional browser/fixture
-execution and are not claimed complete by this log.
+Section 19 (React consumer fixtures) remains explicitly unchecked because it
+requires separate React-version installs and fixture execution.
+
+## Browser Workflow (Section 17)
+
+- Added Playwright configuration against a freshly built Vite demo.
+- Added a browser smoke test for opening the picker, dialog visibility, and
+  calendar/text-input availability.
+
+Verification: `npm.cmd run demo:build`; `npm.cmd run test:e2e` when Chromium is
+available in the local Playwright cache.

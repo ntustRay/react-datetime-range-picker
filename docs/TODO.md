@@ -485,12 +485,12 @@ the current clock when a deterministic relative preset requires it.
 
 ## 17. Expand End-to-End Coverage Slice by Slice
 
-- [ ] Configure Playwright against a production demo build.
+- [x] Configure Playwright against a production demo build.
 - [ ] Add each E2E case as the RED step for missing browser-visible behavior.
 - [ ] Verify each E2E RED failure comes from missing product behavior.
 - [ ] Avoid assertions against React state or implementation details.
 - [ ] Install the required browser binaries in CI.
-- [ ] Add an E2E test for opening and closing the popover.
+- [x] Add an E2E test for opening and closing the popover.
 - [ ] Add an E2E test for pointer range selection.
 - [ ] Add an E2E test for keyboard-only range selection.
 - [ ] Add an E2E test for a cross-month range.
@@ -513,7 +513,7 @@ the current clock when a deterministic relative preset requires it.
 - [ ] Add an E2E test for overridden test IDs.
 - [ ] Add an E2E test for focus restoration.
 - [ ] Add an E2E test for one- and two-month responsive layouts.
-- [ ] Run E2E only after building the current source.
+- [x] Run E2E only after building the current source.
 
 ## 18. Verify Accessibility
 
