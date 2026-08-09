@@ -134,8 +134,8 @@ _Avoid_: Built-in range
 
 - The first release provides one complete date-time range picker, not headless
   hooks or a low-level component system.
-- The first release uses an anchored floating popover, not inline or modal
-  presentation.
+- The picker uses an anchored floating popover by default and supports an
+  opt-in inline presentation; it does not provide a modal presentation.
 - Native HTML form serialization is outside the first-release scope; consumers
   integrate through controlled React callbacks.
 - No presets are built in; consumers supply presets appropriate to their
