@@ -10,6 +10,7 @@ import type {
   DateTimeRangeTimezoneChangeHandler,
   DateTimeRangeHourCycleChangeHandler,
   HourCycle,
+  PopoverMode,
   Precision,
   Timezone,
   Weekday,
@@ -31,6 +32,7 @@ export interface PickerConfiguration {
   timezone: Timezone;
   hourCycle: HourCycle;
   colorScheme: ColorScheme;
+  popoverMode: PopoverMode;
   precision: Precision;
   locale: string;
   localeText: DateTimeRangeLocaleText;
@@ -64,6 +66,7 @@ export function resolvePickerConfiguration(
     timezone,
     hourCycle,
     colorScheme: props.colorScheme ?? "light",
+    popoverMode: props.popoverMode ?? "floating",
     precision,
     locale: props.locale ?? "en",
     localeText: resolveLocaleText(props.localeText, precision, hourCycle),

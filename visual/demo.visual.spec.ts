@@ -11,6 +11,10 @@ async function clearPointerHover(page: Page): Promise<void> {
   await page.mouse.move(0, 0);
 }
 
+function getOpenPopover(page: Page) {
+  return page.locator('[data-testid="dtrp-popover"]:visible').first();
+}
+
 test("desktop demo page", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await openStableDemo(page);
@@ -47,7 +51,7 @@ test("desktop picker open", async ({ page }) => {
   await page.getByTestId("dtrp-trigger").first().click();
   await clearPointerHover(page);
 
-  await expect(page.locator(".playground-grid")).toHaveScreenshot(
+  await expect(getOpenPopover(page)).toHaveScreenshot(
     "picker-open-desktop.png",
     { animations: "disabled" },
   );
@@ -59,7 +63,7 @@ test("mobile picker open", async ({ page }) => {
   await page.getByTestId("dtrp-trigger").first().click();
   await clearPointerHover(page);
 
-  await expect(page.locator(".picker-stage")).toHaveScreenshot(
+  await expect(getOpenPopover(page)).toHaveScreenshot(
     "picker-open-mobile.png",
     { animations: "disabled" },
   );
@@ -75,7 +79,7 @@ test("desktop selected range", async ({ page }) => {
   await cells.nth(14).click();
   await clearPointerHover(page);
 
-  await expect(page.locator(".picker-stage")).toHaveScreenshot(
+  await expect(getOpenPopover(page)).toHaveScreenshot(
     "picker-selected-desktop.png",
     { animations: "disabled" },
   );
@@ -89,7 +93,7 @@ test("End target keeps the selected Start marker", async ({ page }) => {
   await page.getByTestId("dtrp-next").click();
   await clearPointerHover(page);
 
-  await expect(page.locator(".picker-stage")).toHaveScreenshot(
+  await expect(getOpenPopover(page)).toHaveScreenshot(
     "picker-end-target-draft.png",
     { animations: "disabled" },
   );
@@ -105,7 +109,7 @@ test("mobile selected range", async ({ page }) => {
   await cells.nth(14).click();
   await clearPointerHover(page);
 
-  await expect(page.locator(".picker-stage")).toHaveScreenshot(
+  await expect(getOpenPopover(page)).toHaveScreenshot(
     "picker-selected-mobile.png",
     { animations: "disabled" },
   );
@@ -147,7 +151,7 @@ test("millisecond and 12-hour columns", async ({ page }) => {
   await expect(page.getByTestId("dtrp-period-column")).toBeVisible();
   await clearPointerHover(page);
 
-  await expect(page.locator(".picker-stage")).toHaveScreenshot(
+  await expect(getOpenPopover(page)).toHaveScreenshot(
     "picker-millisecond-h12.png",
     { animations: "disabled" },
   );
@@ -165,9 +169,25 @@ test("constrained preset", async ({ page }) => {
   await expect(scenario.getByTestId("dtrp-next")).toBeEnabled();
   await clearPointerHover(page);
 
-  await expect(scenario).toHaveScreenshot("scenario-constrained-preset.png", {
-    animations: "disabled",
+  await expect(scenario.getByTestId("dtrp-popover")).toHaveScreenshot(
+    "scenario-constrained-preset.png",
+    { animations: "disabled" },
+  );
+});
+
+test("inline scenario picker expands in document flow", async ({ page }) => {
+  await page.setViewportSize({ width: 1080, height: 1200 });
+  await openStableDemo(page);
+  const scenario = page.locator(".scenario-card").filter({
+    hasText: "Guardrailed reporting window",
   });
+  await scenario.getByRole("button", { name: "Open calendar" }).click();
+  await clearPointerHover(page);
+
+  await expect(page.locator(".scenario-grid")).toHaveScreenshot(
+    "scenario-inline-open.png",
+    { animations: "disabled" },
+  );
 });
 
 test("text-only mode", async ({ page }) => {
@@ -179,9 +199,12 @@ test("text-only mode", async ({ page }) => {
   await scenario.getByRole("button", { name: "Open calendar" }).click();
   await clearPointerHover(page);
 
-  await expect(scenario).toHaveScreenshot("scenario-text-only.png", {
-    animations: "disabled",
-  });
+  await expect(scenario.getByTestId("dtrp-popover")).toHaveScreenshot(
+    "scenario-text-only.png",
+    {
+      animations: "disabled",
+    },
+  );
 });
 
 test("calendar-only mode", async ({ page }) => {
@@ -193,9 +216,10 @@ test("calendar-only mode", async ({ page }) => {
   await scenario.getByRole("button", { name: "Open calendar" }).click();
   await clearPointerHover(page);
 
-  await expect(scenario).toHaveScreenshot("scenario-calendar-only.png", {
-    animations: "disabled",
-  });
+  await expect(scenario.getByTestId("dtrp-popover")).toHaveScreenshot(
+    "scenario-calendar-only.png",
+    { animations: "disabled" },
+  );
 });
 
 test("invalid controlled range", async ({ page }) => {
@@ -207,9 +231,10 @@ test("invalid controlled range", async ({ page }) => {
   await scenario.getByRole("button", { name: "Open calendar" }).click();
   await clearPointerHover(page);
 
-  await expect(scenario).toHaveScreenshot("scenario-invalid-range.png", {
-    animations: "disabled",
-  });
+  await expect(scenario.getByTestId("dtrp-popover")).toHaveScreenshot(
+    "scenario-invalid-range.png",
+    { animations: "disabled" },
+  );
 });
 
 test("DST gap validation", async ({ page }) => {
@@ -223,9 +248,12 @@ test("DST gap validation", async ({ page }) => {
   await scenario.getByTestId("dtrp-start-input").blur();
   await clearPointerHover(page);
 
-  await expect(scenario).toHaveScreenshot("scenario-dst-gap.png", {
-    animations: "disabled",
-  });
+  await expect(scenario.getByTestId("dtrp-popover")).toHaveScreenshot(
+    "scenario-dst-gap.png",
+    {
+      animations: "disabled",
+    },
+  );
 });
 
 test("DST overlap validation", async ({ page }) => {
@@ -239,7 +267,32 @@ test("DST overlap validation", async ({ page }) => {
   await scenario.getByTestId("dtrp-start-input").blur();
   await clearPointerHover(page);
 
-  await expect(scenario).toHaveScreenshot("scenario-dst-overlap.png", {
+  await expect(scenario.getByTestId("dtrp-popover")).toHaveScreenshot(
+    "scenario-dst-overlap.png",
+    { animations: "disabled" },
+  );
+});
+
+test("year selection view", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await openStableDemo(page);
+  await page.getByTestId("dtrp-trigger").first().click();
+  await page.getByRole("button", { name: /選擇年份/ }).click();
+  await clearPointerHover(page);
+
+  await expect(getOpenPopover(page)).toHaveScreenshot("picker-year-view.png", {
+    animations: "disabled",
+  });
+});
+
+test("month selection view", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await openStableDemo(page);
+  await page.getByTestId("dtrp-trigger").first().click();
+  await page.getByRole("button", { name: /選擇月份/ }).click();
+  await clearPointerHover(page);
+
+  await expect(getOpenPopover(page)).toHaveScreenshot("picker-month-view.png", {
     animations: "disabled",
   });
 });

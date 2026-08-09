@@ -87,6 +87,74 @@ describe("calendar", () => {
     ).not.toBeNull();
   });
 
+  test("year and month controls jump directly to a distant month", async () => {
+    const user = userEvent.setup();
+    await renderOpenCalendar({
+      startTimestamp: Date.UTC(2026, 7, 1),
+      endTimestamp: null,
+    });
+
+    await user.click(screen.getByRole("button", { name: "Choose year: 2026" }));
+    const yearGrid = screen.getByRole("grid", { name: "Choose year" });
+    await user.click(within(yearGrid).getByRole("gridcell", { name: "2030" }));
+
+    const monthGrid = screen.getByRole("grid", { name: "Choose month" });
+    await user.click(
+      within(monthGrid).getByRole("gridcell", { name: "March" }),
+    );
+
+    expect(screen.getByRole("grid", { name: "March 2030" })).not.toBeNull();
+    expect(screen.getAllByRole("grid")).toHaveLength(1);
+  });
+
+  test("year and month controls can return without selecting", async () => {
+    const user = userEvent.setup();
+    await renderOpenCalendar();
+    const yearButton = screen.getByRole("button", {
+      name: "Choose year: 2026",
+    });
+    const monthButton = screen.getByRole("button", {
+      name: "Choose month: August",
+    });
+
+    await user.click(yearButton);
+    expect(screen.getByRole("grid", { name: "Choose year" })).not.toBeNull();
+    await user.click(yearButton);
+    expect(screen.getByRole("grid", { name: "August 2026" })).not.toBeNull();
+
+    await user.click(monthButton);
+    expect(screen.getByRole("grid", { name: "Choose month" })).not.toBeNull();
+    await user.click(monthButton);
+    expect(screen.getByRole("grid", { name: "August 2026" })).not.toBeNull();
+  });
+
+  test("month view disables months outside target constraints", async () => {
+    const user = userEvent.setup();
+    await renderOpenCalendar(AUGUST_RANGE, {
+      constraints: {
+        minTimestamp: Date.UTC(2026, 5, 1),
+        maxTimestamp: Date.UTC(2026, 8, 30),
+        maxDurationMilliseconds: null,
+      },
+    });
+
+    await user.click(
+      screen.getByRole("button", { name: "Choose month: August" }),
+    );
+    const monthGrid = screen.getByRole("grid", { name: "Choose month" });
+
+    expect(
+      within(monthGrid)
+        .getByRole("gridcell", { name: "May" })
+        .hasAttribute("disabled"),
+    ).toBe(true);
+    expect(
+      within(monthGrid)
+        .getByRole("gridcell", { name: "June" })
+        .hasAttribute("disabled"),
+    ).toBe(false);
+  });
+
   test("start selection changes only Start and preserves End", async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();

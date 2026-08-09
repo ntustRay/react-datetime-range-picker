@@ -38,8 +38,17 @@ timestamps, but each popover session edits either Start or End.
 ### Single-target popover
 
 - One popover session displays and edits only the active target.
-- The popover always renders exactly one calendar month; previous and next
-  controls navigate between months.
+- The complete calendar, time controls, and footer render together in an
+  anchored floating layer that does not move surrounding content.
+- The popover always renders exactly one calendar panel. Separate year and
+  month header buttons switch it between day, month, and year views. Previous
+  and next controls move by month, year, or 12-year page for the active view.
+- Selecting a year moves to month selection; selecting a month returns to the
+  day grid for that exact period.
+- Clicking the active year or month header, or pressing Escape inside its grid,
+  returns to the day grid without selecting a value.
+- `popoverMode` defaults to `"floating"`; `"inline"` renders the same picker in
+  normal document flow when overlap is undesirable.
 - Start selection changes only `startTimestamp`; an existing End is preserved.
 - End selection changes only `endTimestamp`; Start is preserved.
 - Start dates that would be invalid relative to End are disabled.
@@ -89,11 +98,13 @@ The footer is one row at desktop widths and follows this order:
 ```ts
 export type HourCycle = "h12" | "h24";
 export type ColorScheme = "light" | "dark";
+export type PopoverMode = "floating" | "inline";
 
 export interface DateTimeRangePickerProps {
   hourCycle?: HourCycle;
   onHourCycleChange?: (hourCycle: HourCycle) => void;
   colorScheme?: ColorScheme;
+  popoverMode?: PopoverMode;
 }
 ```
 
@@ -149,6 +160,10 @@ to `"light"`; consumers may explicitly select `"dark"`.
       Escape, and outside-click behavior.
 - [x] Render exactly one month, make selection target-specific, and disable
       invalid choices.
+- [x] Add direct year and month selection inside the same calendar panel.
+- [x] Float the complete picker above page content without layout movement.
+- [x] Support an inline presentation for normal document flow.
+- [x] Let year and month views exit without selecting.
 - [x] Replace native time inputs with precision-aware scroll-snap columns.
 - [x] Build the single-row responsive footer.
 - [x] Update locale demo mappings and public documentation.
@@ -157,6 +172,6 @@ to `"light"`; consumers may explicitly select `"dark"`.
       Apply.
 - [x] Add keyboard and accessibility coverage for inputs and time columns.
 - [x] Rebuild and inspect desktop, mobile, dark, forced-colors, text-only,
-      calendar-only, and precision visual baselines.
+      calendar-only, year, month, and precision visual baselines.
 - [x] Run typecheck, unit tests, build, demo build, E2E, visual comparison,
       package dry run, and `git diff --check`.

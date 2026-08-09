@@ -15,6 +15,8 @@ export type HourCycle = "h12" | "h24";
 
 export type ColorScheme = "light" | "dark";
 
+export type PopoverMode = "floating" | "inline";
+
 export interface DateTimeRangeValue {
   startTimestamp: Timestamp | null;
   endTimestamp: Timestamp | null;
@@ -129,6 +131,14 @@ export interface DateTimeRangeLocaleText {
   endLabel: string;
   previousMonthLabel: string;
   nextMonthLabel: string;
+  previousYearLabel: string;
+  nextYearLabel: string;
+  previousYearPageLabel: string;
+  nextYearPageLabel: string;
+  chooseYearLabel: string;
+  chooseMonthLabel: string;
+  yearGridLabel: string;
+  monthGridLabel: string;
   calendarButtonLabel: string;
   timezoneLabel: string;
   applyButtonLabel: string;
@@ -240,6 +250,7 @@ export interface DateTimeRangePickerProps {
   hourCycle?: HourCycle;
   onHourCycleChange?: (hourCycle: HourCycle) => void;
   colorScheme?: ColorScheme;
+  popoverMode?: PopoverMode;
   onValidationChange?: (result: DateTimeRangeValidationResult) => void;
 
   precision?: Precision;
@@ -266,7 +277,8 @@ export declare function DateTimeRangePicker(
 
 Omitted optional props select documented defaults; they do not represent
 missing domain fields. Defaults are UTC, second precision, English locale and
-English locale text, 24-hour time, explicit light color scheme,
+English locale text, 24-hour time, explicit light color scheme, a floating
+popover,
 locale-derived first weekday, no constraints, unit steps of `1`, no presets,
 and enabled Reset. The range remains controlled. `onChange` reports draft
 edits, while `onCommit` fires only after Apply accepts a complete valid range.
@@ -337,5 +349,6 @@ properties:
 --dtrp-disabled-opacity
 ```
 
-The popover always renders one month. Previous and next controls replace that
-month rather than adding a second grid.
+The popover always renders one calendar panel. Separate header buttons switch
+that panel between day, month, and year views. Previous and next controls move
+the active view instead of adding another grid.

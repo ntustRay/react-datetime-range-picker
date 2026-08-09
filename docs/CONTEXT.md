@@ -79,8 +79,15 @@ _Avoid_: Built-in range
 - Calendar, text input, and time-zone selector regions can be configured.
 - Time fields are determined by precision rather than a separate visibility
   switch.
-- The popover always displays exactly one month. Navigation replaces the
-  visible month.
+- The entire picker body and footer open as one anchored floating popover and
+  never change surrounding page layout.
+- `popoverMode="inline"` places that same complete picker in normal document
+  flow for demos or containers where overlapping nearby content is undesirable.
+- The popover always displays exactly one calendar panel. Its separate year and
+  month header controls switch that panel between day, month, and year views;
+  navigation replaces the visible period rather than adding another panel.
+- Clicking an already-open year or month header returns to the day view without
+  changing the selected date.
 - Start and End remain visibly marked while editing End, with a continuous
   range band between the two endpoints.
 - Time units use seven-row scroll-snap columns with visible themed scrollbars.
@@ -127,7 +134,8 @@ _Avoid_: Built-in range
 
 - The first release provides one complete date-time range picker, not headless
   hooks or a low-level component system.
-- The first release uses a popover, not inline or modal presentation.
+- The first release uses an anchored floating popover, not inline or modal
+  presentation.
 - Native HTML form serialization is outside the first-release scope; consumers
   integrate through controlled React callbacks.
 - No presets are built in; consumers supply presets appropriate to their

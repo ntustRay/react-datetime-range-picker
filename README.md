@@ -48,10 +48,16 @@ export function FilterControl(): React.JSX.Element {
 
 The Start and End fields accept local text in `YYYY/MM/DD HH:mm:ss` format and
 parse 300 ms after typing stops. Start opens first; Next switches the same
-single-month popover to End; Apply then accepts a complete range. `onChange`
+single-panel popover to End; Apply then accepts a complete range. The year and
+month header controls switch that panel to direct year or month selection.
+`onChange`
 receives valid draft edits, while `onCommit` is Apply-only. Ranges use half-open semantics:
 `startTimestamp <= timestamp < endTimestamp`. Clearing produces two explicit
 `null` fields.
+
+The complete picker floats over surrounding content by default. Set
+`popoverMode="inline"` when it should expand in normal document flow instead.
+Click an already-open year or month heading to return without selecting.
 
 Formatting and wording are separate. Pass a BCP 47 tag through `locale`, and
 replace any UI wording key through `localeText`; omitted wording keys keep the

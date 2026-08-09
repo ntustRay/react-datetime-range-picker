@@ -62,6 +62,7 @@ export function PickerPopover(props: PickerPopoverProps): React.JSX.Element {
       aria-label={props.dialog.label}
       tabIndex={-1}
       data-target={props.activeTarget}
+      data-popover-mode={configuration.popoverMode}
       data-calendar-enabled={configuration.calendarEnabled}
       data-time-enabled={timeEnabled}
       data-testid={getTestId(configuration.testIds.popover, "dtrp-popover")}

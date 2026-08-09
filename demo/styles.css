@@ -403,6 +403,9 @@ h1 {
   font-size: 0.85rem;
   line-height: 1.55;
 }
+.scenario-card:has(.dtrp-popover[data-popover-mode="inline"]) {
+  grid-column: 1 / -1;
+}
 .scenario-control,
 .scenario-control > .dtrp-root {
   min-width: 0;
@@ -415,10 +418,6 @@ h1 {
   flex-wrap: wrap;
   gap: 0.75rem;
 }
-.scenario-card:has(.dtrp-popover) {
-  grid-column: 1 / -1;
-}
-
 .edge-cases {
   background: #fff;
 }
@@ -431,10 +430,9 @@ h1 {
   align-items: center;
   min-height: auto;
 }
-.edge-list .scenario-card:has(.dtrp-popover) {
+.edge-list .scenario-card:has(.dtrp-popover[data-popover-mode="inline"]) {
   grid-template-columns: 1fr;
 }
-
 footer {
   padding: 1.5rem max(1.5rem, calc((100vw - 76rem) / 2));
   border: 0;

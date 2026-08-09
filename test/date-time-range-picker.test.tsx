@@ -31,6 +31,26 @@ describe("DateTimeRangePicker", () => {
     ).toBe("dark");
   });
 
+  test("defaults to a floating popover and supports inline presentation", async () => {
+    const user = userEvent.setup();
+    const props = {
+      value: COMPLETE_RANGE,
+      onChange: vi.fn(),
+      onCommit: vi.fn(),
+    };
+    const { rerender } = render(<DateTimeRangePicker {...props} />);
+
+    await user.click(screen.getByRole("button", { name: "Open calendar" }));
+    expect(screen.getByRole("dialog").getAttribute("data-popover-mode")).toBe(
+      "floating",
+    );
+
+    rerender(<DateTimeRangePicker {...props} popoverMode="inline" />);
+    expect(screen.getByRole("dialog").getAttribute("data-popover-mode")).toBe(
+      "inline",
+    );
+  });
+
   test("renders two text inputs and disables End until Start is valid", () => {
     render(
       <DateTimeRangePicker

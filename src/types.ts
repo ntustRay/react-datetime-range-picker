@@ -6,6 +6,8 @@ export type HourCycle = "h12" | "h24";
 
 export type ColorScheme = "light" | "dark";
 
+export type PopoverMode = "floating" | "inline";
+
 export interface DateTimeRangeValue {
   startTimestamp: Timestamp | null;
   endTimestamp: Timestamp | null;
@@ -91,6 +93,14 @@ export interface DateTimeRangeLocaleText {
   endLabel: string;
   previousMonthLabel: string;
   nextMonthLabel: string;
+  previousYearLabel: string;
+  nextYearLabel: string;
+  previousYearPageLabel: string;
+  nextYearPageLabel: string;
+  chooseYearLabel: string;
+  chooseMonthLabel: string;
+  yearGridLabel: string;
+  monthGridLabel: string;
   calendarButtonLabel: string;
   timezoneLabel: string;
   applyButtonLabel: string;
@@ -189,6 +199,7 @@ export interface DateTimeRangePickerProps {
   hourCycle?: HourCycle;
   onHourCycleChange?: DateTimeRangeHourCycleChangeHandler;
   colorScheme?: ColorScheme;
+  popoverMode?: PopoverMode;
   onValidationChange?: DateTimeRangeValidationChangeHandler;
   precision?: Precision;
   locale?: string;

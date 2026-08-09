@@ -24,6 +24,52 @@ test("opens the picker and exposes exactly one calendar month", async ({
   await expect(page.locator("[data-time-scrollbar]")).toHaveCount(3);
 });
 
+test("opening the picker floats above the page without moving later content", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const laterSection = page.getByRole("heading", {
+    name: "Production scenarios",
+  });
+  const before = await laterSection.evaluate(
+    (element) => element.getBoundingClientRect().top + window.scrollY,
+  );
+
+  await page.getByTestId("dtrp-trigger").first().click();
+  const after = await laterSection.evaluate(
+    (element) => element.getBoundingClientRect().top + window.scrollY,
+  );
+
+  expect(before).toBe(after);
+  await expect(page.getByTestId("dtrp-popover")).toHaveCSS(
+    "position",
+    "absolute",
+  );
+});
+
+test("scenario pickers can render inline without covering later examples", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const scenario = page.locator(".scenario-card").filter({
+    hasText: "Guardrailed reporting window",
+  });
+  const laterScenario = page.locator(".scenario-card").filter({
+    hasText: "Calendar-only selection",
+  });
+  const before = await laterScenario.evaluate(
+    (element) => element.getBoundingClientRect().top + window.scrollY,
+  );
+
+  await scenario.getByRole("button", { name: "Open calendar" }).click();
+  await expect(scenario.getByRole("dialog")).toHaveCSS("position", "static");
+  const after = await laterScenario.evaluate(
+    (element) => element.getBoundingClientRect().top + window.scrollY,
+  );
+
+  expect(after).toBeGreaterThan(before);
+});
+
 test("playground exposes every public precision and controls the timezone", async ({
   page,
 }) => {

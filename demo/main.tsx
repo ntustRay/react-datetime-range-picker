@@ -395,6 +395,7 @@ function ProductionScenarios(): React.JSX.Element {
         >
           <DateTimeRangePicker
             value={constrainedValue}
+            popoverMode="inline"
             onChange={setConstrainedValue}
             onCommit={setConstrainedValue}
             required
@@ -427,6 +428,7 @@ function ProductionScenarios(): React.JSX.Element {
         >
           <DateTimeRangePicker
             value={textOnlyValue}
+            popoverMode="inline"
             onChange={setTextOnlyValue}
             onCommit={setTextOnlyValue}
             features={{
@@ -443,6 +445,7 @@ function ProductionScenarios(): React.JSX.Element {
         >
           <DateTimeRangePicker
             value={calendarOnlyValue}
+            popoverMode="inline"
             onChange={setCalendarOnlyValue}
             onCommit={setCalendarOnlyValue}
             precision="day"
@@ -461,6 +464,7 @@ function ProductionScenarios(): React.JSX.Element {
           <div className="scenario-stack">
             <DateTimeRangePicker
               value={EMPTY_RANGE}
+              popoverMode="inline"
               onChange={ignoreRangeChange}
               onCommit={ignoreRangeChange}
               localeText={{ triggerLabel: "Disabled range" }}
@@ -468,6 +472,7 @@ function ProductionScenarios(): React.JSX.Element {
             />
             <DateTimeRangePicker
               value={EMPTY_RANGE}
+              popoverMode="inline"
               onChange={ignoreRangeChange}
               onCommit={ignoreRangeChange}
               localeText={{ triggerLabel: "Read-only range" }}
@@ -504,6 +509,7 @@ function EdgeCases(): React.JSX.Element {
         >
           <DateTimeRangePicker
             value={gapValue}
+            popoverMode="inline"
             onChange={setGapValue}
             onCommit={setGapValue}
             timezone="America/New_York"
@@ -519,6 +525,7 @@ function EdgeCases(): React.JSX.Element {
               startTimestamp: Date.UTC(2026, 7, 2),
               endTimestamp: Date.UTC(2026, 7, 1),
             }}
+            popoverMode="inline"
             onChange={ignoreRangeChange}
             onCommit={ignoreRangeChange}
             localeText={{ triggerLabel: "Invalid controlled value" }}
@@ -530,6 +537,7 @@ function EdgeCases(): React.JSX.Element {
         >
           <DateTimeRangePicker
             value={overlapValue}
+            popoverMode="inline"
             onChange={setOverlapValue}
             onCommit={setOverlapValue}
             timezone="America/New_York"

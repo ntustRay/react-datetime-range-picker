@@ -6,6 +6,8 @@ and mobile widths, light/dark/high-contrast rendering, feature modes,
 constraints, presets, invalid ranges, and DST validation. The browser clock is
 fixed so the calendar does not drift with the current date. Tests move the
 pointer away before capture so accidental hover states do not enter a baseline.
+Open-state baselines capture the complete floating popover directly, including
+the day, month, and year calendar views.
 
 After a UI change:
 

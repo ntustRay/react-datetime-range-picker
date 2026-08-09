@@ -16,6 +16,7 @@ import type {
   DateTimeRangeValidationTarget,
   DateTimeRangeValue,
   HourCycle,
+  PopoverMode,
   Precision,
   Timestamp,
   Timezone,
@@ -129,6 +130,9 @@ describe("public domain types", () => {
     expectTypeOf<
       NonNullable<DateTimeRangePickerProps["onHourCycleChange"]>
     >().toEqualTypeOf<(hourCycle: HourCycle) => void>();
+    expectTypeOf<
+      NonNullable<DateTimeRangePickerProps["popoverMode"]>
+    >().toEqualTypeOf<PopoverMode>();
 
     const preset: DateTimeRangePreset = {
       id: "last-hour",

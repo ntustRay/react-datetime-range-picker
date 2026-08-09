@@ -25,6 +25,7 @@ export type {
   DateTimeRangeValue,
   HourCycle,
   NormalizeTimestampOptions,
+  PopoverMode,
   Precision,
   Timestamp,
   Timezone,

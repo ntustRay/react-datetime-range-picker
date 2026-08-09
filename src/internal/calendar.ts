@@ -15,6 +15,23 @@ interface CalendarMonth {
   days: readonly CalendarDay[];
 }
 
+interface CalendarAvailabilityOptions {
+  target: "start" | "end";
+  startDay: Timestamp | null;
+  endDay: Timestamp | null;
+  constraints: DateTimeRangeConstraints;
+  timezone: string;
+}
+
+interface CalendarMonthAvailabilityOptions extends CalendarAvailabilityOptions {
+  year: number;
+  month: number;
+}
+
+interface CalendarYearAvailabilityOptions extends CalendarAvailabilityOptions {
+  year: number;
+}
+
 const WEEKDAY_INDEX: Record<Weekday, number> = {
   sunday: 0,
   monday: 1,
@@ -69,6 +86,94 @@ function localMidnightTimestamp(
     timezone,
   );
   return resolution.candidates[0]?.timestamp ?? null;
+}
+
+function getSelectableBounds(options: CalendarAvailabilityOptions): {
+  minimum: Timestamp | null;
+  maximum: Timestamp | null;
+} {
+  let minimum = options.constraints.minTimestamp;
+  let maximum = options.constraints.maxTimestamp;
+  const maximumDuration = options.constraints.maxDurationMilliseconds;
+
+  if (options.target === "end" && options.startDay !== null) {
+    minimum =
+      minimum === null ? options.startDay : Math.max(minimum, options.startDay);
+    if (maximumDuration !== null) {
+      const durationMaximum = options.startDay + maximumDuration;
+      maximum =
+        maximum === null ? durationMaximum : Math.min(maximum, durationMaximum);
+    }
+  }
+
+  if (options.target === "start" && options.endDay !== null) {
+    maximum =
+      maximum === null ? options.endDay : Math.min(maximum, options.endDay);
+    if (maximumDuration !== null) {
+      const durationMinimum = options.endDay - maximumDuration;
+      minimum =
+        minimum === null ? durationMinimum : Math.max(minimum, durationMinimum);
+    }
+  }
+
+  return { minimum, maximum };
+}
+
+function getLastDayOfMonth(year: number, month: number): number {
+  const date = new Date(0);
+  date.setUTCFullYear(year, month, 0);
+  return date.getUTCDate();
+}
+
+function isCalendarPeriodDisabled(
+  firstDay: Timestamp | null,
+  lastDay: Timestamp | null,
+  options: CalendarAvailabilityOptions,
+): boolean {
+  if (firstDay === null || lastDay === null) return true;
+  const bounds = getSelectableBounds(options);
+  if (bounds.minimum !== null && lastDay < bounds.minimum) return true;
+  if (bounds.maximum !== null && firstDay > bounds.maximum) return true;
+  return (
+    bounds.minimum !== null &&
+    bounds.maximum !== null &&
+    bounds.minimum > bounds.maximum
+  );
+}
+
+export function getYearPageStart(year: number): number {
+  return year - 5;
+}
+
+export function isCalendarMonthDisabled(
+  options: CalendarMonthAvailabilityOptions,
+): boolean {
+  const firstDay = localMidnightTimestamp(
+    options.year,
+    options.month,
+    1,
+    options.timezone,
+  );
+  const lastDay = localMidnightTimestamp(
+    options.year,
+    options.month,
+    getLastDayOfMonth(options.year, options.month),
+    options.timezone,
+  );
+  return isCalendarPeriodDisabled(firstDay, lastDay, options);
+}
+
+export function isCalendarYearDisabled(
+  options: CalendarYearAvailabilityOptions,
+): boolean {
+  const firstDay = localMidnightTimestamp(options.year, 1, 1, options.timezone);
+  const lastDay = localMidnightTimestamp(
+    options.year,
+    12,
+    31,
+    options.timezone,
+  );
+  return isCalendarPeriodDisabled(firstDay, lastDay, options);
 }
 
 export function createCalendarMonth(

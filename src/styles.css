@@ -24,6 +24,10 @@
   line-height: 1.4;
 }
 
+.dtrp-root:has(.dtrp-popover[data-popover-mode="floating"]) {
+  z-index: 100;
+}
+
 .dtrp-root[data-color-scheme="dark"] {
   --dtrp-surface: #202126;
   --dtrp-surface-muted: #292b32;
@@ -155,6 +159,9 @@
 
 .dtrp-popover {
   container-type: inline-size;
+  position: absolute;
+  top: 100%;
+  left: 0;
   z-index: 10;
   display: grid;
   width: min(52rem, 100%);
@@ -165,6 +172,12 @@
   border-radius: var(--dtrp-radius);
   background: var(--dtrp-surface);
   box-shadow: var(--dtrp-shadow);
+}
+
+.dtrp-popover[data-popover-mode="inline"] {
+  position: static;
+  width: min(52rem, 100%);
+  max-width: 100%;
 }
 
 .dtrp-popover[data-calendar-enabled="false"] {
@@ -205,7 +218,7 @@
   gap: 0.5rem;
   margin-bottom: 0.75rem;
 }
-.dtrp-calendar-navigation button {
+.dtrp-calendar-navigation > button {
   width: 2.5rem;
   padding: 0;
   border-color: transparent;
@@ -231,6 +244,70 @@
   font-size: 0.9375rem;
   font-weight: 650;
   letter-spacing: -0.01em;
+}
+.dtrp-period-controls {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  justify-content: center;
+}
+.dtrp-period-controls button {
+  display: inline-flex;
+  gap: 0.3rem;
+  align-items: center;
+  width: auto;
+  min-height: 1.75rem;
+  padding: 0.15rem 0.45rem;
+  border-color: transparent;
+  background: transparent;
+  color: var(--dtrp-text);
+  font-size: inherit;
+  font-weight: inherit;
+}
+.dtrp-period-controls button[data-active="true"] {
+  background: var(--dtrp-range);
+  color: var(--dtrp-accent);
+}
+.dtrp-period-controls button span {
+  color: var(--dtrp-text-muted);
+  font-size: 0.7rem;
+  transition: transform 120ms ease-out;
+}
+.dtrp-period-controls button[data-active="true"] span {
+  transform: rotate(180deg);
+}
+.dtrp-year-page-label {
+  margin-top: 0.1rem;
+  color: var(--dtrp-text-muted);
+  font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+  font-size: 0.6rem;
+  line-height: 1;
+}
+.dtrp-period-grid {
+  display: grid;
+  min-height: 17rem;
+  align-content: center;
+  gap: 0.6rem;
+  padding: 0.75rem 0;
+}
+.dtrp-period-grid > [role="row"] {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 0.6rem;
+}
+.dtrp-period-grid [role="gridcell"] {
+  min-height: 3rem;
+  border: 1px solid transparent;
+  border-radius: 0.6rem;
+  font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+  font-size: 0.75rem;
+}
+.dtrp-period-grid [role="gridcell"][aria-selected="true"] {
+  border-color: var(--dtrp-accent);
+  background: var(--dtrp-accent);
+  color: #fff;
+  font-weight: 750;
+  box-shadow: 0 3px 9px color-mix(in srgb, var(--dtrp-accent) 25%, transparent);
 }
 .dtrp-calendar-region [role="grid"] > [role="row"] {
   display: grid;
@@ -581,6 +658,10 @@
   }
   .dtrp-calendar-region [aria-selected="true"] .dtrp-day-value {
     outline: 2px solid Highlight;
+  }
+  .dtrp-period-grid [role="gridcell"][aria-selected="true"] {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
   }
   .dtrp-time-column-list button[aria-selected="true"] {
     outline: 2px solid Highlight;
