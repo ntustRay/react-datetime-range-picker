@@ -5,16 +5,21 @@ import {
 } from "@ntustray/react-datetime-range-picker";
 import "@ntustray/react-datetime-range-picker/styles.css";
 
-export function App(): React.JSX.Element {
-  const [value, setValue] = useState<DateTimeRangeValue>({
-    startTimestamp: null,
-    endTimestamp: null,
-  });
+const emptyRange: DateTimeRangeValue = {
+  startTimestamp: null,
+  endTimestamp: null,
+};
+
+export function FilterControl(): React.JSX.Element {
+  const [draft, setDraft] = useState(emptyRange);
+  const [, setCommitted] = useState(emptyRange);
+
   return (
     <DateTimeRangePicker
-      value={value}
-      onChange={setValue}
-      onCommit={setValue}
+      value={draft}
+      onChange={setDraft}
+      onCommit={setCommitted}
+      timezone="UTC"
     />
   );
 }

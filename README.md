@@ -35,7 +35,7 @@ const emptyRange: DateTimeRangeValue = {
 
 export function FilterControl(): React.JSX.Element {
   const [draft, setDraft] = useState(emptyRange);
-  const [committed, setCommitted] = useState(emptyRange);
+  const [, setCommitted] = useState(emptyRange);
 
   return (
     <DateTimeRangePicker
