@@ -304,16 +304,16 @@ the current clock when a deterministic relative preset requires it.
 - [x] Render two calendar months at the chosen container breakpoint.
 - [x] Implement the responsive change with CSS container queries.
 - [x] Avoid JavaScript viewport listeners for month count.
-- [ ] Add visible start, end, in-range, today, disabled, and focus states.
-- [ ] Ensure states are distinguishable without color alone.
+- [x] Add visible start, end, in-range, today, disabled, and focus states.
+- [x] Ensure states are distinguishable without color alone.
 - [x] Support arrow-key movement by day and week.
 - [x] Support Home and End movement within a week.
 - [x] Support Page Up and Page Down month movement.
-- [ ] Support Enter and Space selection.
-- [ ] Prevent disabled dates from being selected by pointer.
-- [ ] Prevent disabled dates from being selected by keyboard.
+- [x] Support Enter and Space selection.
+- [x] Prevent disabled dates from being selected by pointer.
+- [x] Prevent disabled dates from being selected by keyboard.
 - [x] Restore focus predictably after month navigation.
-- [ ] Component-test single-month rendering.
+- [x] Component-test single-month rendering.
 - [x] Component-test two-month rendering.
 - [x] Component-test range selection across months.
 
@@ -327,18 +327,18 @@ the current clock when a deterministic relative preset requires it.
 - [x] Apply minute-step choices.
 - [x] Apply second-step choices.
 - [x] Apply millisecond-step choices.
-- [ ] Prevent step-mismatched graphical selections.
+- [x] Prevent step-mismatched graphical selections.
 - [x] Normalize units below precision after selection.
 - [x] Label start and end time controls distinctly.
-- [ ] Support keyboard increment and decrement.
-- [ ] Respect min/max constraints at boundary dates.
-- [ ] Respect maximum duration while editing the end time.
-- [ ] Surface DST gaps as disabled choices.
+- [x] Support keyboard increment and decrement.
+- [x] Respect min/max constraints at boundary dates.
+- [x] Respect maximum duration while editing the end time.
+- [x] Surface DST gaps as disabled choices.
 - [x] Render both offset choices for a repeated local time.
 - [x] Require the user to resolve an ambiguous time before Apply.
-- [ ] Component-test every precision.
-- [ ] Component-test custom step values.
-- [ ] Component-test DST gap and overlap controls.
+- [x] Component-test every precision.
+- [x] Component-test custom step values.
+- [x] Component-test DST gap and overlap controls.
 
 ## 11. Develop Time-Zone and Preset UI in Vertical Slices
 

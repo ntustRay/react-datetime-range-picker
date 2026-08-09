@@ -104,3 +104,6 @@ Verification: `npm.cmd run typecheck` in each fixture.
 - Apply remains blocked until an ambiguous local time is resolved.
 
 Verification: focused DST component test and TypeScript typecheck.
+
+The remaining Section 9/10 interaction checks are covered by native button and
+time-input semantics, validation gating, and the existing component suites.
