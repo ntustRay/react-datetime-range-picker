@@ -1,8 +1,10 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useState } from "react";
 import { describe, expect, test, vi } from "vitest";
 
 import { DateTimeRangePicker } from "../src/index.js";
+import type { DateTimeRangeValue } from "../src/index.js";
 
 describe("DateTimeRangePicker", () => {
   test("opens an accessible date-time range dialog", async () => {
@@ -15,11 +17,19 @@ describe("DateTimeRangePicker", () => {
       />,
     );
 
-    await user.click(screen.getByRole("button", { name: "Select date and time range" }));
+    const trigger = screen.getByRole("button", {
+      name: "Select date and time range",
+    });
+    expect(trigger.getAttribute("aria-expanded")).toBe("false");
 
-    expect(
-      screen.getByRole("dialog", { name: "Select date and time range" }).hidden,
-    ).toBe(false);
+    await user.click(trigger);
+
+    const dialog = screen.getByRole("dialog", {
+      name: "Select date and time range",
+    });
+    expect(dialog.hidden).toBe(false);
+    expect(trigger.getAttribute("aria-expanded")).toBe("true");
+    expect(trigger.getAttribute("aria-controls")).toBe(dialog.id);
   });
 
   test("keeps text editing available when both feature flags are disabled", async () => {
@@ -194,6 +204,44 @@ describe("DateTimeRangePicker", () => {
     await user.click(screen.getByRole("button", { name: "Select date and time range" }));
 
     expect(screen.getByRole("button", { name: "Apply" }).hasAttribute("disabled")).toBe(true);
+  });
+
+  test("Cancel restores the value owned by a controlled parent", async () => {
+    const user = userEvent.setup();
+    const originalValue = {
+      startTimestamp: Date.UTC(2026, 7, 1),
+      endTimestamp: Date.UTC(2026, 7, 2),
+    };
+    const editedValue = {
+      startTimestamp: Date.UTC(2026, 7, 10),
+      endTimestamp: Date.UTC(2026, 7, 12),
+    };
+
+    function ControlledPicker(): React.JSX.Element {
+      const [value, setValue] = useState<DateTimeRangeValue>(originalValue);
+      return (
+        <DateTimeRangePicker
+          value={value}
+          presets={[
+            { id: "edited", label: "Edited range", getValue: () => editedValue },
+          ]}
+          onChange={setValue}
+          onCommit={vi.fn()}
+        />
+      );
+    }
+
+    render(<ControlledPicker />);
+    const trigger = screen.getByRole("button", {
+      name: "Select date and time range",
+    });
+    const originalSummary = trigger.textContent;
+
+    await user.click(trigger);
+    await user.click(screen.getByRole("button", { name: "Edited range" }));
+    await user.click(screen.getByRole("button", { name: "Cancel" }));
+
+    expect(trigger.textContent).toBe(originalSummary);
   });
 
   test("Escape cancels and restores focus to the trigger", async () => {

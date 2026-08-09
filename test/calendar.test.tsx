@@ -77,6 +77,22 @@ describe("calendar", () => {
     expect(screen.getByRole("grid", { name: "December 2026" })).not.toBeNull();
   });
 
+  test("month navigation uses the caller's accessible labels", async () => {
+    await renderOpenCalendar(AUGUST_RANGE, {
+      labels: {
+        previousMonth: "Previous billing month",
+        nextMonth: "Next billing month",
+      },
+    });
+
+    expect(
+      screen.getByRole("button", { name: "Previous billing month" }),
+    ).not.toBeNull();
+    expect(
+      screen.getByRole("button", { name: "Next billing month" }),
+    ).not.toBeNull();
+  });
+
   test("leap-year February includes February 29", async () => {
     await renderOpenCalendar({
       startTimestamp: Date.UTC(2024, 1, 1),
@@ -250,6 +266,22 @@ describe("calendar", () => {
     expect(screen.getByRole("grid", { name: "September 2026" })).not.toBeNull();
     expect(document.activeElement?.getAttribute("aria-label")).toBe(
       "Saturday, September 12, 2026",
+    );
+  });
+
+  test("keyboard navigation works in the following month", async () => {
+    const user = userEvent.setup();
+    await renderOpenCalendar();
+    const september = screen.getByRole("grid", { name: "September 2026" });
+    const septemberTwelfth = within(september).getByRole("gridcell", {
+      name: "Saturday, September 12, 2026",
+    });
+    septemberTwelfth.focus();
+
+    await user.keyboard("{ArrowRight}");
+
+    expect(document.activeElement?.getAttribute("aria-label")).toBe(
+      "Sunday, September 13, 2026",
     );
   });
 });
