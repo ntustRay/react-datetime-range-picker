@@ -90,19 +90,23 @@ jobs:
         run: |
           fixture="$(mktemp -d "$RUNNER_TEMP/react18.XXXXXX")"
           cp -R fixtures/react18/. "$fixture"
+          cp fixtures/ssr-smoke.mjs "$fixture"
           cd "$fixture"
           node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); p.dependencies['@ntustray/react-datetime-range-picker']='file:' + process.env.TARBALL; fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\n');"
           rm package-lock.json
           npm install
           npm run typecheck
+          node ssr-smoke.mjs
       - name: Verify React 19 consumer
         env:
           TARBALL: ${{ steps.pack.outputs.tarball }}
         run: |
           fixture="$(mktemp -d "$RUNNER_TEMP/react19.XXXXXX")"
           cp -R fixtures/react19/. "$fixture"
+          cp fixtures/ssr-smoke.mjs "$fixture"
           cd "$fixture"
           node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); p.dependencies['@ntustray/react-datetime-range-picker']='file:' + process.env.TARBALL; fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\n');"
           rm package-lock.json
           npm install
           npm run typecheck
+          node ssr-smoke.mjs

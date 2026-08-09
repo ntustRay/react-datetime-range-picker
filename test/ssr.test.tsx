@@ -3,7 +3,7 @@
 import { renderToString } from "react-dom/server";
 import { expect, test } from "vitest";
 
-import { DateTimeRangePicker } from "@ntustray/react-datetime-range-picker";
+import { DateTimeRangePicker } from "../src/index.js";
 
 test("public picker renders without browser globals", () => {
   const html = renderToString(
