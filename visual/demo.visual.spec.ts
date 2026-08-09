@@ -61,6 +61,7 @@ test("desktop selected range", async ({ page }) => {
   await page.getByTestId("dtrp-trigger").first().click();
   const cells = page.locator('[data-testid^="dtrp-date-"]:visible');
   await cells.nth(10).click();
+  await page.getByTestId("dtrp-next").click();
   await cells.nth(14).click();
   await clearPointerHover(page);
 
@@ -76,6 +77,7 @@ test("mobile selected range", async ({ page }) => {
   await page.getByTestId("dtrp-trigger").first().click();
   const cells = page.locator('[data-testid^="dtrp-date-"]:visible');
   await cells.nth(10).click();
+  await page.getByTestId("dtrp-next").click();
   await cells.nth(14).click();
   await clearPointerHover(page);
 
@@ -111,16 +113,32 @@ test("high contrast picker", async ({ page }) => {
   );
 });
 
+test("millisecond and 12-hour columns", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await openStableDemo(page);
+  await page.getByLabel("Precision").selectOption("millisecond");
+  await page.getByTestId("dtrp-trigger").first().click();
+  await page.getByTestId("dtrp-hour-cycle").selectOption("h12");
+  await expect(page.getByTestId("dtrp-millisecond-column")).toBeVisible();
+  await expect(page.getByTestId("dtrp-period-column")).toBeVisible();
+  await clearPointerHover(page);
+
+  await expect(page.locator(".picker-stage")).toHaveScreenshot(
+    "picker-millisecond-h12.png",
+    { animations: "disabled" },
+  );
+});
+
 test("constrained preset", async ({ page }) => {
   await page.setViewportSize({ width: 1080, height: 900 });
   await openStableDemo(page);
   const scenario = page.locator(".scenario-card").filter({
     hasText: "Guardrailed reporting window",
   });
-  await scenario.getByRole("button", { name: "Constrained range" }).click();
+  await scenario.getByRole("button", { name: "Open calendar" }).click();
   await scenario.getByTestId("dtrp-preset-today").click();
   await expect(scenario.getByTestId("dtrp-start-input")).not.toHaveValue("");
-  await expect(scenario.getByTestId("dtrp-apply")).toBeEnabled();
+  await expect(scenario.getByTestId("dtrp-next")).toBeEnabled();
   await clearPointerHover(page);
 
   await expect(scenario).toHaveScreenshot("scenario-constrained-preset.png", {
@@ -134,7 +152,7 @@ test("text-only mode", async ({ page }) => {
   const scenario = page.locator(".scenario-card").filter({
     hasText: "Text-only toolbar",
   });
-  await scenario.getByRole("button", { name: "Enter exact range" }).click();
+  await scenario.getByRole("button", { name: "Open calendar" }).click();
   await clearPointerHover(page);
 
   await expect(scenario).toHaveScreenshot("scenario-text-only.png", {
@@ -148,7 +166,7 @@ test("calendar-only mode", async ({ page }) => {
   const scenario = page.locator(".scenario-card").filter({
     hasText: "Calendar-only selection",
   });
-  await scenario.getByRole("button", { name: "Choose reporting days" }).click();
+  await scenario.getByRole("button", { name: "Open calendar" }).click();
   await clearPointerHover(page);
 
   await expect(scenario).toHaveScreenshot("scenario-calendar-only.png", {
@@ -163,7 +181,7 @@ test("invalid controlled range", async ({ page }) => {
     hasText: "Invalid controlled range",
   });
   await scenario
-    .getByRole("button", { name: "Invalid controlled value" })
+    .getByRole("button", { name: "Open calendar" })
     .click();
   await clearPointerHover(page);
 
@@ -178,8 +196,8 @@ test("DST gap validation", async ({ page }) => {
   const scenario = page.locator(".scenario-card").filter({
     hasText: "Spring-forward gap",
   });
-  await scenario.getByRole("button", { name: "DST gap example" }).click();
-  await scenario.getByTestId("dtrp-start-input").fill("2024-03-10 02:30:00");
+  await scenario.getByRole("button", { name: "Open calendar" }).click();
+  await scenario.getByTestId("dtrp-start-input").fill("2024/03/10 02:30:00");
   await scenario.getByTestId("dtrp-start-input").blur();
   await clearPointerHover(page);
 
@@ -194,8 +212,8 @@ test("DST overlap validation", async ({ page }) => {
   const scenario = page.locator(".scenario-card").filter({
     hasText: "Fall-back overlap",
   });
-  await scenario.getByRole("button", { name: "DST overlap example" }).click();
-  await scenario.getByTestId("dtrp-start-input").fill("2024-11-03 01:30:00");
+  await scenario.getByRole("button", { name: "Open calendar" }).click();
+  await scenario.getByTestId("dtrp-start-input").fill("2024/11/03 01:30:00");
   await scenario.getByTestId("dtrp-start-input").blur();
   await clearPointerHover(page);
 

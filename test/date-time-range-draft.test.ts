@@ -10,6 +10,7 @@ import {
 const UTC_CONTEXT: DateTimeRangeDraftContext = {
   timezone: "UTC",
   precision: "second",
+  hourCycle: "h24",
 };
 
 describe("date-time range draft", () => {
@@ -23,13 +24,11 @@ describe("date-time range draft", () => {
     );
 
     expect(state.start).toMatchObject({
-      text: "2026-08-09 12:34:56",
-      time: "12:34:56",
+      text: "2026/08/09 12:34:56",
       error: null,
     });
     expect(state.end).toMatchObject({
-      text: "2026-08-09 13:34:56",
-      time: "13:34:56",
+      text: "2026/08/09 13:34:56",
       error: null,
     });
   });
@@ -41,7 +40,7 @@ describe("date-time range draft", () => {
     );
     const edited = transitionDateTimeRangeDraft(
       initial,
-      { type: "change-text", target: "start", text: "2026-08-09 12:34:56" },
+      { type: "change-text", target: "start", text: "2026/08/09 12:34:56" },
       UTC_CONTEXT,
     );
 
@@ -67,7 +66,7 @@ describe("date-time range draft", () => {
     );
     const edited = transitionDateTimeRangeDraft(
       initial,
-      { type: "change-text", target: "start", text: "2026-08-" },
+      { type: "change-text", target: "start", text: "2026/08/" },
       UTC_CONTEXT,
     );
     const committed = transitionDateTimeRangeDraft(
@@ -85,6 +84,7 @@ describe("date-time range draft", () => {
     const context: DateTimeRangeDraftContext = {
       timezone: "America/New_York",
       precision: "second",
+      hourCycle: "h24",
     };
     const initial = createDateTimeRangeDraft(
       { startTimestamp: null, endTimestamp: null },
@@ -92,7 +92,7 @@ describe("date-time range draft", () => {
     );
     const edited = transitionDateTimeRangeDraft(
       initial,
-      { type: "change-text", target: "start", text: "2024-11-03 01:30:00" },
+      { type: "change-text", target: "start", text: "2024/11/03 01:30:00" },
       context,
     );
     const committed = transitionDateTimeRangeDraft(
@@ -138,29 +138,83 @@ describe("date-time range draft", () => {
     );
 
     expect(replaced.state.start.error).toBeNull();
-    expect(replaced.state.start.text).toBe("2026-08-09 12:00:00");
+    expect(replaced.state.start.text).toBe("2026/08/09 12:00:00");
     expect(replaced.changedValue).toEqual(value);
   });
 
-  test("changes the time while preserving the local date", () => {
+  test("changes only the target date while preserving its time and the other endpoint", () => {
     const initial = createDateTimeRangeDraft(
       {
-        startTimestamp: Date.UTC(2026, 7, 9, 12),
-        endTimestamp: null,
+        startTimestamp: Date.UTC(2026, 7, 9, 12, 34, 56),
+        endTimestamp: Date.UTC(2026, 7, 12, 18),
       },
       UTC_CONTEXT,
     );
     const changed = transitionDateTimeRangeDraft(
       initial,
-      { type: "change-time", target: "start", time: "14:15:16" },
+      {
+        type: "change-date",
+        target: "start",
+        timestamp: Date.UTC(2026, 7, 10),
+      },
       UTC_CONTEXT,
     );
 
     expect(changed.changedValue).toEqual({
-      startTimestamp: Date.UTC(2026, 7, 9, 14, 15, 16),
+      startTimestamp: Date.UTC(2026, 7, 10, 12, 34, 56),
+      endTimestamp: Date.UTC(2026, 7, 12, 18),
+    });
+  });
+
+  test("changes one local time unit without rewriting the date or endpoint", () => {
+    const initial = createDateTimeRangeDraft(
+      {
+        startTimestamp: Date.UTC(2026, 7, 9, 12, 34, 56),
+        endTimestamp: Date.UTC(2026, 7, 12, 18),
+      },
+      UTC_CONTEXT,
+    );
+    const changed = transitionDateTimeRangeDraft(
+      initial,
+      {
+        type: "change-time-unit",
+        target: "start",
+        unit: "minute",
+        value: 45,
+      },
+      UTC_CONTEXT,
+    );
+
+    expect(changed.changedValue).toEqual({
+      startTimestamp: Date.UTC(2026, 7, 9, 12, 45, 56),
+      endTimestamp: Date.UTC(2026, 7, 12, 18),
+    });
+  });
+
+  test("changes AM or PM without changing the displayed twelve-hour value", () => {
+    const context: DateTimeRangeDraftContext = {
+      timezone: "UTC",
+      precision: "second",
+      hourCycle: "h12",
+    };
+    const initial = createDateTimeRangeDraft(
+      {
+        startTimestamp: Date.UTC(2026, 7, 9, 8, 30),
+        endTimestamp: null,
+      },
+      context,
+    );
+    const changed = transitionDateTimeRangeDraft(
+      initial,
+      { type: "change-period", target: "start", period: "pm" },
+      context,
+    );
+
+    expect(changed.changedValue).toEqual({
+      startTimestamp: Date.UTC(2026, 7, 9, 20, 30),
       endTimestamp: null,
     });
-    expect(changed.state.start.text).toBe("2026-08-09 14:15:16");
+    expect(changed.state.start.text).toBe("2026/08/09 08:30:00 PM");
   });
 
   test("combines field parsing errors with range validation", () => {

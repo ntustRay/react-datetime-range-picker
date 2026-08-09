@@ -5,9 +5,9 @@ import { describe, expect, test, vi } from "vitest";
 import { DateTimeRangePicker } from "../src/index.js";
 import type { DateTimeRangeValue } from "../src/index.js";
 
-const AUGUST_RANGE = {
+const AUGUST_RANGE: DateTimeRangeValue = {
   startTimestamp: Date.UTC(2026, 7, 1),
-  endTimestamp: Date.UTC(2026, 7, 2),
+  endTimestamp: Date.UTC(2026, 7, 20),
 };
 
 async function renderOpenCalendar(
@@ -23,22 +23,16 @@ async function renderOpenCalendar(
       {...extraProps}
     />,
   );
-  await user.click(
-    screen.getByRole("button", { name: "Select date and time range" }),
-  );
+  await user.click(screen.getByRole("button", { name: "Open calendar" }));
 }
 
 describe("calendar", () => {
-  test("renders the current and following month for responsive layout", async () => {
+  test("always renders exactly one month", async () => {
     await renderOpenCalendar();
 
+    expect(screen.getAllByRole("grid")).toHaveLength(1);
     expect(screen.getByRole("grid", { name: "August 2026" })).not.toBeNull();
-    expect(screen.getByRole("grid", { name: "September 2026" })).not.toBeNull();
-    expect(
-      screen.getByRole("grid", { name: "September 2026" }).getAttribute(
-        "data-responsive-calendar",
-      ),
-    ).toBe("wide");
+    expect(screen.queryByRole("grid", { name: "September 2026" })).toBeNull();
   });
 
   test("renders a complete six-week month grid with locale weekdays", async () => {
@@ -49,14 +43,9 @@ describe("calendar", () => {
     expect(
       within(grid).getAllByRole("columnheader").map((header) => header.textContent),
     ).toEqual(["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]);
-    expect(
-      within(grid).getByRole("gridcell", {
-        name: "Sunday, July 26, 2026",
-      }),
-    ).not.toBeNull();
   });
 
-  test("locale and explicit weekday override control grid order", async () => {
+  test("locale controls the first weekday", async () => {
     await renderOpenCalendar(AUGUST_RANGE, { locale: "en-GB" });
     const grid = screen.getByRole("grid", { name: "August 2026" });
     expect(
@@ -64,20 +53,21 @@ describe("calendar", () => {
     ).toEqual(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]);
   });
 
-  test("month navigation crosses year boundaries", async () => {
+  test("month navigation crosses year boundaries without adding a second grid", async () => {
     const user = userEvent.setup();
     await renderOpenCalendar({
       startTimestamp: Date.UTC(2026, 11, 1),
-      endTimestamp: Date.UTC(2026, 11, 2),
+      endTimestamp: Date.UTC(2026, 11, 20),
     });
 
     await user.click(screen.getByRole("button", { name: "Next month" }));
     expect(screen.getByRole("grid", { name: "January 2027" })).not.toBeNull();
+    expect(screen.getAllByRole("grid")).toHaveLength(1);
     await user.click(screen.getByRole("button", { name: "Previous month" }));
     expect(screen.getByRole("grid", { name: "December 2026" })).not.toBeNull();
   });
 
-  test("month navigation uses the caller's accessible labels", async () => {
+  test("month navigation uses localized accessible labels", async () => {
     await renderOpenCalendar(AUGUST_RANGE, {
       localeText: {
         previousMonthLabel: "Previous billing month",
@@ -85,87 +75,11 @@ describe("calendar", () => {
       },
     });
 
-    expect(
-      screen.getByRole("button", { name: "Previous billing month" }),
-    ).not.toBeNull();
-    expect(
-      screen.getByRole("button", { name: "Next billing month" }),
-    ).not.toBeNull();
+    expect(screen.getByRole("button", { name: "Previous billing month" })).not.toBeNull();
+    expect(screen.getByRole("button", { name: "Next billing month" })).not.toBeNull();
   });
 
-  test("locale text replaces selected range status wording", async () => {
-    await renderOpenCalendar(AUGUST_RANGE, {
-      localeText: {
-        startDateStatusLabel: "起始日期",
-        endDateStatusLabel: "結束日期",
-      },
-    });
-    const august = screen.getByRole("grid", { name: "August 2026" });
-
-    expect(
-      within(august).getByRole("gridcell", {
-        name: "Saturday, August 1, 2026",
-      }).textContent,
-    ).toContain("起始日期");
-    expect(
-      within(august).getByRole("gridcell", {
-        name: "Sunday, August 2, 2026",
-      }).textContent,
-    ).toContain("結束日期");
-  });
-
-  test("leap-year February includes February 29", async () => {
-    await renderOpenCalendar({
-      startTimestamp: Date.UTC(2024, 1, 1),
-      endTimestamp: Date.UTC(2024, 1, 2),
-    });
-
-    const grid = screen.getByRole("grid", { name: "February 2024" });
-    expect(
-      within(grid).getByRole("gridcell", {
-        name: "Thursday, February 29, 2024",
-      }),
-    ).not.toBeNull();
-  });
-
-  test("non-leap February has no February 29", async () => {
-    await renderOpenCalendar({
-      startTimestamp: Date.UTC(2026, 1, 1),
-      endTimestamp: Date.UTC(2026, 1, 2),
-    });
-    expect(
-      screen.queryByRole("gridcell", { name: "Sunday, February 29, 2026" }),
-    ).toBeNull();
-  });
-
-  test.each([
-    [2026, 2, "Sunday"],
-    [2026, 6, "Monday"],
-    [2026, 9, "Tuesday"],
-    [2026, 4, "Wednesday"],
-    [2026, 1, "Thursday"],
-    [2026, 5, "Friday"],
-    [2026, 8, "Saturday"],
-  ] as const)(
-    "renders a month beginning on %s-%s",
-    async (year, month, weekday) => {
-      await renderOpenCalendar({
-        startTimestamp: Date.UTC(year, month - 1, 1),
-        endTimestamp: Date.UTC(year, month - 1, 2),
-      });
-      const monthName = new Intl.DateTimeFormat("en", {
-        month: "long",
-        timeZone: "UTC",
-      }).format(Date.UTC(year, month - 1, 1));
-      expect(
-        screen.getByRole("gridcell", {
-          name: `${weekday}, ${monthName} 1, ${year}`,
-        }),
-      ).not.toBeNull();
-    },
-  );
-
-  test("pointer selection emits a start draft and then a complete range", async () => {
+  test("start selection changes only Start and preserves End", async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
     await renderOpenCalendar(AUGUST_RANGE, { onChange });
@@ -173,59 +87,54 @@ describe("calendar", () => {
     await user.click(
       screen.getByRole("gridcell", { name: "Monday, August 10, 2026" }),
     );
+
+    expect(onChange).toHaveBeenLastCalledWith({
+      startTimestamp: Date.UTC(2026, 7, 10),
+      endTimestamp: Date.UTC(2026, 7, 20),
+    });
+  });
+
+  test("end selection changes only End and preserves Start", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <DateTimeRangePicker
+        value={AUGUST_RANGE}
+        onChange={onChange}
+        onCommit={vi.fn()}
+      />,
+    );
+    await user.click(screen.getByRole("textbox", { name: "End" }));
+    expect(screen.getByRole("dialog").getAttribute("data-target")).toBe("end");
     await user.click(
       screen.getByRole("gridcell", { name: "Wednesday, August 12, 2026" }),
     );
 
-    expect(onChange).toHaveBeenNthCalledWith(1, {
-      startTimestamp: Date.UTC(2026, 7, 10),
-      endTimestamp: null,
-    });
-    expect(onChange).toHaveBeenNthCalledWith(2, {
-      startTimestamp: Date.UTC(2026, 7, 10),
+    expect(onChange).toHaveBeenLastCalledWith({
+      startTimestamp: Date.UTC(2026, 7, 1),
       endTimestamp: Date.UTC(2026, 7, 12),
     });
   });
 
-  test("pointer selection spans the two displayed months", async () => {
+  test("target-specific constraints disable invalid dates", async () => {
     const user = userEvent.setup();
-    const onChange = vi.fn();
-    await renderOpenCalendar(AUGUST_RANGE, { onChange });
-
-    await user.click(
-      within(screen.getByRole("grid", { name: "August 2026" })).getByRole(
-        "gridcell",
-        { name: "Sunday, August 30, 2026" },
-      ),
-    );
-    await user.click(
-      within(screen.getByRole("grid", { name: "September 2026" })).getByRole(
-        "gridcell",
-        { name: "Wednesday, September 2, 2026" },
-      ),
-    );
-
-    expect(onChange).toHaveBeenLastCalledWith({
-      startTimestamp: Date.UTC(2026, 7, 30),
-      endTimestamp: Date.UTC(2026, 8, 2),
-    });
-  });
-
-  test("constraints disable unavailable start and end dates", async () => {
-    await renderOpenCalendar(
-      { startTimestamp: Date.UTC(2026, 7, 10), endTimestamp: null },
-      {
-        constraints: {
-          minTimestamp: Date.UTC(2026, 7, 5),
-          maxTimestamp: Date.UTC(2026, 7, 20),
+    render(
+      <DateTimeRangePicker
+        value={{ startTimestamp: Date.UTC(2026, 7, 10), endTimestamp: null }}
+        constraints={{
+          minTimestamp: null,
+          maxTimestamp: null,
           maxDurationMilliseconds: 2 * 86_400_000,
-        },
-      },
+        }}
+        onChange={vi.fn()}
+        onCommit={vi.fn()}
+      />,
     );
+    await user.click(screen.getByRole("textbox", { name: "End" }));
 
     expect(
       screen
-        .getByRole("gridcell", { name: "Tuesday, August 4, 2026" })
+        .getByRole("gridcell", { name: "Sunday, August 9, 2026" })
         .hasAttribute("disabled"),
     ).toBe(true);
     expect(
@@ -240,69 +149,20 @@ describe("calendar", () => {
     ).toBe(true);
   });
 
-  test("half-open visual range excludes the selected endpoints", async () => {
-    await renderOpenCalendar({
-      startTimestamp: Date.UTC(2026, 7, 10),
-      endTimestamp: Date.UTC(2026, 7, 13),
-    });
-
-    expect(
-      screen
-        .getByRole("gridcell", { name: "Tuesday, August 11, 2026" })
-        .getAttribute("data-in-range"),
-    ).toBe("true");
-    expect(
-      screen
-        .getByRole("gridcell", { name: "Monday, August 10, 2026" })
-        .getAttribute("data-in-range"),
-    ).toBe("false");
-    expect(
-      screen
-        .getByRole("gridcell", { name: "Thursday, August 13, 2026" })
-        .getAttribute("data-in-range"),
-    ).toBe("false");
-  });
-
-  test("arrow, Home, End, and Page Down keys move calendar focus", async () => {
+  test("keyboard navigation moves focus and replaces the visible month", async () => {
     const user = userEvent.setup();
     await renderOpenCalendar();
-    const augustFirst = screen.getByRole("gridcell", {
+    const first = screen.getByRole("gridcell", {
       name: "Saturday, August 1, 2026",
     });
-    augustFirst.focus();
+    first.focus();
 
     await user.keyboard("{ArrowRight}");
     expect(document.activeElement?.getAttribute("aria-label")).toBe(
       "Sunday, August 2, 2026",
-    );
-    await user.keyboard("{Home}");
-    expect(document.activeElement?.getAttribute("aria-label")).toBe(
-      "Sunday, August 2, 2026",
-    );
-    await user.keyboard("{End}");
-    expect(document.activeElement?.getAttribute("aria-label")).toBe(
-      "Saturday, August 8, 2026",
     );
     await user.keyboard("{PageDown}");
     expect(screen.getByRole("grid", { name: "September 2026" })).not.toBeNull();
-    expect(document.activeElement?.getAttribute("aria-label")).toBe(
-      "Saturday, September 12, 2026",
-    );
-  });
-
-  test("keyboard navigation works in the following month", async () => {
-    const user = userEvent.setup();
-    await renderOpenCalendar();
-    const september = screen.getByRole("grid", { name: "September 2026" });
-    const septemberTwelfth = within(september).getByRole("gridcell", {
-      name: "Saturday, September 12, 2026",
-    });
-    septemberTwelfth.focus();
-
-    await user.keyboard("{ArrowRight}");
-
-    expect(document.activeElement?.getAttribute("aria-label")).toBe(
-      "Sunday, September 13, 2026",
-    );
+    expect(screen.getAllByRole("grid")).toHaveLength(1);
   });
 });

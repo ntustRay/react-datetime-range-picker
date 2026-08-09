@@ -14,6 +14,7 @@ import type {
   DateTimeRangeValidationStatus,
   DateTimeRangeValidationTarget,
   DateTimeRangeValue,
+  HourCycle,
   Precision,
   Timestamp,
   Timezone,
@@ -48,6 +49,7 @@ describe("public domain types", () => {
 
   test("precision and weekday expose every fixed value", () => {
     expectTypeOf<Timezone>().toEqualTypeOf<string>();
+    expectTypeOf<HourCycle>().toEqualTypeOf<"h12" | "h24">();
     expectTypeOf<Precision>().toEqualTypeOf<
       | "year"
       | "month"
@@ -127,6 +129,9 @@ describe("public domain types", () => {
     >();
     expectTypeOf<NonNullable<DateTimeRangePickerProps["onTimezoneChange"]>>().toEqualTypeOf<
       (timezone: string) => void
+    >();
+    expectTypeOf<NonNullable<DateTimeRangePickerProps["onHourCycleChange"]>>().toEqualTypeOf<
+      (hourCycle: HourCycle) => void
     >();
 
     const preset: DateTimeRangePreset = {
