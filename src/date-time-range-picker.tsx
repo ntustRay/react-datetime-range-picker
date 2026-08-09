@@ -91,6 +91,9 @@ export function DateTimeRangePicker(
   const [draft, setDraft] = useState(props.value);
   const timezone = props.timezone ?? "UTC";
   const precision = props.precision ?? "second";
+  const calendarEnabled = props.features?.calendar !== false;
+  const textInputEnabled =
+    props.features?.textInput !== false || calendarEnabled === false;
   const [startText, setStartText] = useState(() =>
     safelyFormatTimestamp(props.value.startTimestamp, timezone, precision),
   );
@@ -323,7 +326,7 @@ export function DateTimeRangePicker(
           tabIndex={-1}
           data-testid={props.testIds?.popover ?? "dtrp-popover"}
         >
-          {props.features?.calendar !== false ? (
+          {calendarEnabled ? (
             <CalendarView
               value={draft}
               timezone={timezone}
@@ -334,7 +337,7 @@ export function DateTimeRangePicker(
               onChange={updateDraft}
             />
           ) : null}
-          {props.features?.textInput !== false ? (
+          {textInputEnabled ? (
             <div>
               <label>
                 {props.labels?.start ?? "Start"}

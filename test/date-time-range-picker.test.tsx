@@ -22,6 +22,20 @@ describe("DateTimeRangePicker", () => {
     ).toBe(false);
   });
 
+  test("keeps text editing available when both feature flags are disabled", async () => {
+    const user = userEvent.setup();
+    render(
+      <DateTimeRangePicker
+        features={{ calendar: false, textInput: false, timezoneSelector: false }}
+        value={{ startTimestamp: null, endTimestamp: null }}
+        onChange={vi.fn()}
+        onCommit={vi.fn()}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Select date and time range" }));
+    expect(screen.getByRole("textbox", { name: "Start" })).not.toBeNull();
+  });
+
   test("preset edits stay draft until Apply commits them", async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();

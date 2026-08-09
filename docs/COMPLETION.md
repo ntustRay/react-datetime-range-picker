@@ -32,3 +32,13 @@ Verification: focused picker tests (24 tests) and TypeScript typecheck.
 - Added component coverage for timezone changes and valid/invalid presets.
 
 Verification: focused picker tests (27 tests) and TypeScript typecheck.
+
+## Picker Assembly (Section 12)
+
+- Completed the controlled trigger/popover editing shell and action controls.
+- Wired feature visibility, controlled updates, validation, focus restoration,
+  cancellation, clearing, and commit gating.
+- Added a safe text-input fallback when consumers disable both graphical and
+  text editing flags.
+
+Verification: picker component tests and TypeScript typecheck.

@@ -363,27 +363,27 @@ the current clock when a deterministic relative preset requires it.
 
 ## 12. Assemble the Picker through Consumer-Visible Slices
 
-- [ ] Build the closed trigger and range summary.
-- [ ] Build the popover container.
-- [ ] Add Apply, Cancel, and Clear controls.
-- [ ] Show Clear by default.
-- [ ] Wire the calendar region visibility setting.
-- [ ] Wire the text-input region visibility setting.
-- [ ] Wire the time-zone-selector visibility setting.
-- [ ] Ensure at least one editing method remains available.
-- [ ] Wire controlled values and callbacks.
-- [ ] Wire constraints, precision, steps, locale, labels, and presets.
-- [ ] Implement disabled behavior.
-- [ ] Implement read-only behavior.
-- [ ] Implement required behavior.
-- [ ] Prevent opening when disabled or read-only.
-- [ ] Move focus into the popover when opened.
-- [ ] Return focus to the trigger when closed.
-- [ ] Cancel and close on Escape.
-- [ ] Cancel and close on outside click.
-- [ ] Keep Apply disabled for invalid or incomplete drafts.
-- [ ] Keep validation messages visible for invalid controlled values.
-- [ ] Verify the component remains controlled under rerenders.
+- [x] Build the closed trigger and range summary.
+- [x] Build the popover container.
+- [x] Add Apply, Cancel, and Clear controls.
+- [x] Show Clear by default.
+- [x] Wire the calendar region visibility setting.
+- [x] Wire the text-input region visibility setting.
+- [x] Wire the time-zone-selector visibility setting.
+- [x] Ensure at least one editing method remains available.
+- [x] Wire controlled values and callbacks.
+- [x] Wire constraints, precision, steps, locale, labels, and presets.
+- [x] Implement disabled behavior.
+- [x] Implement read-only behavior.
+- [x] Implement required behavior.
+- [x] Prevent opening when disabled or read-only.
+- [x] Move focus into the popover when opened.
+- [x] Return focus to the trigger when closed.
+- [x] Cancel and close on Escape.
+- [x] Cancel and close on outside click.
+- [x] Keep Apply disabled for invalid or incomplete drafts.
+- [x] Keep validation messages visible for invalid controlled values.
+- [x] Verify the component remains controlled under rerenders.
 
 ## 13. Add Stable Test IDs
 
