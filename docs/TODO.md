@@ -436,17 +436,17 @@ the current clock when a deterministic relative preset requires it.
 - [x] Add a controlled basic UTC example.
 - [x] Add a `zh-TW` and `Asia/Taipei` example.
 - [x] Add a precision selector example.
-- [ ] Add a constraints example.
-- [ ] Add a custom steps example.
-- [ ] Add a custom presets example.
-- [ ] Add a custom labels example.
-- [ ] Add a custom test-ID example.
-- [ ] Add a disabled example.
-- [ ] Add a read-only example.
-- [ ] Add a required example.
-- [ ] Add an invalid controlled-value example.
-- [ ] Add a DST gap example.
-- [ ] Add a DST overlap example.
+- [x] Add a constraints example.
+- [x] Add a custom steps example.
+- [x] Add a custom presets example.
+- [x] Add a custom labels example.
+- [x] Add a custom test-ID example.
+- [x] Add a disabled example.
+- [x] Add a read-only example.
+- [x] Add a required example.
+- [x] Add an invalid controlled-value example.
+- [x] Add a DST gap example.
+- [x] Add a DST overlap example.
 - [x] Display draft changes separately from committed chart-filter values.
 - [x] Add a lightweight mock chart-filter result panel.
 - [x] Ensure the demo works at narrow and wide widths.

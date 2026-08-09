@@ -71,6 +71,10 @@ Verification: full package build and test check.
 
 Verification: `npm.cmd run demo:build`.
 
+The demo now also includes constraint, custom-step, preset, label, test-ID,
+disabled, read-only, required, invalid-value, DST-gap, and DST-overlap
+examples.
+
 ## Coverage and Documentation (Sections 16, 18, and 20)
 
 - Recorded the configured Vitest/RTL/user-event harness and existing public

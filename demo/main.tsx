@@ -113,6 +113,19 @@ function Demo(): React.JSX.Element {
           timezone="America/New_York"
           labels={{ trigger: "DST gap example" }}
         />
+        <DateTimeRangePicker
+          value={{ startTimestamp: Date.UTC(2026, 7, 2), endTimestamp: Date.UTC(2026, 7, 1) }}
+          onChange={() => undefined}
+          onCommit={() => undefined}
+          labels={{ trigger: "Invalid controlled value" }}
+        />
+        <DateTimeRangePicker
+          value={EMPTY_RANGE}
+          onChange={() => undefined}
+          onCommit={() => undefined}
+          timezone="America/New_York"
+          labels={{ trigger: "DST overlap example" }}
+        />
       </div>
       <dl className="demo-status">
         <div>
