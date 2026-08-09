@@ -26,6 +26,10 @@ interface CalendarViewProps {
   onChange: (value: DateTimeRangeValue) => void;
 }
 
+function testId(value: string | undefined, fallback: string): string {
+  return value?.trim() === "" || value === undefined ? fallback : value;
+}
+
 function getAnchor(timestamp: Timestamp | null, timezone: string): {
   year: number;
   month: number;
@@ -140,7 +144,7 @@ export function CalendarView(props: CalendarViewProps): React.JSX.Element {
         <button
           type="button"
           aria-label="Previous month"
-          data-testid={props.testIds?.previousMonth ?? "dtrp-previous-month"}
+          data-testid={testId(props.testIds?.previousMonth, "dtrp-previous-month")}
           onClick={() => changeMonth(-1)}
         >
           ‹
@@ -149,7 +153,7 @@ export function CalendarView(props: CalendarViewProps): React.JSX.Element {
         <button
           type="button"
           aria-label="Next month"
-          data-testid={props.testIds?.nextMonth ?? "dtrp-next-month"}
+          data-testid={testId(props.testIds?.nextMonth, "dtrp-next-month")}
           onClick={() => changeMonth(1)}
         >
           ›
@@ -159,7 +163,7 @@ export function CalendarView(props: CalendarViewProps): React.JSX.Element {
         ref={gridRef}
         role="grid"
         aria-label={monthLabel}
-        data-testid={props.testIds?.calendar ?? "dtrp-calendar"}
+        data-testid={testId(props.testIds?.calendar, "dtrp-calendar")}
       >
         <div role="row">
           {weekdayLabels(props.locale, firstWeekdayIndex).map((label) => (
@@ -208,8 +212,10 @@ export function CalendarView(props: CalendarViewProps): React.JSX.Element {
                     data-testid={
                       day.timestamp === null
                         ? undefined
-                        : props.testIds?.dateCell?.(day.timestamp) ??
-                          `dtrp-date-${day.timestamp}`
+                        : testId(
+                            props.testIds?.dateCell?.(day.timestamp),
+                            `dtrp-date-${day.timestamp}`,
+                          )
                     }
                     onFocus={() => setFocusedIndex(index)}
                     onKeyDown={(event) => {

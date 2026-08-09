@@ -27,6 +27,10 @@ const DEFAULT_CONSTRAINTS = {
   maxDurationMilliseconds: null,
 };
 
+function testId(value: string | undefined, fallback: string): string {
+  return value?.trim() === "" || value === undefined ? fallback : value;
+}
+
 function getDefaultValidationMessage(code: DateTimeRangeValidationErrorCode): string {
   const messages: Record<DateTimeRangeValidationErrorCode, string> = {
     "end-without-start": "Choose a start before the end.",
@@ -300,11 +304,11 @@ export function DateTimeRangePicker(
   };
 
   return (
-    <div ref={rootRef} data-testid={props.testIds?.root ?? "dtrp-root"}>
+    <div ref={rootRef} data-testid={testId(props.testIds?.root, "dtrp-root")}>
       <button
         ref={triggerRef}
         type="button"
-        data-testid={props.testIds?.trigger ?? "dtrp-trigger"}
+        data-testid={testId(props.testIds?.trigger, "dtrp-trigger")}
         disabled={props.disabled === true || props.readOnly === true}
         aria-label={triggerLabel}
         onClick={() => {
@@ -324,7 +328,7 @@ export function DateTimeRangePicker(
           role="dialog"
           aria-label={triggerLabel}
           tabIndex={-1}
-          data-testid={props.testIds?.popover ?? "dtrp-popover"}
+          data-testid={testId(props.testIds?.popover, "dtrp-popover")}
         >
           {calendarEnabled ? (
             <CalendarView
@@ -343,7 +347,7 @@ export function DateTimeRangePicker(
                 {props.labels?.start ?? "Start"}
                 <input
                   aria-describedby={`dtrp-start-format ${validationDescriptionIds("start")}`.trim()}
-                  data-testid={props.testIds?.startInput ?? "dtrp-start-input"}
+                  data-testid={testId(props.testIds?.startInput, "dtrp-start-input")}
                   value={startText}
                   aria-invalid={startTextError === null ? undefined : true}
                   onChange={(event) => {
@@ -360,7 +364,7 @@ export function DateTimeRangePicker(
                 {props.labels?.end ?? "End"}
                 <input
                   aria-describedby={`dtrp-end-format ${validationDescriptionIds("end")}`.trim()}
-                  data-testid={props.testIds?.endInput ?? "dtrp-end-input"}
+                  data-testid={testId(props.testIds?.endInput, "dtrp-end-input")}
                   value={endText}
                   aria-invalid={endTextError === null ? undefined : true}
                   onChange={(event) => {
@@ -387,7 +391,7 @@ export function DateTimeRangePicker(
                             ? "second"
                             : "millisecond"] ?? 1,
                       )}
-                      data-testid={props.testIds?.startTime ?? "dtrp-start-time"}
+                      data-testid={testId(props.testIds?.startTime, "dtrp-start-time")}
                       value={formatTimeInput(draft.startTimestamp, timezone, precision)}
                       disabled={props.disabled === true || props.readOnly === true}
                       onChange={(event) =>
@@ -407,7 +411,7 @@ export function DateTimeRangePicker(
                             ? "second"
                             : "millisecond"] ?? 1,
                       )}
-                      data-testid={props.testIds?.endTime ?? "dtrp-end-time"}
+                      data-testid={testId(props.testIds?.endTime, "dtrp-end-time")}
                       value={formatTimeInput(draft.endTimestamp, timezone, precision)}
                       disabled={props.disabled === true || props.readOnly === true}
                       onChange={(event) =>
@@ -423,7 +427,7 @@ export function DateTimeRangePicker(
             <label>
               {props.labels?.timezone ?? "Time zone"}
               <select
-                data-testid={props.testIds?.timezone ?? "dtrp-timezone"}
+                data-testid={testId(props.testIds?.timezone, "dtrp-timezone")}
                 value={timezone}
                 aria-invalid={invalidTimezoneOptions.includes(timezone)}
                 onChange={(event) => {
@@ -451,7 +455,7 @@ export function DateTimeRangePicker(
           {validation.errors.length > 0 ? (
             <ul
               aria-live="polite"
-              data-testid={props.testIds?.validation ?? "dtrp-validation"}
+              data-testid={testId(props.testIds?.validation, "dtrp-validation")}
             >
               {validation.errors.map((item) => (
                 <li
@@ -470,7 +474,10 @@ export function DateTimeRangePicker(
                   key={preset.id}
                   type="button"
                   data-testid={
-                    props.testIds?.preset?.(preset.id) ?? `dtrp-preset-${preset.id}`
+                    testId(
+                      props.testIds?.preset?.(preset.id),
+                      `dtrp-preset-${preset.id}`,
+                    )
                   }
                   onClick={() => {
                     const presetValue = preset.getValue({
@@ -497,7 +504,7 @@ export function DateTimeRangePicker(
           ) : null}
           <button
             type="button"
-            data-testid={props.testIds?.apply ?? "dtrp-apply"}
+            data-testid={testId(props.testIds?.apply, "dtrp-apply")}
             disabled={validation.status !== "complete"}
             onClick={() => {
               props.onCommit(draft);
@@ -509,7 +516,7 @@ export function DateTimeRangePicker(
           </button>
           <button
             type="button"
-            data-testid={props.testIds?.cancel ?? "dtrp-cancel"}
+            data-testid={testId(props.testIds?.cancel, "dtrp-cancel")}
             onClick={closeAndDiscard}
           >
             {cancelLabel}
@@ -517,7 +524,7 @@ export function DateTimeRangePicker(
           {props.clearable !== false ? (
             <button
               type="button"
-              data-testid={props.testIds?.clear ?? "dtrp-clear"}
+              data-testid={testId(props.testIds?.clear, "dtrp-clear")}
               onClick={() => updateDraft(EMPTY_RANGE)}
             >
               {clearLabel}

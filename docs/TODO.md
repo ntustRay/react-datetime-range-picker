@@ -387,22 +387,22 @@ the current clock when a deterministic relative preset requires it.
 
 ## 13. Add Stable Test IDs
 
-- [ ] Define default IDs for the root and trigger.
-- [ ] Define default IDs for start and end text inputs.
-- [ ] Define default IDs for the popover and calendar dialog.
-- [ ] Define default IDs for month navigation.
-- [ ] Define default IDs for time controls.
-- [ ] Define default IDs for the time-zone selector.
-- [ ] Define default IDs for preset controls.
-- [ ] Define default IDs for Apply, Cancel, and Clear.
-- [ ] Define default IDs for validation messages.
-- [ ] Define deterministic IDs for date cells using timestamps.
-- [ ] Allow each stable default ID to be overridden.
-- [ ] Preserve defaults for keys that are not overridden.
-- [ ] Do not provide a way to disable test IDs.
-- [ ] Reject empty custom test IDs if they would remove the attribute.
-- [ ] Unit-test all default IDs.
-- [ ] Unit-test partial overrides.
+- [x] Define default IDs for the root and trigger.
+- [x] Define default IDs for start and end text inputs.
+- [x] Define default IDs for the popover and calendar dialog.
+- [x] Define default IDs for month navigation.
+- [x] Define default IDs for time controls.
+- [x] Define default IDs for the time-zone selector.
+- [x] Define default IDs for preset controls.
+- [x] Define default IDs for Apply, Cancel, and Clear.
+- [x] Define default IDs for validation messages.
+- [x] Define deterministic IDs for date cells using timestamps.
+- [x] Allow each stable default ID to be overridden.
+- [x] Preserve defaults for keys that are not overridden.
+- [x] Do not provide a way to disable test IDs.
+- [x] Reject empty custom test IDs if they would remove the attribute.
+- [x] Unit-test all default IDs.
+- [x] Unit-test partial overrides.
 - [ ] E2E-test selectors using default IDs.
 - [ ] E2E-test selectors using overridden IDs.
 

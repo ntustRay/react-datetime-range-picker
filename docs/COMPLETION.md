@@ -42,3 +42,12 @@ Verification: focused picker tests (27 tests) and TypeScript typecheck.
   text editing flags.
 
 Verification: picker component tests and TypeScript typecheck.
+
+## Stable Test IDs (Section 13)
+
+- Added validated fallback handling for empty static and dynamic ID overrides.
+- Preserved deterministic defaults for picker controls, calendar cells, time
+  controls, presets, and validation output.
+- Added regression coverage for partial and empty overrides.
+
+Verification: picker component tests (29 tests) and TypeScript typecheck.

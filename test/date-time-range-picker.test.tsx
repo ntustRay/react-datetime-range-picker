@@ -36,6 +36,22 @@ describe("DateTimeRangePicker", () => {
     expect(screen.getByRole("textbox", { name: "Start" })).not.toBeNull();
   });
 
+  test("uses default test IDs when overrides are empty and preserves custom IDs", async () => {
+    const user = userEvent.setup();
+    render(
+      <DateTimeRangePicker
+        testIds={{ root: "", trigger: "custom-trigger" }}
+        value={{ startTimestamp: null, endTimestamp: null }}
+        onChange={vi.fn()}
+        onCommit={vi.fn()}
+      />,
+    );
+    expect(screen.getByTestId("dtrp-root")).not.toBeNull();
+    expect(screen.getByTestId("custom-trigger")).not.toBeNull();
+    await user.click(screen.getByTestId("custom-trigger"));
+    expect(screen.getByTestId("dtrp-calendar")).not.toBeNull();
+  });
+
   test("preset edits stay draft until Apply commits them", async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
