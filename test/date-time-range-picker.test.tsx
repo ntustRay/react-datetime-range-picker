@@ -68,6 +68,79 @@ describe("DateTimeRangePicker", () => {
     expect(onCommit).not.toHaveBeenCalled();
   });
 
+  test("timezone selection is controlled and preserves the represented range", async () => {
+    const user = userEvent.setup();
+    const onTimezoneChange = vi.fn();
+    const value = {
+      startTimestamp: Date.UTC(2026, 7, 9, 12),
+      endTimestamp: Date.UTC(2026, 7, 9, 13),
+    };
+    render(
+      <DateTimeRangePicker
+        timezone="UTC"
+        timezoneOptions={["UTC", "Asia/Taipei"]}
+        value={value}
+        onChange={vi.fn()}
+        onCommit={vi.fn()}
+        onTimezoneChange={onTimezoneChange}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Select date and time range" }));
+    await user.selectOptions(screen.getByTestId("dtrp-timezone"), "Asia/Taipei");
+
+    expect(onTimezoneChange).toHaveBeenCalledWith("Asia/Taipei");
+    expect(screen.getByTestId("dtrp-start-input").getAttribute("value")).toBe(
+      "2026-08-09 12:00:00",
+    );
+  });
+
+  test("presets evaluate at activation and reject invalid values", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    const getValue = vi.fn(() => ({
+      startTimestamp: Date.UTC(2026, 7, 9, 12),
+      endTimestamp: Date.UTC(2026, 7, 9, 13),
+    }));
+    render(
+      <DateTimeRangePicker
+        value={{ startTimestamp: null, endTimestamp: null }}
+        onChange={onChange}
+        onCommit={vi.fn()}
+        presets={[{ id: "hour", label: "Last hour", getValue }]}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Select date and time range" }));
+    expect(screen.getByTestId("dtrp-presets")).not.toBeNull();
+    await user.click(screen.getByRole("button", { name: "Last hour" }));
+    expect(getValue).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenLastCalledWith({
+      startTimestamp: Date.UTC(2026, 7, 9, 12),
+      endTimestamp: Date.UTC(2026, 7, 9, 13),
+    });
+  });
+
+  test("an invalid preset does not update the draft", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <DateTimeRangePicker
+        value={{ startTimestamp: null, endTimestamp: null }}
+        onChange={onChange}
+        onCommit={vi.fn()}
+        presets={[
+          {
+            id: "invalid",
+            label: "Invalid",
+            getValue: () => ({ startTimestamp: 2_000, endTimestamp: 1_000 }),
+          },
+        ]}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Select date and time range" }));
+    await user.click(screen.getByRole("button", { name: "Invalid" }));
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
   test("Cancel discards draft edits", async () => {
     const user = userEvent.setup();
     render(

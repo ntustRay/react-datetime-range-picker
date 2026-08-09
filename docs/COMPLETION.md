@@ -22,3 +22,13 @@ Verification: `npm.cmd run check` (80 tests, typecheck, and build).
 - Added component coverage for each time precision.
 
 Verification: focused picker tests (24 tests) and TypeScript typecheck.
+
+## Timezone and Preset UI (Section 11)
+
+- Added a controlled IANA timezone selector with option validation and feature
+  visibility support.
+- Added a preset region with stable IDs, click-time evaluation, validation,
+  and invalid-result rejection.
+- Added component coverage for timezone changes and valid/invalid presets.
+
+Verification: focused picker tests (27 tests) and TypeScript typecheck.

@@ -6,7 +6,7 @@ import {
   getEditableDateTimeFormat,
   parseEditableDateTime,
 } from "./internal/date-time-text.js";
-import { getLocalDateTime } from "./internal/timezone.js";
+import { getLocalDateTime, validateTimezone } from "./internal/timezone.js";
 import { isUnitVisible } from "./internal/precision.js";
 import { CalendarView } from "./internal/calendar-view.js";
 import type {
@@ -185,6 +185,15 @@ export function DateTimeRangePicker(
   const applyLabel = props.labels?.apply ?? "Apply";
   const cancelLabel = props.labels?.cancel ?? "Cancel";
   const clearLabel = props.labels?.clear ?? "Clear";
+  const timezoneOptions = props.timezoneOptions ?? [timezone];
+  const invalidTimezoneOptions = timezoneOptions.filter((option) => {
+    try {
+      validateTimezone(option);
+      return false;
+    } catch {
+      return true;
+    }
+  });
   const validationMessage = (item: DateTimeRangeValidationError): string => {
     const fallback = getDefaultValidationMessage(item.code);
     return props.formatValidationMessage?.(item, fallback) ?? fallback;
@@ -407,6 +416,35 @@ export function DateTimeRangePicker(
               ) : null}
             </div>
           ) : null}
+          {props.features?.timezoneSelector !== false ? (
+            <label>
+              {props.labels?.timezone ?? "Time zone"}
+              <select
+                data-testid={props.testIds?.timezone ?? "dtrp-timezone"}
+                value={timezone}
+                aria-invalid={invalidTimezoneOptions.includes(timezone)}
+                onChange={(event) => {
+                  const nextTimezone = event.currentTarget.value;
+                  try {
+                    validateTimezone(nextTimezone);
+                    props.onTimezoneChange?.(nextTimezone);
+                  } catch {
+                    return;
+                  }
+                }}
+              >
+                {timezoneOptions.map((option) => (
+                  <option
+                    key={option}
+                    value={option}
+                    disabled={invalidTimezoneOptions.includes(option)}
+                  >
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
           {validation.errors.length > 0 ? (
             <ul
               aria-live="polite"
@@ -422,26 +460,38 @@ export function DateTimeRangePicker(
               ))}
             </ul>
           ) : null}
-          {props.presets?.map((preset) => (
-            <button
-              key={preset.id}
-              type="button"
-              data-testid={
-                props.testIds?.preset?.(preset.id) ?? `dtrp-preset-${preset.id}`
-              }
-              onClick={() =>
-                updateDraft(
-                  preset.getValue({
-                    nowTimestamp: Date.now(),
-                    timezone: props.timezone ?? "UTC",
-                    precision: props.precision ?? "second",
-                  }),
-                )
-              }
-            >
-              {preset.label}
-            </button>
-          ))}
+          {props.presets !== undefined && props.presets.length > 0 ? (
+            <div data-testid={props.testIds?.presets ?? "dtrp-presets"}>
+              {props.presets.map((preset) => (
+                <button
+                  key={preset.id}
+                  type="button"
+                  data-testid={
+                    props.testIds?.preset?.(preset.id) ?? `dtrp-preset-${preset.id}`
+                  }
+                  onClick={() => {
+                    const presetValue = preset.getValue({
+                      nowTimestamp: Date.now(),
+                      timezone: props.timezone ?? "UTC",
+                      precision: props.precision ?? "second",
+                    });
+                    const presetValidation = validateDateTimeRange(presetValue, {
+                      ...(props.constraints === undefined
+                        ? {}
+                        : { constraints: props.constraints }),
+                      ...(props.steps === undefined ? {} : { steps: props.steps }),
+                      ...(props.timezone === undefined ? {} : { timezone: props.timezone }),
+                    });
+                    if (presetValidation.status === "complete") {
+                      updateDraft(presetValue);
+                    }
+                  }}
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
+          ) : null}
           <button
             type="button"
             data-testid={props.testIds?.apply ?? "dtrp-apply"}

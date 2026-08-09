@@ -342,24 +342,24 @@ the current clock when a deterministic relative preset requires it.
 
 ## 11. Develop Time-Zone and Preset UI in Vertical Slices
 
-- [ ] Render the time-zone selector when enabled.
-- [ ] Hide the time-zone selector when configured off.
-- [ ] Keep UTC selected by default.
-- [ ] Accept consumer-provided IANA time-zone options.
-- [ ] Validate every supplied time-zone option.
-- [ ] Emit `onTimezoneChange` without changing timestamps.
-- [ ] Re-render displayed local parts after a time-zone change.
-- [ ] Preserve the represented instants after a time-zone change.
-- [ ] Render no preset region when no presets are supplied.
-- [ ] Render consumer-provided preset labels.
-- [ ] Evaluate relative presets when clicked, not when rendered.
-- [ ] Validate a preset result before updating the draft.
-- [ ] Prevent an invalid preset from being committed.
-- [ ] Support keyboard activation of presets.
-- [ ] Component-test UTC as the default.
-- [ ] Component-test time-zone changes.
-- [ ] Component-test relative preset evaluation time.
-- [ ] Component-test invalid preset results.
+- [x] Render the time-zone selector when enabled.
+- [x] Hide the time-zone selector when configured off.
+- [x] Keep UTC selected by default.
+- [x] Accept consumer-provided IANA time-zone options.
+- [x] Validate every supplied time-zone option.
+- [x] Emit `onTimezoneChange` without changing timestamps.
+- [x] Re-render displayed local parts after a time-zone change.
+- [x] Preserve the represented instants after a time-zone change.
+- [x] Render no preset region when no presets are supplied.
+- [x] Render consumer-provided preset labels.
+- [x] Evaluate relative presets when clicked, not when rendered.
+- [x] Validate a preset result before updating the draft.
+- [x] Prevent an invalid preset from being committed.
+- [x] Support keyboard activation of presets.
+- [x] Component-test UTC as the default.
+- [x] Component-test time-zone changes.
+- [x] Component-test relative preset evaluation time.
+- [x] Component-test invalid preset results.
 
 ## 12. Assemble the Picker through Consumer-Visible Slices
 
