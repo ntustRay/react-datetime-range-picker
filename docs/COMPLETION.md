@@ -96,3 +96,11 @@ available in the local Playwright cache.
 - Both fixtures typecheck successfully against the generated declarations.
 
 Verification: `npm.cmd run typecheck` in each fixture.
+
+## DST Ambiguity Resolution
+
+- Added explicit earlier/later offset selectors for repeated local times.
+- Offset labels use stable `±HH:MM` formatting and preserve the chosen instant.
+- Apply remains blocked until an ambiguous local time is resolved.
+
+Verification: focused DST component test and TypeScript typecheck.

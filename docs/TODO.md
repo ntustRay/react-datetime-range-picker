@@ -185,7 +185,7 @@ the current clock when a deterministic relative preset requires it.
 - [x] Detect ambiguous local times during backward DST transitions.
 - [x] Return both candidate offsets for ambiguous local times.
 - [x] Define a stable representation for offset choices.
-- [ ] Format offsets consistently in the ambiguity UI.
+- [x] Format offsets consistently in the ambiguity UI.
 - [x] Avoid direct `window` or `document` access in time-zone utilities.
 - [x] Unit-test UTC conversion.
 - [x] Unit-test `Asia/Taipei` conversion.
@@ -334,8 +334,8 @@ the current clock when a deterministic relative preset requires it.
 - [ ] Respect min/max constraints at boundary dates.
 - [ ] Respect maximum duration while editing the end time.
 - [ ] Surface DST gaps as disabled choices.
-- [ ] Render both offset choices for a repeated local time.
-- [ ] Require the user to resolve an ambiguous time before Apply.
+- [x] Render both offset choices for a repeated local time.
+- [x] Require the user to resolve an ambiguous time before Apply.
 - [ ] Component-test every precision.
 - [ ] Component-test custom step values.
 - [ ] Component-test DST gap and overlap controls.

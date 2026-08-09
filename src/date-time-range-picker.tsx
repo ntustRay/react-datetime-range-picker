@@ -6,7 +6,12 @@ import {
   getEditableDateTimeFormat,
   parseEditableDateTime,
 } from "./internal/date-time-text.js";
-import { getLocalDateTime, validateTimezone } from "./internal/timezone.js";
+import {
+  formatTimezoneOffset,
+  getLocalDateTime,
+  validateTimezone,
+  type LocalDateTimeCandidate,
+} from "./internal/timezone.js";
 import { isUnitVisible } from "./internal/precision.js";
 import { CalendarView } from "./internal/calendar-view.js";
 import type {
@@ -108,6 +113,12 @@ export function DateTimeRangePicker(
     useState<DateTimeRangeValidationErrorCode | null>(null);
   const [endTextError, setEndTextError] =
     useState<DateTimeRangeValidationErrorCode | null>(null);
+  const [startAmbiguousCandidates, setStartAmbiguousCandidates] = useState<
+    readonly LocalDateTimeCandidate[]
+  >([]);
+  const [endAmbiguousCandidates, setEndAmbiguousCandidates] = useState<
+    readonly LocalDateTimeCandidate[]
+  >([]);
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -141,6 +152,8 @@ export function DateTimeRangePicker(
     setEndText(safelyFormatTimestamp(props.value.endTimestamp, timezone, precision));
     setStartTextError(null);
     setEndTextError(null);
+    setStartAmbiguousCandidates([]);
+    setEndAmbiguousCandidates([]);
     setIsOpen(false);
     triggerRef.current?.focus();
   };
@@ -155,6 +168,8 @@ export function DateTimeRangePicker(
     setEndText(safelyFormatTimestamp(props.value.endTimestamp, timezone, precision));
     setStartTextError(null);
     setEndTextError(null);
+    setStartAmbiguousCandidates([]);
+    setEndAmbiguousCandidates([]);
   }, [props.value.startTimestamp, props.value.endTimestamp, timezone, precision]);
 
   useEffect(() => {
@@ -241,6 +256,13 @@ export function DateTimeRangePicker(
     }
     const result = parseEditableDateTime(text, timezone, precision);
     if (result.status !== "valid") {
+      if (result.status === "ambiguous") {
+        const setCandidates =
+          target === "start"
+            ? setStartAmbiguousCandidates
+            : setEndAmbiguousCandidates;
+        setCandidates([...result.candidates]);
+      }
       setError(
         result.status === "nonexistent"
           ? "nonexistent-local-time"
@@ -256,11 +278,29 @@ export function DateTimeRangePicker(
       return;
     }
     setError(null);
+    if (target === "start") setStartAmbiguousCandidates([]);
+    else setEndAmbiguousCandidates([]);
     const value: DateTimeRangeValue = {
       startTimestamp: target === "start" ? timestamp : draft.startTimestamp,
       endTimestamp: target === "end" ? timestamp : draft.endTimestamp,
     };
     updateDraft(value);
+  };
+
+  const chooseOffset = (target: "start" | "end", index: number): void => {
+    const candidates =
+      target === "start" ? startAmbiguousCandidates : endAmbiguousCandidates;
+    const candidate = candidates[index];
+    if (candidate === undefined) return;
+    if (target === "start") {
+      setStartAmbiguousCandidates([]);
+      setStartTextError(null);
+      updateDraft({ startTimestamp: candidate.timestamp, endTimestamp: draft.endTimestamp });
+    } else {
+      setEndAmbiguousCandidates([]);
+      setEndTextError(null);
+      updateDraft({ startTimestamp: draft.startTimestamp, endTimestamp: candidate.timestamp });
+    }
   };
 
   const applyTimeValue = (target: "start" | "end", time: string): void => {
@@ -382,7 +422,7 @@ export function DateTimeRangePicker(
               <span id="dtrp-end-format">
                 {props.labels?.endFormatHint ?? getEditableDateTimeFormat(precision)}
               </span>
-              {isUnitVisible("hour", precision) ? (
+          {isUnitVisible("hour", precision) ? (
                 <div>
                   <label>
                     {props.labels?.start ?? "Start"} time
@@ -427,6 +467,46 @@ export function DateTimeRangePicker(
                 </div>
               ) : null}
             </div>
+          ) : null}
+          {startAmbiguousCandidates.length > 0 ? (
+            <label>
+              {props.labels?.start ?? "Start"} offset
+              <select
+                aria-label={`${props.labels?.start ?? "Start"} offset`}
+                value=""
+                onChange={(event) => chooseOffset("start", Number(event.currentTarget.value))}
+              >
+                <option value="">{props.labels?.earlierOffset ?? "Choose an offset"}</option>
+                {startAmbiguousCandidates.map((candidate, index) => (
+                  <option key={candidate.timestamp} value={index}>
+                    {index === 0
+                      ? props.labels?.earlierOffset ?? "Earlier"
+                      : props.labels?.laterOffset ?? "Later"}{" "}
+                    ({formatTimezoneOffset(candidate.offsetMinutes)})
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
+          {endAmbiguousCandidates.length > 0 ? (
+            <label>
+              {props.labels?.end ?? "End"} offset
+              <select
+                aria-label={`${props.labels?.end ?? "End"} offset`}
+                value=""
+                onChange={(event) => chooseOffset("end", Number(event.currentTarget.value))}
+              >
+                <option value="">{props.labels?.earlierOffset ?? "Choose an offset"}</option>
+                {endAmbiguousCandidates.map((candidate, index) => (
+                  <option key={candidate.timestamp} value={index}>
+                    {index === 0
+                      ? props.labels?.earlierOffset ?? "Earlier"
+                      : props.labels?.laterOffset ?? "Later"}{" "}
+                    ({formatTimezoneOffset(candidate.offsetMinutes)})
+                  </option>
+                ))}
+              </select>
+            </label>
           ) : null}
           {props.features?.timezoneSelector !== false ? (
             <label>

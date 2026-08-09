@@ -494,6 +494,31 @@ describe("DateTimeRangePicker", () => {
     });
   });
 
+  test("ambiguous local time exposes consistently formatted offset choices", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <DateTimeRangePicker
+        timezone="America/New_York"
+        value={{ startTimestamp: null, endTimestamp: null }}
+        onChange={onChange}
+        onCommit={vi.fn()}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Select date and time range" }));
+    const start = screen.getByRole("textbox", { name: "Start" });
+    await user.type(start, "2024-11-03 01:30:00");
+    await user.tab();
+    const offset = screen.getByRole("combobox", { name: "Start offset" });
+    expect(offset.textContent).toContain("-04:00");
+    expect(offset.textContent).toContain("-05:00");
+    await user.selectOptions(offset, "1");
+    expect(onChange).toHaveBeenLastCalledWith({
+      startTimestamp: Date.UTC(2024, 10, 3, 6, 30),
+      endTimestamp: null,
+    });
+  });
+
   test("the closed summary uses the selected locale and display timezone", () => {
     render(
       <DateTimeRangePicker
