@@ -35,7 +35,7 @@ const emptyRange: DateTimeRangeValue = {
 
 export function FilterControl(): React.JSX.Element {
   const [draft, setDraft] = useState(emptyRange);
-  const [committed, setCommitted] = useState(emptyRange);
+  const [, setCommitted] = useState(emptyRange);
 
   return (
     <DateTimeRangePicker
@@ -88,6 +88,8 @@ in [docs/PUBLIC_API.md](docs/PUBLIC_API.md). The product and accessibility
 contract is in [docs/CONTEXT.md](docs/CONTEXT.md).
 CI ownership, pre-release auditing, and npm publication are covered by the
 [CI and npm release guide](docs/CI_AND_NPM_RELEASE_GUIDE.md).
+The latest evidence is recorded in the
+[pre-release audit](docs/PRE_RELEASE_AUDIT.md).
 For a local Windows build without publishing, follow the
 [manual build guide](docs/MANUAL_BUILD_GUIDE.md).
 
@@ -105,6 +107,15 @@ npm run demo          # serve the demo locally
 The package is ESM-only, has no runtime dependencies, and supports React 18
 and React 19 as peer dependencies. Date calculations avoid direct browser
 globals so server-side React rendering remains safe.
+
+## Known limitations
+
+- The package is ESM-only and does not provide native HTML form serialization.
+- The calendar displays one month at a time; navigation replaces that panel.
+- Presentation can be floating or inline, but is not modal or headless.
+- Presets and timezone option lists are supplied by the consumer.
+- Browser support targets modern Chrome, Edge, Firefox, and Safari, not
+  Internet Explorer.
 
 ## License
 

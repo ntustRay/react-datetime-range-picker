@@ -478,7 +478,7 @@ the current clock when a deterministic relative preset requires it.
 - [x] Add validation-message association tests.
 - [x] Add locale-label override tests.
 - [ ] Add light- and dark-theme class/state tests.
-- [ ] Add SSR render smoke tests.
+- [x] Add SSR render smoke tests.
 - [ ] Add tests proving no render-time side effects.
 - [ ] Add regression tests before fixing every discovered bug.
 - [ ] Make test failures readable without implementation knowledge.
@@ -547,7 +547,7 @@ the current clock when a deterministic relative preset requires it.
 - [x] Install the packed tarball into the React 19 fixture.
 - [x] Typecheck and render the React 19 fixture.
 - [ ] Verify the package in a Vite consumer.
-- [ ] Verify the package in an SSR-capable React consumer.
+- [x] Verify the package in an SSR-capable React consumer.
 - [ ] Verify CSS can be imported from the documented export.
 - [ ] Verify tree shaking removes unused public utilities.
 - [ ] Verify no duplicate React copy is installed.
@@ -614,26 +614,26 @@ Local Windows build and packed-consumer commands are documented in
 
 ## 22. Pre-Release Audit
 
-- [ ] Search production code for `any`.
-- [ ] Review every type assertion and remove avoidable assertions.
-- [ ] Review every optional property for real domain optionality.
-- [ ] Review every array iteration for the clearest method.
-- [ ] Confirm runtime dependencies remain empty.
-- [ ] Confirm React and React DOM remain peer dependencies.
-- [ ] Confirm no environment-specific globals run during SSR.
-- [ ] Confirm every validation rule has unit coverage.
-- [ ] Confirm every critical invalid interaction has E2E coverage.
-- [ ] Confirm all supported keyboard paths pass E2E.
-- [ ] Confirm DST boundary tests pass in deterministic time zones.
-- [ ] Confirm the npm tarball contains only intended files.
-- [ ] Confirm the package name is still available under `@ntustray`.
-- [ ] Confirm README examples compile against the packed package.
-- [ ] Confirm license and copyright text.
-- [ ] Run `npm audit` and assess relevant findings.
-- [ ] Run the full `check` command from a clean install.
-- [ ] Review bundle size and explain any unexpected growth.
-- [ ] Review the public exports for accidental API surface.
-- [ ] Record known limitations.
+- [x] Search production code for `any`.
+- [x] Review every type assertion and remove avoidable assertions.
+- [x] Review every optional property for real domain optionality.
+- [x] Review every array iteration for the clearest method.
+- [x] Confirm runtime dependencies remain empty.
+- [x] Confirm React and React DOM remain peer dependencies.
+- [x] Confirm no environment-specific globals run during SSR.
+- [x] Confirm every validation rule has unit coverage.
+- [x] Confirm every critical invalid interaction has E2E coverage.
+- [x] Confirm all supported keyboard paths pass E2E.
+- [x] Confirm DST boundary tests pass in deterministic time zones.
+- [x] Confirm the npm tarball contains only intended files.
+- [x] Confirm the package name is still available under `@ntustray`.
+- [x] Confirm README examples compile against the packed package.
+- [x] Confirm license and copyright text.
+- [x] Run `npm audit` and assess relevant findings.
+- [x] Run the full `check` command from a clean install.
+- [x] Review bundle size and explain any unexpected growth.
+- [x] Review the public exports for accidental API surface.
+- [x] Record known limitations.
 
 ## 23. Deferred npm Publication
 

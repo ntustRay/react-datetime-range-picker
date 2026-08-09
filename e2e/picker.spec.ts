@@ -161,3 +161,81 @@ test("keyboard-only range selection commits and Escape restores focus", async ({
   await expect(stage.getByTestId("dtrp-end-input")).toBeFocused();
   await expect(dialog).toHaveCount(0);
 });
+
+test("day, year, and month grids expose every keyboard navigation path", async ({
+  page,
+}) => {
+  await page.clock.setFixedTime(new Date("2026-08-09T00:00:00.000Z"));
+  await page.getByLabel("Locale").selectOption("en-US");
+  const stage = page.locator(".picker-stage");
+  const trigger = stage.getByTestId("dtrp-trigger");
+
+  await trigger.press("Enter");
+  let grid = stage.getByRole("grid", { name: "August 2026" });
+  let focusedCell = grid.locator('[role="gridcell"][tabindex="0"]');
+  await focusedCell.press("ArrowDown");
+  await expect(grid.locator('[role="gridcell"][tabindex="0"]')).toBeFocused();
+  focusedCell = grid.locator('[role="gridcell"][tabindex="0"]');
+  await focusedCell.press("ArrowUp");
+  await grid.locator('[role="gridcell"][tabindex="0"]').press("ArrowLeft");
+  await grid.locator('[role="gridcell"][tabindex="0"]').press("ArrowRight");
+  await focusedCell.press("Home");
+  await grid.locator('[role="gridcell"][tabindex="0"]').press("End");
+  await grid.locator('[role="gridcell"][tabindex="0"]').press("PageDown");
+  await expect(
+    stage.getByRole("grid", { name: "September 2026" }),
+  ).toBeVisible();
+  await stage
+    .getByRole("grid", { name: "September 2026" })
+    .locator('[role="gridcell"][tabindex="0"]')
+    .press("PageUp");
+
+  await stage.getByRole("button", { name: "Choose year: 2026" }).press("Enter");
+  grid = stage.getByRole("grid", { name: "Choose year" });
+  await grid.locator('[role="gridcell"][tabindex="0"]').press("ArrowLeft");
+  await expect(grid.getByRole("gridcell", { name: "2025" })).toBeFocused();
+  await grid.getByRole("gridcell", { name: "2025" }).press("ArrowRight");
+  await grid.getByRole("gridcell", { name: "2026" }).press("ArrowUp");
+  await expect(grid.getByRole("gridcell", { name: "2023" })).toBeFocused();
+  await grid.getByRole("gridcell", { name: "2023" }).press("ArrowDown");
+  await grid.getByRole("gridcell", { name: "2026" }).press("Home");
+  await grid.locator('[role="gridcell"][tabindex="0"]').press("End");
+  await expect(grid.getByRole("gridcell", { name: "2032" })).toBeFocused();
+  await grid.getByRole("gridcell", { name: "2032" }).press("PageDown");
+  grid = stage.getByRole("grid", { name: "Choose year" });
+  await expect(grid.getByRole("gridcell", { name: "2033" })).toBeFocused();
+  await grid.getByRole("gridcell", { name: "2033" }).press("PageUp");
+  await expect(
+    stage
+      .getByRole("grid", { name: "Choose year" })
+      .getByRole("gridcell", { name: "2026" }),
+  ).toBeFocused();
+  await page.keyboard.press("Escape");
+
+  await trigger.press("Enter");
+  await stage
+    .getByRole("button", { name: "Choose month: August" })
+    .press("Enter");
+  grid = stage.getByRole("grid", { name: "Choose month" });
+  await grid.locator('[role="gridcell"][tabindex="0"]').press("ArrowLeft");
+  await expect(grid.getByRole("gridcell", { name: "July" })).toBeFocused();
+  await grid.getByRole("gridcell", { name: "July" }).press("ArrowRight");
+  await grid.getByRole("gridcell", { name: "August" }).press("ArrowUp");
+  await expect(grid.getByRole("gridcell", { name: "May" })).toBeFocused();
+  await grid.getByRole("gridcell", { name: "May" }).press("ArrowDown");
+  await grid.locator('[role="gridcell"][tabindex="0"]').press("ArrowRight");
+  await expect(grid.getByRole("gridcell", { name: "September" })).toBeFocused();
+  await grid.getByRole("gridcell", { name: "September" }).press("Home");
+  await expect(grid.getByRole("gridcell", { name: "January" })).toBeFocused();
+  await grid.getByRole("gridcell", { name: "January" }).press("End");
+  await expect(grid.getByRole("gridcell", { name: "December" })).toBeFocused();
+  await grid.getByRole("gridcell", { name: "December" }).press("PageDown");
+  grid = stage.getByRole("grid", { name: "Choose month" });
+  await expect(grid.getByRole("gridcell", { name: "August" })).toBeFocused();
+  await grid.getByRole("gridcell", { name: "August" }).press("PageUp");
+  await expect(
+    stage
+      .getByRole("grid", { name: "Choose month" })
+      .getByRole("gridcell", { name: "August" }),
+  ).toBeFocused();
+});
