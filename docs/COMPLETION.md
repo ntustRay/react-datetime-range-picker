@@ -51,3 +51,13 @@ Verification: picker component tests and TypeScript typecheck.
 - Added regression coverage for partial and empty overrides.
 
 Verification: picker component tests (29 tests) and TypeScript typecheck.
+
+## Styling (Section 14)
+
+- Added a scoped base stylesheet with the complete documented custom-property
+  set.
+- Added light/dark defaults, focus indicators, range/selected/error/disabled
+  states, and responsive calendar layout rules.
+- Kept selectors scoped to the picker root and independent of CSS resets.
+
+Verification: full package build and test check.

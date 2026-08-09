@@ -408,23 +408,23 @@ the current clock when a deterministic relative preset requires it.
 
 ## 14. Add Styling
 
-- [ ] Create a framework-independent base stylesheet.
+- [x] Create a framework-independent base stylesheet.
 - [x] Export the stylesheet through the package exports map.
-- [ ] Define typography custom properties.
-- [ ] Define spacing custom properties.
-- [ ] Define radius custom properties.
-- [ ] Define surface and border custom properties.
-- [ ] Define selected-range custom properties.
-- [ ] Define focus custom properties.
-- [ ] Define error custom properties.
-- [ ] Define disabled-state custom properties.
-- [ ] Define light-theme defaults.
-- [ ] Define dark-theme defaults.
-- [ ] Avoid selectors that leak outside the component root.
-- [ ] Avoid assumptions about a consumer CSS reset.
-- [ ] Provide a clearly visible keyboard focus indicator.
-- [ ] Meet AA text and control contrast targets.
-- [ ] Ensure error state includes iconography or text, not color alone.
+- [x] Define typography custom properties.
+- [x] Define spacing custom properties.
+- [x] Define radius custom properties.
+- [x] Define surface and border custom properties.
+- [x] Define selected-range custom properties.
+- [x] Define focus custom properties.
+- [x] Define error custom properties.
+- [x] Define disabled-state custom properties.
+- [x] Define light-theme defaults.
+- [x] Define dark-theme defaults.
+- [x] Avoid selectors that leak outside the component root.
+- [x] Avoid assumptions about a consumer CSS reset.
+- [x] Provide a clearly visible keyboard focus indicator.
+- [x] Meet AA text and control contrast targets.
+- [x] Ensure error state includes iconography or text, not color alone.
 - [ ] Test at narrow container widths.
 - [ ] Test at wide container widths.
 - [ ] Test long translated labels without clipping.

@@ -304,7 +304,11 @@ export function DateTimeRangePicker(
   };
 
   return (
-    <div ref={rootRef} data-testid={testId(props.testIds?.root, "dtrp-root")}>
+    <div
+      ref={rootRef}
+      className="dtrp-root"
+      data-testid={testId(props.testIds?.root, "dtrp-root")}
+    >
       <button
         ref={triggerRef}
         type="button"
@@ -325,6 +329,7 @@ export function DateTimeRangePicker(
       {isOpen ? (
         <div
           ref={dialogRef}
+          className="dtrp-popover"
           role="dialog"
           aria-label={triggerLabel}
           tabIndex={-1}
