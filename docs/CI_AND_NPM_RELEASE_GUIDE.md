@@ -171,6 +171,17 @@ jobs:
             test-results/
           if-no-files-found: ignore
           retention-days: 7
+      - name: Generate GitHub Windows baseline candidates
+        if: ${{ failure() }}
+        run: npm run test:visual:update
+      - name: Upload GitHub Windows baseline candidates
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: visual-baseline-candidates-${{ github.run_id }}
+          path: visual/snapshots/github-windows/
+          if-no-files-found: error
+          retention-days: 7
 
   consumers:
     name: Packed React Consumers
@@ -235,15 +246,20 @@ not use the archived third-party Playwright GitHub Action.
 
 ### Windows visual regression policy
 
-Run the visual job on `windows-latest` while the committed baselines remain
-Windows-generated. Playwright warns that rendering varies by host OS, settings,
-hardware, and headless mode, and recommends comparing in the same environment
-used to generate the baselines
+Run the visual job on `windows-latest`. Local Windows 11 and GitHub's Windows
+runner keep separate committed baseline directories because their font
+rasterization differs. `playwright.visual.config.ts` selects the hosted set only
+when `GITHUB_ACTIONS=true`, and both environments retain exact comparisons
+without a broad pixel-difference allowance. Playwright warns that rendering
+varies by host OS, settings, hardware, and headless mode, and recommends
+comparing in the same environment used to generate the baselines
 ([Playwright visual comparisons](https://playwright.dev/docs/test-snapshots)).
 
-If the project later moves visual CI to Linux, regenerate every baseline on the
-chosen Linux runner in one intentional, reviewed change. Do not accept a mass
-snapshot rewrite as an incidental CI fix.
+On failure, upload the original Playwright diagnostics before generating and
+uploading a complete candidate hosted baseline. Inspect both artifacts before
+replacing any committed image. If the project later moves visual CI to Linux,
+create and review a separate Linux baseline set in one intentional change. Do
+not accept a mass snapshot rewrite as an incidental CI fix.
 
 ### CI permissions and cancellation
 

@@ -1,8 +1,13 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const snapshotPathTemplate =
+  process.env.GITHUB_ACTIONS === "true"
+    ? "{testDir}/snapshots/github-windows/{arg}{ext}"
+    : "{testDir}/snapshots/{arg}{ext}";
+
 export default defineConfig({
   testDir: "./visual",
-  snapshotPathTemplate: "{testDir}/snapshots/{arg}{ext}",
+  snapshotPathTemplate,
   use: {
     baseURL: "http://127.0.0.1:4173",
     colorScheme: "light",
