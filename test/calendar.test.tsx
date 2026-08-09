@@ -274,4 +274,63 @@ describe("calendar", () => {
     expect(screen.getByRole("grid", { name: "September 2026" })).not.toBeNull();
     expect(screen.getAllByRole("grid")).toHaveLength(1);
   });
+
+  test("day grid supports row, week-edge, and month keyboard navigation", async () => {
+    const user = userEvent.setup();
+    await renderOpenCalendar();
+    screen
+      .getByRole("gridcell", { name: "Wednesday, August 12, 2026" })
+      .focus();
+
+    await user.keyboard("{ArrowDown}");
+    expect(document.activeElement?.getAttribute("aria-label")).toBe(
+      "Wednesday, August 19, 2026",
+    );
+    await user.keyboard("{ArrowUp}{Home}");
+    expect(document.activeElement?.getAttribute("aria-label")).toBe(
+      "Sunday, August 9, 2026",
+    );
+    await user.keyboard("{End}");
+    expect(document.activeElement?.getAttribute("aria-label")).toBe(
+      "Saturday, August 15, 2026",
+    );
+    await user.keyboard("{PageUp}");
+    expect(screen.getByRole("grid", { name: "July 2026" })).not.toBeNull();
+  });
+
+  test("year and month grids support complete keyboard navigation", async () => {
+    const user = userEvent.setup();
+    await renderOpenCalendar({
+      startTimestamp: Date.UTC(2026, 7, 1),
+      endTimestamp: null,
+    });
+    await user.click(screen.getByRole("button", { name: "Choose year: 2026" }));
+
+    await user.keyboard("{ArrowLeft}");
+    expect(document.activeElement?.textContent).toBe("2025");
+    await user.keyboard("{ArrowUp}{Home}");
+    expect(document.activeElement?.textContent).toBe("2021");
+    await user.keyboard("{End}");
+    expect(document.activeElement?.textContent).toBe("2032");
+    await user.keyboard("{PageDown}");
+    expect(document.activeElement?.textContent).toBe("2033");
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(document.activeElement).toBe(
+      screen.getByRole("textbox", { name: "Start" }),
+    );
+
+    await user.click(screen.getByRole("button", { name: "Open calendar" }));
+    await user.click(
+      screen.getByRole("button", { name: "Choose month: August" }),
+    );
+    await user.keyboard("{ArrowRight}");
+    expect(document.activeElement?.textContent).toBe("September");
+    await user.keyboard("{ArrowDown}{Home}");
+    expect(document.activeElement?.textContent).toBe("January");
+    await user.keyboard("{End}");
+    expect(document.activeElement?.textContent).toBe("December");
+    await user.keyboard("{PageDown}");
+    expect(document.activeElement?.textContent).toBe("August");
+  });
 });
