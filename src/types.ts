@@ -2,6 +2,8 @@ export type Timestamp = number;
 
 export type Timezone = string;
 
+export type HourCycle = "h12" | "h24";
+
 export interface DateTimeRangeValue {
   startTimestamp: Timestamp | null;
   endTimestamp: Timestamp | null;
@@ -99,10 +101,24 @@ export interface DateTimeRangeLocaleText {
   endLabel: string;
   previousMonthLabel: string;
   nextMonthLabel: string;
+  calendarButtonLabel: string;
   timezoneLabel: string;
   applyButtonLabel: string;
+  nextButtonLabel: string;
   cancelButtonLabel: string;
   clearButtonLabel: string;
+  resetButtonLabel: string;
+  rangeSummaryLabel: string;
+  hourCycleLabel: string;
+  hourCycle12Label: string;
+  hourCycle24Label: string;
+  hourColumnLabel: string;
+  minuteColumnLabel: string;
+  secondColumnLabel: string;
+  millisecondColumnLabel: string;
+  periodColumnLabel: string;
+  amLabel: string;
+  pmLabel: string;
   startFormatHint: string;
   endFormatHint: string;
   startTimeLabel: string;
@@ -141,11 +157,20 @@ export interface DateTimeRangeTestIds {
   endInput: string;
   startTime: string;
   endTime: string;
+  hourColumn: string;
+  minuteColumn: string;
+  secondColumn: string;
+  millisecondColumn: string;
+  periodColumn: string;
+  hourCycle: string;
   timezone: string;
   presets: string;
   apply: string;
+  next: string;
   cancel: string;
   clear: string;
+  reset: string;
+  rangeSummary: string;
   validation: string;
   dateCell: (timestamp: Timestamp) => string;
   preset: (presetId: string) => string;
@@ -157,6 +182,10 @@ export type DateTimeRangeCommitHandler = (value: DateTimeRangeValue) => void;
 
 export type DateTimeRangeTimezoneChangeHandler = (timezone: Timezone) => void;
 
+export type DateTimeRangeHourCycleChangeHandler = (
+  hourCycle: HourCycle,
+) => void;
+
 export type DateTimeRangeValidationChangeHandler = (
   result: DateTimeRangeValidationResult,
 ) => void;
@@ -167,6 +196,8 @@ export interface DateTimeRangePickerProps {
   onCommit: DateTimeRangeCommitHandler;
   timezone?: Timezone;
   onTimezoneChange?: DateTimeRangeTimezoneChangeHandler;
+  hourCycle?: HourCycle;
+  onHourCycleChange?: DateTimeRangeHourCycleChangeHandler;
   onValidationChange?: DateTimeRangeValidationChangeHandler;
   precision?: Precision;
   locale?: string;

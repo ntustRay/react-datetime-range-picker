@@ -9,6 +9,7 @@ import {
 import { normalizeTimestamp } from "./normalize-timestamp.js";
 import { getLocalDateTime } from "./timezone.js";
 import { getTestId } from "./test-id.js";
+import type { DateTimeRangeDraftTarget } from "./date-time-range-draft.js";
 import type {
   DateTimeRangeConstraints,
   DateTimeRangeLocaleText,
@@ -18,17 +19,16 @@ import type {
   Weekday,
 } from "../types.js";
 
-type FocusedCalendar = "current" | "following";
-
 interface CalendarViewProps {
   value: DateTimeRangeValue;
+  target: DateTimeRangeDraftTarget;
   timezone: string;
   locale: string;
   firstWeekday: Weekday | null;
   constraints: DateTimeRangeConstraints;
   localeText: DateTimeRangeLocaleText;
   testIds: Partial<DateTimeRangeTestIds> | undefined;
-  onChange: (value: DateTimeRangeValue) => void;
+  onSelect: (timestamp: Timestamp) => void;
 }
 
 function getAnchor(
@@ -67,11 +67,14 @@ function getMonthLabel(locale: string, year: number, month: number): string {
 
 export function CalendarView(props: CalendarViewProps): React.JSX.Element {
   const [displayed, setDisplayed] = useState(() =>
-    getAnchor(props.value.startTimestamp, props.timezone),
+    getAnchor(
+      props.target === "start"
+        ? props.value.startTimestamp
+        : props.value.endTimestamp ?? props.value.startTimestamp,
+      props.timezone,
+    ),
   );
   const [focusedIndex, setFocusedIndex] = useState(0);
-  const [focusedCalendar, setFocusedCalendar] =
-    useState<FocusedCalendar>("current");
   const calendarRegionRef = useRef<HTMLElement>(null);
 
   const firstWeekdayIndex = getFirstWeekdayIndex(
@@ -88,28 +91,6 @@ export function CalendarView(props: CalendarViewProps): React.JSX.Element {
       ),
     [displayed.year, displayed.month, props.timezone, firstWeekdayIndex],
   );
-  const followingMonth = moveCalendarMonth(
-    displayed.year,
-    displayed.month,
-    1,
-  );
-  const followingCalendar = useMemo(
-    () =>
-      createCalendarMonth(
-        followingMonth.year,
-        followingMonth.month,
-        props.timezone,
-        firstWeekdayIndex,
-      ),
-    [
-      followingMonth.year,
-      followingMonth.month,
-      props.timezone,
-      firstWeekdayIndex,
-    ],
-  );
-  const selectingEnd =
-    props.value.startTimestamp !== null && props.value.endTimestamp === null;
   const startDay =
     props.value.startTimestamp === null
       ? null
@@ -134,15 +115,9 @@ export function CalendarView(props: CalendarViewProps): React.JSX.Element {
     displayed.year,
     displayed.month,
   );
-  const followingMonthLabel = getMonthLabel(
-    props.locale,
-    followingMonth.year,
-    followingMonth.month,
-  );
   const selection = {
-    value: props.value,
     constraints: props.constraints,
-    selectingEnd,
+    target: props.target,
     startDay,
     endDay,
     today,
@@ -158,20 +133,25 @@ export function CalendarView(props: CalendarViewProps): React.JSX.Element {
     setDisplayed(moveCalendarMonth(displayed.year, displayed.month, offset));
   };
 
-  const focusCalendar = (
-    target: FocusedCalendar,
-    index: number,
-  ): void => {
-    setFocusedCalendar(target);
-    setFocusedIndex(index);
-  };
-
   useEffect(() => {
     const target = calendarRegionRef.current?.querySelector(
-      `[data-calendar-grid="${focusedCalendar}"] [data-calendar-index="${focusedIndex}"]`,
+      `[data-calendar-grid="current"] [data-calendar-index="${focusedIndex}"]`,
     );
     if (target instanceof HTMLElement) target.focus();
-  }, [displayed.year, displayed.month, focusedCalendar, focusedIndex]);
+  }, [displayed.year, displayed.month, focusedIndex]);
+
+  useEffect(() => {
+    const timestamp =
+      props.target === "start"
+        ? props.value.startTimestamp
+        : props.value.endTimestamp ?? props.value.startTimestamp;
+    setDisplayed(getAnchor(timestamp, props.timezone));
+  }, [
+    props.target,
+    props.timezone,
+    props.value.startTimestamp,
+    props.value.endTimestamp,
+  ]);
 
   return (
     <section
@@ -193,7 +173,6 @@ export function CalendarView(props: CalendarViewProps): React.JSX.Element {
         </button>
         <div className="dtrp-calendar-months" aria-live="polite">
           <h2>{monthLabel}</h2>
-          <h2 className="dtrp-calendar-wide">{followingMonthLabel}</h2>
         </div>
         <button
           type="button"
@@ -206,14 +185,11 @@ export function CalendarView(props: CalendarViewProps): React.JSX.Element {
       </div>
       <CalendarMonthGrid
         presentation={{
-          gridName: "current",
           calendar,
           label: monthLabel,
           weekdayLabels,
           locale: props.locale,
           timezone: props.timezone,
-          className: null,
-          responsive: false,
           calendarTestId: getTestId(props.testIds?.calendar, "dtrp-calendar"),
           dateTestId: (timestamp) =>
             getTestId(
@@ -226,39 +202,13 @@ export function CalendarView(props: CalendarViewProps): React.JSX.Element {
         }}
         selection={selection}
         focus={{
-          active: focusedCalendar === "current",
+          active: true,
           index: focusedIndex,
-          onFocus: (index) => focusCalendar("current", index),
+          onFocus: setFocusedIndex,
           onMove: moveFocus,
           onChangeMonth: changeMonth,
         }}
-        onChange={props.onChange}
-      />
-      <CalendarMonthGrid
-        presentation={{
-          gridName: "following",
-          calendar: followingCalendar,
-          label: followingMonthLabel,
-          weekdayLabels,
-          locale: props.locale,
-          timezone: props.timezone,
-          className: "dtrp-calendar-wide",
-          responsive: true,
-          calendarTestId: null,
-          dateTestId: null,
-          startDateStatusLabel: props.localeText.startDateStatusLabel,
-          endDateStatusLabel: props.localeText.endDateStatusLabel,
-          inRangeStatusLabel: props.localeText.inRangeStatusLabel,
-        }}
-        selection={selection}
-        focus={{
-          active: focusedCalendar === "following",
-          index: focusedIndex,
-          onFocus: (index) => focusCalendar("following", index),
-          onMove: moveFocus,
-          onChangeMonth: changeMonth,
-        }}
-        onChange={props.onChange}
+        onSelect={props.onSelect}
       />
     </section>
   );

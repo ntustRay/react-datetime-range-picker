@@ -2,8 +2,11 @@ import {
   formatEditableTimestamp,
   parseEditableDateTime,
 } from "./date-time-text.js";
-import { isUnitVisible } from "./precision.js";
-import { getLocalDateTime, type LocalDateTimeCandidate } from "./timezone.js";
+import {
+  getLocalDateTime,
+  resolveLocalDateTime,
+  type LocalDateTimeCandidate,
+} from "./timezone.js";
 import { validateDateTimeRange } from "./validate-date-time-range.js";
 import type {
   DateTimeRangeConstraints,
@@ -12,6 +15,7 @@ import type {
   DateTimeRangeValidationErrorCode,
   DateTimeRangeValidationResult,
   DateTimeRangeValue,
+  HourCycle,
   Precision,
   Timestamp,
 } from "../types.js";
@@ -21,11 +25,11 @@ export type DateTimeRangeDraftTarget = "start" | "end";
 export interface DateTimeRangeDraftContext {
   timezone: string;
   precision: Precision;
+  hourCycle: HourCycle;
 }
 
 export interface DateTimeRangeDraftField {
   text: string;
-  time: string;
   error: DateTimeRangeValidationErrorCode | null;
   ambiguousCandidates: readonly LocalDateTimeCandidate[];
 }
@@ -40,7 +44,22 @@ export type DateTimeRangeDraftAction =
   | { type: "replace-value"; value: DateTimeRangeValue }
   | { type: "change-text"; target: DateTimeRangeDraftTarget; text: string }
   | { type: "commit-text"; target: DateTimeRangeDraftTarget }
-  | { type: "change-time"; target: DateTimeRangeDraftTarget; time: string }
+  | {
+      type: "change-date";
+      target: DateTimeRangeDraftTarget;
+      timestamp: Timestamp;
+    }
+  | {
+      type: "change-time-unit";
+      target: DateTimeRangeDraftTarget;
+      unit: "hour" | "minute" | "second" | "millisecond";
+      value: number;
+    }
+  | {
+      type: "change-period";
+      target: DateTimeRangeDraftTarget;
+      period: "am" | "pm";
+    }
   | { type: "choose-offset"; target: DateTimeRangeDraftTarget; index: number };
 
 export interface DateTimeRangeDraftTransition {
@@ -65,30 +84,11 @@ function safelyFormatTimestamp(
       timestamp,
       context.timezone,
       context.precision,
+      context.hourCycle,
     );
   } catch {
     return String(timestamp);
   }
-}
-
-function formatTimeInput(
-  timestamp: Timestamp | null,
-  context: DateTimeRangeDraftContext,
-): string {
-  if (timestamp === null || !isUnitVisible("hour", context.precision)) {
-    return "";
-  }
-  const local = getLocalDateTime(timestamp, context.timezone);
-  const pad = (value: number, length = 2): string =>
-    String(value).padStart(length, "0");
-  let value = `${pad(local.hour)}:${pad(local.minute)}`;
-  if (isUnitVisible("second", context.precision)) {
-    value += `:${pad(local.second)}`;
-  }
-  if (isUnitVisible("millisecond", context.precision)) {
-    value += `.${pad(local.millisecond, 3)}`;
-  }
-  return value;
 }
 
 function createField(
@@ -97,7 +97,6 @@ function createField(
 ): DateTimeRangeDraftField {
   return {
     text: safelyFormatTimestamp(timestamp, context),
-    time: formatTimeInput(timestamp, context),
     error: null,
     ambiguousCandidates: [],
   };
@@ -145,12 +144,10 @@ function synchronizeValue(
     start: {
       ...state.start,
       text: safelyFormatTimestamp(value.startTimestamp, context),
-      time: formatTimeInput(value.startTimestamp, context),
     },
     end: {
       ...state.end,
       text: safelyFormatTimestamp(value.endTimestamp, context),
-      time: formatTimeInput(value.endTimestamp, context),
     },
   };
 }
@@ -198,6 +195,7 @@ function transitionTextCommit(
     field.text,
     context.timezone,
     context.precision,
+    context.hourCycle,
   );
   if (result.status !== "valid") {
     return {
@@ -229,50 +227,41 @@ function transitionTextCommit(
   };
 }
 
-function transitionTimeChange(
+function transitionLocalDateTimeChange(
   state: DateTimeRangeDraftState,
   target: DateTimeRangeDraftTarget,
-  time: string,
+  local: ReturnType<typeof getLocalDateTime>,
   context: DateTimeRangeDraftContext,
 ): DateTimeRangeDraftTransition {
-  const field = state[target];
-  const dateText = field.text.split(" ")[0];
-  if (dateText === undefined || time === "") {
-    return { state, changedValue: null };
-  }
-  const editableTime =
-    context.precision === "hour"
-      ? time.slice(0, 2)
-      : context.precision === "minute"
-        ? time.slice(0, 5)
-        : context.precision === "second"
-          ? time.slice(0, 8)
-          : time;
-  const result = parseEditableDateTime(
-    `${dateText} ${editableTime}`,
-    context.timezone,
-    context.precision,
-  );
-  if (result.status !== "valid") {
+  const resolution = resolveLocalDateTime(local, context.timezone);
+  if (resolution.status !== "exact") {
     return {
       state: updateField(
         state,
         target,
-        invalidField(field, result.status, result.candidates),
+        invalidField(
+          state[target],
+          resolution.status,
+          resolution.candidates,
+        ),
       ),
       changedValue: null,
     };
   }
-  const timestamp = result.candidates[0]?.timestamp;
+  const timestamp = resolution.candidates[0]?.timestamp;
   if (timestamp === undefined) {
     return {
-      state: updateField(state, target, invalidField(field, "invalid", [])),
+      state: updateField(
+        state,
+        target,
+        invalidField(state[target], "invalid", []),
+      ),
       changedValue: null,
     };
   }
   const changedValue = replaceTimestamp(state.value, target, timestamp);
   const nextState = updateField(state, target, {
-    ...field,
+    ...state[target],
     error: null,
     ambiguousCandidates: [],
   });
@@ -280,6 +269,67 @@ function transitionTimeChange(
     state: synchronizeValue(nextState, changedValue, context),
     changedValue,
   };
+}
+
+function transitionDateChange(
+  state: DateTimeRangeDraftState,
+  target: DateTimeRangeDraftTarget,
+  timestamp: Timestamp,
+  context: DateTimeRangeDraftContext,
+): DateTimeRangeDraftTransition {
+  const selectedDate = getLocalDateTime(timestamp, context.timezone);
+  const currentTimestamp =
+    target === "start"
+      ? state.value.startTimestamp
+      : state.value.endTimestamp;
+  const current =
+    currentTimestamp === null
+      ? selectedDate
+      : getLocalDateTime(currentTimestamp, context.timezone);
+  return transitionLocalDateTimeChange(
+    state,
+    target,
+    {
+      ...current,
+      year: selectedDate.year,
+      month: selectedDate.month,
+      day: selectedDate.day,
+    },
+    context,
+  );
+}
+
+function transitionTimeUnitChange(
+  state: DateTimeRangeDraftState,
+  target: DateTimeRangeDraftTarget,
+  unit: "hour" | "minute" | "second" | "millisecond",
+  value: number,
+  context: DateTimeRangeDraftContext,
+): DateTimeRangeDraftTransition {
+  const timestamp =
+    target === "start"
+      ? state.value.startTimestamp
+      : state.value.endTimestamp;
+  if (timestamp === null) return { state, changedValue: null };
+  const local = getLocalDateTime(timestamp, context.timezone);
+  local[unit] = value;
+  return transitionLocalDateTimeChange(state, target, local, context);
+}
+
+function transitionPeriodChange(
+  state: DateTimeRangeDraftState,
+  target: DateTimeRangeDraftTarget,
+  period: "am" | "pm",
+  context: DateTimeRangeDraftContext,
+): DateTimeRangeDraftTransition {
+  const timestamp =
+    target === "start"
+      ? state.value.startTimestamp
+      : state.value.endTimestamp;
+  if (timestamp === null) return { state, changedValue: null };
+  const local = getLocalDateTime(timestamp, context.timezone);
+  local.hour = local.hour % 12 + (period === "pm" ? 12 : 0);
+  return transitionLocalDateTimeChange(state, target, local, context);
 }
 
 export function transitionDateTimeRangeDraft(
@@ -307,10 +357,31 @@ export function transitionDateTimeRangeDraft(
   if (action.type === "commit-text") {
     return transitionTextCommit(state, action.target, context);
   }
-  if (action.type === "change-time") {
-    return transitionTimeChange(state, action.target, action.time, context);
+  if (action.type === "change-date") {
+    return transitionDateChange(
+      state,
+      action.target,
+      action.timestamp,
+      context,
+    );
   }
-
+  if (action.type === "change-time-unit") {
+    return transitionTimeUnitChange(
+      state,
+      action.target,
+      action.unit,
+      action.value,
+      context,
+    );
+  }
+  if (action.type === "change-period") {
+    return transitionPeriodChange(
+      state,
+      action.target,
+      action.period,
+      context,
+    );
+  }
   const candidate = state[action.target].ambiguousCandidates[action.index];
   if (candidate === undefined) return { state, changedValue: null };
   const changedValue = replaceTimestamp(

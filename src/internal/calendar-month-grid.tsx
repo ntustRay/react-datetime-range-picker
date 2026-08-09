@@ -1,14 +1,12 @@
 import { isCalendarDayDisabled, type CalendarMonth } from "./calendar.js";
 import type {
   DateTimeRangeConstraints,
-  DateTimeRangeValue,
   Timestamp,
 } from "../types.js";
 
 interface CalendarSelection {
-  value: DateTimeRangeValue;
   constraints: DateTimeRangeConstraints;
-  selectingEnd: boolean;
+  target: "start" | "end";
   startDay: Timestamp | null;
   endDay: Timestamp | null;
   today: Timestamp;
@@ -23,14 +21,11 @@ interface CalendarFocus {
 }
 
 interface CalendarPresentation {
-  gridName: "current" | "following";
   calendar: CalendarMonth;
   label: string;
   weekdayLabels: readonly string[];
   locale: string;
   timezone: string;
-  className: string | null;
-  responsive: boolean;
   calendarTestId: string | null;
   dateTestId: ((timestamp: Timestamp) => string) | null;
   startDateStatusLabel: string;
@@ -42,7 +37,7 @@ interface CalendarMonthGridProps {
   presentation: CalendarPresentation;
   selection: CalendarSelection;
   focus: CalendarFocus;
-  onChange: (value: DateTimeRangeValue) => void;
+  onSelect: (timestamp: Timestamp) => void;
 }
 
 function handleNavigation(
@@ -66,18 +61,12 @@ function handleNavigation(
 export function CalendarMonthGrid(
   props: CalendarMonthGridProps,
 ): React.JSX.Element {
-  const gridProps = props.presentation.responsive
-    ? { "data-responsive-calendar": "wide" }
-    : {};
-
   return (
     <div
       role="grid"
       aria-label={props.presentation.label}
-      data-calendar-grid={props.presentation.gridName}
-      className={props.presentation.className ?? undefined}
+      data-calendar-grid="current"
       data-testid={props.presentation.calendarTestId ?? undefined}
-      {...gridProps}
     >
       <div role="row">
         {props.presentation.weekdayLabels.map((label) => (
@@ -94,18 +83,18 @@ export function CalendarMonthGrid(
               const index = rowIndex * 7 + columnIndex;
               const disabled = isCalendarDayDisabled(
                 day.timestamp,
-                props.selection.selectingEnd,
-                props.selection.value.startTimestamp,
+                props.selection.target,
+                props.selection.startDay,
+                props.selection.endDay,
                 props.selection.constraints,
               );
-              const selectedStart = day.timestamp === props.selection.startDay;
-              const selectedEnd = day.timestamp === props.selection.endDay;
-              const inRange =
-                day.timestamp !== null &&
-                props.selection.startDay !== null &&
-                props.selection.endDay !== null &&
-                day.timestamp > props.selection.startDay &&
-                day.timestamp < props.selection.endDay;
+              const selectedStart =
+                props.selection.target === "start" &&
+                day.timestamp === props.selection.startDay;
+              const selectedEnd =
+                props.selection.target === "end" &&
+                day.timestamp === props.selection.endDay;
+              const inRange = false;
               const label = new Intl.DateTimeFormat(props.presentation.locale, {
                 dateStyle: "full",
                 timeZone: props.presentation.timezone,
@@ -139,18 +128,7 @@ export function CalendarMonthGrid(
                   }
                   onClick={() => {
                     if (day.timestamp === null) return;
-                    props.onChange(
-                      props.selection.selectingEnd
-                        ? {
-                            startTimestamp:
-                              props.selection.value.startTimestamp,
-                            endTimestamp: day.timestamp,
-                          }
-                        : {
-                            startTimestamp: day.timestamp,
-                            endTimestamp: null,
-                          },
-                    );
+                    props.onSelect(day.timestamp);
                   }}
                 >
                   {day.day}

@@ -104,8 +104,9 @@ export function createCalendarMonth(
 
 export function isCalendarDayDisabled(
   timestamp: Timestamp | null,
-  selectingEnd: boolean,
-  startTimestamp: Timestamp | null,
+  target: "start" | "end",
+  startDay: Timestamp | null,
+  endDay: Timestamp | null,
   constraints: DateTimeRangeConstraints,
 ): boolean {
   if (timestamp === null) return true;
@@ -115,11 +116,20 @@ export function isCalendarDayDisabled(
   if (constraints.maxTimestamp !== null && timestamp > constraints.maxTimestamp) {
     return true;
   }
-  if (selectingEnd && startTimestamp !== null) {
-    if (timestamp <= startTimestamp) return true;
+  if (target === "end" && startDay !== null) {
+    if (timestamp < startDay) return true;
     if (
       constraints.maxDurationMilliseconds !== null &&
-      timestamp - startTimestamp > constraints.maxDurationMilliseconds
+      timestamp - startDay > constraints.maxDurationMilliseconds
+    ) {
+      return true;
+    }
+  }
+  if (target === "start" && endDay !== null) {
+    if (timestamp > endDay) return true;
+    if (
+      constraints.maxDurationMilliseconds !== null &&
+      endDay - timestamp > constraints.maxDurationMilliseconds
     ) {
       return true;
     }

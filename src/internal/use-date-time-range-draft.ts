@@ -16,6 +16,7 @@ import type {
   DateTimeRangeValidationChangeHandler,
   DateTimeRangeValidationResult,
   DateTimeRangeValue,
+  HourCycle,
   Precision,
 } from "../types.js";
 
@@ -23,6 +24,7 @@ interface UseDateTimeRangeDraftOptions {
   value: DateTimeRangeValue;
   timezone: string;
   precision: Precision;
+  hourCycle: HourCycle;
   constraints: DateTimeRangeConstraints;
   steps: DateTimeRangeSteps;
   required: boolean;
@@ -39,7 +41,19 @@ export interface DateTimeRangeDraftController {
   reset: (value: DateTimeRangeValue) => void;
   changeText: (target: DateTimeRangeDraftTarget, text: string) => void;
   commitText: (target: DateTimeRangeDraftTarget) => void;
-  changeTime: (target: DateTimeRangeDraftTarget, time: string) => void;
+  changeDate: (
+    target: DateTimeRangeDraftTarget,
+    timestamp: number,
+  ) => void;
+  changeTimeUnit: (
+    target: DateTimeRangeDraftTarget,
+    unit: "hour" | "minute" | "second" | "millisecond",
+    value: number,
+  ) => void;
+  changePeriod: (
+    target: DateTimeRangeDraftTarget,
+    period: "am" | "pm",
+  ) => void;
   chooseOffset: (target: DateTimeRangeDraftTarget, index: number) => void;
 }
 
@@ -55,6 +69,7 @@ export function useDateTimeRangeDraft(
   const context = {
     timezone: options.timezone,
     precision: options.precision,
+    hourCycle: options.hourCycle,
   };
   const [state, setState] = useState<DateTimeRangeDraftState>(() =>
     createDateTimeRangeDraft(options.value, context),
@@ -72,11 +87,12 @@ export function useDateTimeRangeDraft(
       const nextState = createDateTimeRangeDraft(value, {
         timezone: options.timezone,
         precision: options.precision,
+        hourCycle: options.hourCycle,
       });
       stateRef.current = nextState;
       setState(nextState);
     },
-    [options.precision, options.timezone],
+    [options.hourCycle, options.precision, options.timezone],
   );
 
   useEffect(() => {
@@ -86,6 +102,7 @@ export function useDateTimeRangeDraft(
     options.value.endTimestamp,
     options.timezone,
     options.precision,
+    options.hourCycle,
     reset,
   ]);
 
@@ -129,8 +146,12 @@ export function useDateTimeRangeDraft(
     changeText: (target, text) =>
       dispatch({ type: "change-text", target, text }),
     commitText: (target) => dispatch({ type: "commit-text", target }),
-    changeTime: (target, time) =>
-      dispatch({ type: "change-time", target, time }),
+    changeDate: (target, timestamp) =>
+      dispatch({ type: "change-date", target, timestamp }),
+    changeTimeUnit: (target, unit, value) =>
+      dispatch({ type: "change-time-unit", target, unit, value }),
+    changePeriod: (target, period) =>
+      dispatch({ type: "change-period", target, period }),
     chooseOffset: (target, index) =>
       dispatch({ type: "choose-offset", target, index }),
   };

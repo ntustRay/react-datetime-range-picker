@@ -12,10 +12,24 @@ const DEFAULT_LOCALE_TEXT: DateTimeRangeLocaleText = {
   endLabel: "End",
   previousMonthLabel: "Previous month",
   nextMonthLabel: "Next month",
+  calendarButtonLabel: "Open calendar",
   timezoneLabel: "Time zone",
   applyButtonLabel: "Apply",
+  nextButtonLabel: "Next",
   cancelButtonLabel: "Cancel",
   clearButtonLabel: "Clear",
+  resetButtonLabel: "Reset",
+  rangeSummaryLabel: "Selected range",
+  hourCycleLabel: "Hour cycle",
+  hourCycle12Label: "12 hour",
+  hourCycle24Label: "24 hour",
+  hourColumnLabel: "Hour",
+  minuteColumnLabel: "Minute",
+  secondColumnLabel: "Second",
+  millisecondColumnLabel: "Millisecond",
+  periodColumnLabel: "Period",
+  amLabel: "AM",
+  pmLabel: "PM",
   startFormatHint: "",
   endFormatHint: "",
   startTimeLabel: "Start time",
@@ -66,8 +80,9 @@ const VALIDATION_MESSAGE_KEYS: Record<
 export function resolveLocaleText(
   overrides: Partial<DateTimeRangeLocaleText> | undefined,
   precision: Precision,
+  hourCycle: "h12" | "h24",
 ): DateTimeRangeLocaleText {
-  const defaultFormatHint = getEditableDateTimeFormat(precision);
+  const defaultFormatHint = getEditableDateTimeFormat(precision, hourCycle);
   return {
     ...DEFAULT_LOCALE_TEXT,
     startFormatHint: defaultFormatHint,

@@ -7,6 +7,8 @@ import type {
   DateTimeRangeSteps,
   DateTimeRangeTestIds,
   DateTimeRangeTimezoneChangeHandler,
+  DateTimeRangeHourCycleChangeHandler,
+  HourCycle,
   Precision,
   Timezone,
   Weekday,
@@ -26,6 +28,7 @@ const DEFAULT_STEPS: DateTimeRangeSteps = {
 
 export interface PickerConfiguration {
   timezone: Timezone;
+  hourCycle: HourCycle;
   precision: Precision;
   locale: string;
   localeText: DateTimeRangeLocaleText;
@@ -39,9 +42,12 @@ export interface PickerConfiguration {
   presets: readonly DateTimeRangePreset[];
   testIds: Partial<DateTimeRangeTestIds>;
   clearable: boolean;
+  disabled: boolean;
+  readOnly: boolean;
   canOpen: boolean;
   required: boolean;
   onTimezoneChange: DateTimeRangeTimezoneChangeHandler | null;
+  onHourCycleChange: DateTimeRangeHourCycleChangeHandler | null;
 }
 
 export function resolvePickerConfiguration(
@@ -49,13 +55,15 @@ export function resolvePickerConfiguration(
 ): PickerConfiguration {
   const timezone = props.timezone ?? "UTC";
   const precision = props.precision ?? "second";
+  const hourCycle = props.hourCycle ?? "h24";
   const calendarEnabled = props.features?.calendar !== false;
 
   return {
     timezone,
+    hourCycle,
     precision,
     locale: props.locale ?? "en",
-    localeText: resolveLocaleText(props.localeText, precision),
+    localeText: resolveLocaleText(props.localeText, precision, hourCycle),
     firstWeekday: props.firstWeekday ?? null,
     constraints: props.constraints ?? DEFAULT_CONSTRAINTS,
     steps: props.steps ?? DEFAULT_STEPS,
@@ -67,8 +75,11 @@ export function resolvePickerConfiguration(
     presets: props.presets ?? [],
     testIds: props.testIds ?? {},
     clearable: props.clearable !== false,
+    disabled: props.disabled === true,
+    readOnly: props.readOnly === true,
     canOpen: props.disabled !== true && props.readOnly !== true,
     required: props.required === true,
     onTimezoneChange: props.onTimezoneChange ?? null,
+    onHourCycleChange: props.onHourCycleChange ?? null,
   };
 }
