@@ -1,9 +1,11 @@
 # Visual regression workflow
 
 The committed images in `visual/snapshots/` are the durable visual baseline for
-the demo. They cover the full page and the open picker at desktop and mobile
-widths. The browser clock is fixed so the calendar does not drift with the
-current date.
+the demo. They cover the full page, empty and populated picker states at desktop
+and mobile widths, light/dark/high-contrast rendering, feature modes,
+constraints, presets, invalid ranges, and DST validation. The browser clock is
+fixed so the calendar does not drift with the current date. Tests move the
+pointer away before capture so accidental hover states do not enter a baseline.
 
 After a UI change:
 

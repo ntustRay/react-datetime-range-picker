@@ -3,8 +3,12 @@ import { expect, test, type Page } from "@playwright/test";
 const REFERENCE_NOW = new Date("2026-08-09T00:00:00.000Z");
 
 async function openStableDemo(page: Page): Promise<void> {
-  await page.clock.install({ time: REFERENCE_NOW });
+  await page.clock.setFixedTime(REFERENCE_NOW);
   await page.goto("/");
+}
+
+async function clearPointerHover(page: Page): Promise<void> {
+  await page.mouse.move(0, 0);
 }
 
 test("desktop demo page", async ({ page }) => {
@@ -31,6 +35,7 @@ test("desktop picker open", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await openStableDemo(page);
   await page.getByTestId("dtrp-trigger").first().click();
+  await clearPointerHover(page);
 
   await expect(page.locator(".playground-grid")).toHaveScreenshot(
     "picker-open-desktop.png",
@@ -42,9 +47,159 @@ test("mobile picker open", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openStableDemo(page);
   await page.getByTestId("dtrp-trigger").first().click();
+  await clearPointerHover(page);
 
   await expect(page.locator(".picker-stage")).toHaveScreenshot(
     "picker-open-mobile.png",
     { animations: "disabled" },
   );
+});
+
+test("desktop selected range", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await openStableDemo(page);
+  await page.getByTestId("dtrp-trigger").first().click();
+  const cells = page.locator('[data-testid^="dtrp-date-"]:visible');
+  await cells.nth(10).click();
+  await cells.nth(14).click();
+  await clearPointerHover(page);
+
+  await expect(page.locator(".picker-stage")).toHaveScreenshot(
+    "picker-selected-desktop.png",
+    { animations: "disabled" },
+  );
+});
+
+test("mobile selected range", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openStableDemo(page);
+  await page.getByTestId("dtrp-trigger").first().click();
+  const cells = page.locator('[data-testid^="dtrp-date-"]:visible');
+  await cells.nth(10).click();
+  await cells.nth(14).click();
+  await clearPointerHover(page);
+
+  await expect(page.locator(".picker-stage")).toHaveScreenshot(
+    "picker-selected-mobile.png",
+    { animations: "disabled" },
+  );
+});
+
+test("dark picker", async ({ page }) => {
+  await page.setViewportSize({ width: 760, height: 900 });
+  await page.emulateMedia({ colorScheme: "dark" });
+  await openStableDemo(page);
+  await page.getByTestId("dtrp-trigger").first().click();
+  await clearPointerHover(page);
+
+  await expect(page.getByTestId("dtrp-popover").first()).toHaveScreenshot(
+    "picker-open-dark.png",
+    { animations: "disabled" },
+  );
+});
+
+test("high contrast picker", async ({ page }) => {
+  await page.setViewportSize({ width: 760, height: 900 });
+  await page.emulateMedia({ forcedColors: "active" });
+  await openStableDemo(page);
+  await page.getByTestId("dtrp-trigger").first().click();
+  await clearPointerHover(page);
+
+  await expect(page.getByTestId("dtrp-popover").first()).toHaveScreenshot(
+    "picker-open-high-contrast.png",
+    { animations: "disabled" },
+  );
+});
+
+test("constrained preset", async ({ page }) => {
+  await page.setViewportSize({ width: 1080, height: 900 });
+  await openStableDemo(page);
+  const scenario = page.locator(".scenario-card").filter({
+    hasText: "Guardrailed reporting window",
+  });
+  await scenario.getByRole("button", { name: "Constrained range" }).click();
+  await scenario.getByTestId("dtrp-preset-today").click();
+  await expect(scenario.getByTestId("dtrp-start-input")).not.toHaveValue("");
+  await expect(scenario.getByTestId("dtrp-apply")).toBeEnabled();
+  await clearPointerHover(page);
+
+  await expect(scenario).toHaveScreenshot("scenario-constrained-preset.png", {
+    animations: "disabled",
+  });
+});
+
+test("text-only mode", async ({ page }) => {
+  await page.setViewportSize({ width: 1080, height: 900 });
+  await openStableDemo(page);
+  const scenario = page.locator(".scenario-card").filter({
+    hasText: "Text-only toolbar",
+  });
+  await scenario.getByRole("button", { name: "Enter exact range" }).click();
+  await clearPointerHover(page);
+
+  await expect(scenario).toHaveScreenshot("scenario-text-only.png", {
+    animations: "disabled",
+  });
+});
+
+test("calendar-only mode", async ({ page }) => {
+  await page.setViewportSize({ width: 1080, height: 900 });
+  await openStableDemo(page);
+  const scenario = page.locator(".scenario-card").filter({
+    hasText: "Calendar-only selection",
+  });
+  await scenario.getByRole("button", { name: "Choose reporting days" }).click();
+  await clearPointerHover(page);
+
+  await expect(scenario).toHaveScreenshot("scenario-calendar-only.png", {
+    animations: "disabled",
+  });
+});
+
+test("invalid controlled range", async ({ page }) => {
+  await page.setViewportSize({ width: 1080, height: 900 });
+  await openStableDemo(page);
+  const scenario = page.locator(".scenario-card").filter({
+    hasText: "Invalid controlled range",
+  });
+  await scenario
+    .getByRole("button", { name: "Invalid controlled value" })
+    .click();
+  await clearPointerHover(page);
+
+  await expect(scenario).toHaveScreenshot("scenario-invalid-range.png", {
+    animations: "disabled",
+  });
+});
+
+test("DST gap validation", async ({ page }) => {
+  await page.setViewportSize({ width: 1080, height: 900 });
+  await openStableDemo(page);
+  const scenario = page.locator(".scenario-card").filter({
+    hasText: "Spring-forward gap",
+  });
+  await scenario.getByRole("button", { name: "DST gap example" }).click();
+  await scenario.getByTestId("dtrp-start-input").fill("2024-03-10 02:30:00");
+  await scenario.getByTestId("dtrp-start-input").blur();
+  await clearPointerHover(page);
+
+  await expect(scenario).toHaveScreenshot("scenario-dst-gap.png", {
+    animations: "disabled",
+  });
+});
+
+test("DST overlap validation", async ({ page }) => {
+  await page.setViewportSize({ width: 1080, height: 900 });
+  await openStableDemo(page);
+  const scenario = page.locator(".scenario-card").filter({
+    hasText: "Fall-back overlap",
+  });
+  await scenario.getByRole("button", { name: "DST overlap example" }).click();
+  await scenario.getByTestId("dtrp-start-input").fill("2024-11-03 01:30:00");
+  await scenario.getByTestId("dtrp-start-input").blur();
+  await clearPointerHover(page);
+
+  await expect(scenario).toHaveScreenshot("scenario-dst-overlap.png", {
+    animations: "disabled",
+  });
 });

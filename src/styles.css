@@ -1,6 +1,8 @@
 .dtrp-root {
   --dtrp-font-family: "Aptos", "Segoe UI Variable", "Segoe UI", sans-serif;
   --dtrp-font-size: 0.875rem;
+  --dtrp-space: 1rem;
+  --dtrp-radius: 0.875rem;
   --dtrp-surface: #ffffff;
   --dtrp-surface-muted: #f6f7fb;
   --dtrp-surface-hover: #eef1f8;
@@ -12,6 +14,7 @@
   --dtrp-range: #ebe9ff;
   --dtrp-focus: #5b4fd6;
   --dtrp-error: #b3261e;
+  --dtrp-disabled-opacity: 0.42;
   --dtrp-shadow: 0 18px 48px rgb(38 42 61 / 16%), 0 3px 10px rgb(38 42 61 / 10%);
   position: relative;
   color: var(--dtrp-text);
@@ -85,19 +88,20 @@
 }
 
 .dtrp-popover {
+  container-type: inline-size;
   z-index: 10;
   display: grid;
   width: min(45rem, calc(100vw - 2rem));
-  gap: 1rem;
+  gap: var(--dtrp-space);
   margin-top: 0.5rem;
   padding: 1.25rem;
   border: 1px solid var(--dtrp-border);
-  border-radius: 0.875rem;
+  border-radius: var(--dtrp-radius);
   background: var(--dtrp-surface);
   box-shadow: var(--dtrp-shadow);
 }
 
-.dtrp-calendar-region { container-type: inline-size; }
+.dtrp-calendar-region { min-width: 0; }
 .dtrp-calendar-navigation {
   display: grid;
   grid-template-columns: 2.5rem 1fr 2.5rem;
@@ -194,7 +198,7 @@
 .dtrp-actions .dtrp-apply { min-width: 6rem; border-color: var(--dtrp-accent); background: var(--dtrp-accent); color: #fff; font-weight: 650; }
 .dtrp-actions .dtrp-apply:hover:not(:disabled) { background: var(--dtrp-accent-hover); }
 .dtrp-root [aria-invalid="true"] { border-color: var(--dtrp-error); }
-.dtrp-root button:disabled, .dtrp-root input:disabled, .dtrp-root select:disabled { cursor: not-allowed; opacity: 0.42; }
+.dtrp-root button:disabled, .dtrp-root input:disabled, .dtrp-root select:disabled { cursor: not-allowed; opacity: var(--dtrp-disabled-opacity); }
 
 @container (min-width: 40rem) {
   .dtrp-calendar-region { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }

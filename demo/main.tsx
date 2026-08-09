@@ -2,9 +2,11 @@ import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   DateTimeRangePicker,
+  type DateTimeRangeChangeHandler,
   type DateTimeRangeValidationResult,
   type DateTimeRangeValue,
   type Precision,
+  type Timezone,
   type Weekday,
 } from "@ntustray/react-datetime-range-picker";
 import "@ntustray/react-datetime-range-picker/styles.css";
@@ -25,8 +27,42 @@ const PRECISIONS: readonly Precision[] = [
   "millisecond",
 ];
 
-const WEEKDAYS: readonly Weekday[] = ["sunday", "monday", "saturday"];
-const TIMEZONES = ["UTC", "Asia/Taipei", "America/New_York"] as const;
+const WEEKDAYS: readonly Weekday[] = [
+  "sunday",
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+];
+
+const TIMEZONES: readonly Timezone[] = [
+  "UTC",
+  "Asia/Taipei",
+  "America/New_York",
+];
+
+type DemoLocale = "zh-TW" | "en-US" | "ja-JP";
+
+interface LocaleOption {
+  value: DemoLocale;
+  label: string;
+}
+
+const LOCALE_OPTIONS: readonly LocaleOption[] = [
+  { value: "zh-TW", label: "繁體中文" },
+  { value: "en-US", label: "English (US)" },
+  { value: "ja-JP", label: "日本語" },
+];
+
+interface ScenarioProps {
+  title: string;
+  description: string;
+  children: React.ReactNode;
+}
+
+const ignoreRangeChange: DateTimeRangeChangeHandler = () => undefined;
 
 function isPrecision(value: string): value is Precision {
   return PRECISIONS.some((precision) => precision === value);
@@ -36,17 +72,20 @@ function isWeekday(value: string): value is Weekday {
   return WEEKDAYS.some((weekday) => weekday === value);
 }
 
+function isDemoLocale(value: string): value is DemoLocale {
+  return LOCALE_OPTIONS.some((option) => option.value === value);
+}
+
 function formatValue(value: DateTimeRangeValue): string {
-  if (value.startTimestamp === null || value.endTimestamp === null) return "No complete range";
-  const durationHours = (value.endTimestamp - value.startTimestamp) / 3_600_000;
+  if (value.startTimestamp === null || value.endTimestamp === null) {
+    return "No complete range";
+  }
+  const durationHours =
+    (value.endTimestamp - value.startTimestamp) / 3_600_000;
   return `${durationHours.toLocaleString()} hours · ${value.startTimestamp} → ${value.endTimestamp}`;
 }
 
-function Scenario(props: {
-  title: string;
-  description: string;
-  children: React.ReactNode;
-}): React.JSX.Element {
+function Scenario(props: ScenarioProps): React.JSX.Element {
   return (
     <article className="scenario-card">
       <div>
@@ -58,12 +97,57 @@ function Scenario(props: {
   );
 }
 
-function Demo(): React.JSX.Element {
+function Hero(): React.JSX.Element {
+  return (
+    <header className="hero">
+      <nav aria-label="Package links">
+        <span className="package-mark">@ntustray / date-time range</span>
+        <a href="https://www.npmjs.com/package/@ntustray/react-datetime-range-picker">
+          npm package ↗
+        </a>
+      </nav>
+      <div className="hero-copy">
+        <p className="demo-eyebrow">
+          React component · ESM · zero runtime dependencies
+        </p>
+        <h1>
+          Time ranges,
+          <br />
+          without time traps.
+        </h1>
+        <p className="demo-intro">
+          An accessible controlled picker for timestamp-based chart filters,
+          with explicit timezone, precision, and validation behavior.
+        </p>
+        <div className="install-command" aria-label="Install command">
+          <span aria-hidden="true">$</span>
+          <code>npm install @ntustray/react-datetime-range-picker</code>
+        </div>
+      </div>
+      <dl className="package-facts">
+        <div>
+          <dt>Value</dt>
+          <dd>Epoch milliseconds</dd>
+        </div>
+        <div>
+          <dt>Range</dt>
+          <dd>Half-open [start, end)</dd>
+        </div>
+        <div>
+          <dt>React</dt>
+          <dd>18 and 19</dd>
+        </div>
+      </dl>
+    </header>
+  );
+}
+
+function Playground(): React.JSX.Element {
   const [value, setValue] = useState<DateTimeRangeValue>(EMPTY_RANGE);
   const [committed, setCommitted] = useState<DateTimeRangeValue>(EMPTY_RANGE);
   const [precision, setPrecision] = useState<Precision>("second");
-  const [timezone, setTimezone] = useState<string>("UTC");
-  const [locale, setLocale] = useState("zh-TW");
+  const [timezone, setTimezone] = useState<Timezone>("UTC");
+  const [locale, setLocale] = useState<DemoLocale>("zh-TW");
   const [firstWeekday, setFirstWeekday] = useState<Weekday>("sunday");
   const [required, setRequired] = useState(false);
   const [clearable, setClearable] = useState(true);
@@ -71,6 +155,152 @@ function Demo(): React.JSX.Element {
     status: "empty",
     errors: [],
   });
+
+  return (
+    <section className="playground" aria-labelledby="playground-title">
+      <div className="section-heading">
+        <div>
+          <p className="section-kicker">Interactive playground</p>
+          <h2 id="playground-title">Try the complete workflow</h2>
+        </div>
+        <p>Change the product settings, pick a range, then Apply to commit it.</p>
+      </div>
+
+      <div className="playground-grid">
+        <aside className="control-panel" aria-label="Picker configuration">
+          <label>
+            Precision
+            <select
+              value={precision}
+              onChange={(event) => {
+                if (isPrecision(event.currentTarget.value)) {
+                  setPrecision(event.currentTarget.value);
+                }
+              }}
+            >
+              {PRECISIONS.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Locale
+            <select
+              value={locale}
+              onChange={(event) => {
+                if (isDemoLocale(event.currentTarget.value)) {
+                  setLocale(event.currentTarget.value);
+                }
+              }}
+            >
+              {LOCALE_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Week starts on
+            <select
+              value={firstWeekday}
+              onChange={(event) => {
+                if (isWeekday(event.currentTarget.value)) {
+                  setFirstWeekday(event.currentTarget.value);
+                }
+              }}
+            >
+              {WEEKDAYS.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </label>
+          <div className="toggle-row">
+            <label>
+              <input
+                type="checkbox"
+                checked={required}
+                onChange={(event) => setRequired(event.currentTarget.checked)}
+              />
+              Required
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={clearable}
+                onChange={(event) => setClearable(event.currentTarget.checked)}
+              />
+              Clear action
+            </label>
+          </div>
+        </aside>
+
+        <div className="picker-stage">
+          <div className="stage-label">
+            <span>Live component</span>
+            <span>{timezone}</span>
+          </div>
+          <DateTimeRangePicker
+            value={value}
+            precision={precision}
+            onChange={setValue}
+            onCommit={setCommitted}
+            onValidationChange={setValidation}
+            timezone={timezone}
+            onTimezoneChange={setTimezone}
+            locale={locale}
+            firstWeekday={firstWeekday}
+            required={required}
+            clearable={clearable}
+            timezoneOptions={TIMEZONES}
+          />
+          <div className="state-readout" aria-live="polite">
+            <div>
+              <span>Draft · {validation.status}</span>
+              <code>{formatValue(value)}</code>
+            </div>
+            <div>
+              <span>Committed chart filter</span>
+              <code>{formatValue(committed)}</code>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function QuickStart(): React.JSX.Element {
+  return (
+    <section className="quick-start" aria-labelledby="quick-start-title">
+      <div>
+        <p className="section-kicker">Two-state contract</p>
+        <h2 id="quick-start-title">Draft freely. Commit deliberately.</h2>
+        <p>
+          The picker stays controlled: <code>onChange</code> reports every draft,
+          while <code>onCommit</code> runs only when Apply receives a complete,
+          valid range.
+        </p>
+      </div>
+      <pre>
+        <code>{`const [draft, setDraft] = useState(emptyRange);
+
+<DateTimeRangePicker
+  value={draft}
+  onChange={setDraft}
+  onCommit={applyChartFilter}
+  timezone="UTC"
+/>`}</code>
+      </pre>
+    </section>
+  );
+}
+
+function ProductionScenarios(): React.JSX.Element {
   const [constrainedValue, setConstrainedValue] =
     useState<DateTimeRangeValue>(EMPTY_RANGE);
   const [textOnlyValue, setTextOnlyValue] =
@@ -79,200 +309,181 @@ function Demo(): React.JSX.Element {
     useState<DateTimeRangeValue>(EMPTY_RANGE);
 
   return (
-    <main>
-      <header className="hero">
-        <nav aria-label="Package links">
-          <span className="package-mark">@ntustray / date-time range</span>
-          <a href="https://www.npmjs.com/package/@ntustray/react-datetime-range-picker">
-            npm package ↗
-          </a>
-        </nav>
-        <div className="hero-copy">
-          <p className="demo-eyebrow">React component · ESM · zero runtime dependencies</p>
-          <h1>Time ranges,<br />without time traps.</h1>
-          <p className="demo-intro">
-            An accessible controlled picker for timestamp-based chart filters,
-            with explicit timezone, precision, and validation behavior.
-          </p>
-          <div className="install-command" aria-label="Install command">
-            <span aria-hidden="true">$</span>
-            <code>npm install @ntustray/react-datetime-range-picker</code>
-          </div>
-        </div>
-        <dl className="package-facts">
-          <div><dt>Value</dt><dd>Epoch milliseconds</dd></div>
-          <div><dt>Range</dt><dd>Half-open [start, end)</dd></div>
-          <div><dt>React</dt><dd>18 and 19</dd></div>
-        </dl>
-      </header>
-
-      <section className="playground" aria-labelledby="playground-title">
-        <div className="section-heading">
-          <div>
-            <p className="section-kicker">Interactive playground</p>
-            <h2 id="playground-title">Try the complete workflow</h2>
-          </div>
-          <p>Change the product settings, pick a range, then Apply to commit it.</p>
-        </div>
-
-        <div className="playground-grid">
-          <aside className="control-panel" aria-label="Picker configuration">
-            <label>
-              Precision
-              <select
-                value={precision}
-                onChange={(event) => {
-                  if (isPrecision(event.currentTarget.value)) {
-                    setPrecision(event.currentTarget.value);
-                  }
-                }}
-              >
-                {PRECISIONS.map((option) => (
-                  <option key={option} value={option}>{option}</option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Locale
-              <select value={locale} onChange={(event) => setLocale(event.currentTarget.value)}>
-                <option value="zh-TW">繁體中文</option>
-                <option value="en-US">English (US)</option>
-                <option value="ja-JP">日本語</option>
-              </select>
-            </label>
-            <label>
-              Week starts on
-              <select
-                value={firstWeekday}
-                onChange={(event) => {
-                  if (isWeekday(event.currentTarget.value)) {
-                    setFirstWeekday(event.currentTarget.value);
-                  }
-                }}
-              >
-                {WEEKDAYS.map((option) => (
-                  <option key={option} value={option}>{option}</option>
-                ))}
-              </select>
-            </label>
-            <div className="toggle-row">
-              <label><input type="checkbox" checked={required} onChange={(event) => setRequired(event.currentTarget.checked)} /> Required</label>
-              <label><input type="checkbox" checked={clearable} onChange={(event) => setClearable(event.currentTarget.checked)} /> Clear action</label>
-            </div>
-          </aside>
-
-          <div className="picker-stage">
-            <div className="stage-label"><span>Live component</span><span>{timezone}</span></div>
-            <DateTimeRangePicker
-              value={value}
-              precision={precision}
-              onChange={setValue}
-              onCommit={setCommitted}
-              onValidationChange={setValidation}
-              timezone={timezone}
-              onTimezoneChange={setTimezone}
-              locale={locale}
-              firstWeekday={firstWeekday}
-              required={required}
-              clearable={clearable}
-              timezoneOptions={TIMEZONES}
-            />
-            <div className="state-readout" aria-live="polite">
-              <div>
-                <span>Draft · {validation.status}</span>
-                <code>{formatValue(value)}</code>
-              </div>
-              <div>
-                <span>Committed chart filter</span>
-                <code>{formatValue(committed)}</code>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="quick-start" aria-labelledby="quick-start-title">
+    <section className="scenarios" aria-labelledby="scenarios-title">
+      <div className="section-heading">
         <div>
-          <p className="section-kicker">Two-state contract</p>
-          <h2 id="quick-start-title">Draft freely. Commit deliberately.</h2>
-          <p>
-            The picker stays controlled: <code>onChange</code> reports every draft,
-            while <code>onCommit</code> runs only when Apply receives a complete,
-            valid range.
-          </p>
+          <p className="section-kicker">Configuration matrix</p>
+          <h2 id="scenarios-title">Production scenarios</h2>
         </div>
-        <pre><code>{`const [draft, setDraft] = useState(emptyRange);
-
-<DateTimeRangePicker
-  value={draft}
-  onChange={setDraft}
-  onCommit={applyChartFilter}
-  timezone="UTC"
-/>`}</code></pre>
-      </section>
-
-      <section className="scenarios" aria-labelledby="scenarios-title">
-        <div className="section-heading">
-          <div>
-            <p className="section-kicker">Configuration matrix</p>
-            <h2 id="scenarios-title">Production scenarios</h2>
-          </div>
-          <p>Each example owns its state, so experiments never leak between cases.</p>
-        </div>
-        <div className="scenario-grid">
-          <Scenario title="Guardrailed reporting window" description="Required, limited to 2026, capped at seven days, stepped inputs, with a rolling preset.">
+        <p>Each example owns its state, so experiments never leak between cases.</p>
+      </div>
+      <div className="scenario-grid">
+        <Scenario
+          title="Guardrailed reporting window"
+          description="Required, limited to 2026, capped at seven days, stepped inputs, with a rolling preset."
+        >
+          <DateTimeRangePicker
+            value={constrainedValue}
+            onChange={setConstrainedValue}
+            onCommit={setConstrainedValue}
+            required
+            constraints={{
+              minTimestamp: Date.UTC(2026, 0, 1),
+              maxTimestamp: Date.UTC(2027, 0, 1),
+              maxDurationMilliseconds: 7 * 86_400_000,
+            }}
+            steps={{ minute: 5, second: 10, millisecond: 100 }}
+            presets={[
+              {
+                id: "today",
+                label: "Last 24 hours",
+                getValue: ({ nowTimestamp }) => ({
+                  startTimestamp: nowTimestamp - 86_400_000,
+                  endTimestamp: nowTimestamp,
+                }),
+              },
+            ]}
+            labels={{ trigger: "Constrained range", apply: "Use range" }}
+            testIds={{ root: "dtrp-constrained" }}
+          />
+        </Scenario>
+        <Scenario
+          title="Text-only toolbar"
+          description="For dense filter bars where the calendar would interrupt the workflow."
+        >
+          <DateTimeRangePicker
+            value={textOnlyValue}
+            onChange={setTextOnlyValue}
+            onCommit={setTextOnlyValue}
+            features={{
+              calendar: false,
+              textInput: true,
+              timezoneSelector: false,
+            }}
+            labels={{ trigger: "Enter exact range" }}
+          />
+        </Scenario>
+        <Scenario
+          title="Calendar-only selection"
+          description="A simpler day-level picker with text editing and timezone controls removed."
+        >
+          <DateTimeRangePicker
+            value={calendarOnlyValue}
+            onChange={setCalendarOnlyValue}
+            onCommit={setCalendarOnlyValue}
+            precision="day"
+            features={{
+              calendar: true,
+              textInput: false,
+              timezoneSelector: false,
+            }}
+            labels={{ trigger: "Choose reporting days" }}
+          />
+        </Scenario>
+        <Scenario
+          title="Unavailable controls"
+          description="Disabled and read-only states remain visibly distinct and cannot open."
+        >
+          <div className="scenario-stack">
             <DateTimeRangePicker
-              value={constrainedValue}
-              onChange={setConstrainedValue}
-              onCommit={setConstrainedValue}
-              required
-              constraints={{ minTimestamp: Date.UTC(2026, 0, 1), maxTimestamp: Date.UTC(2027, 0, 1), maxDurationMilliseconds: 7 * 86_400_000 }}
-              steps={{ minute: 5, second: 10, millisecond: 100 }}
-              presets={[{ id: "today", label: "Last 24 hours", getValue: ({ nowTimestamp }) => ({ startTimestamp: nowTimestamp - 86_400_000, endTimestamp: nowTimestamp }) }]}
-              labels={{ trigger: "Constrained range", apply: "Use range" }}
-              testIds={{ root: "dtrp-constrained" }}
+              value={EMPTY_RANGE}
+              onChange={ignoreRangeChange}
+              onCommit={ignoreRangeChange}
+              labels={{ trigger: "Disabled range" }}
+              disabled
             />
-          </Scenario>
-          <Scenario title="Text-only toolbar" description="For dense filter bars where the calendar would interrupt the workflow.">
-            <DateTimeRangePicker value={textOnlyValue} onChange={setTextOnlyValue} onCommit={setTextOnlyValue} features={{ calendar: false, textInput: true, timezoneSelector: false }} labels={{ trigger: "Enter exact range" }} />
-          </Scenario>
-          <Scenario title="Calendar-only selection" description="A simpler day-level picker with text editing and timezone controls removed.">
-            <DateTimeRangePicker value={calendarOnlyValue} onChange={setCalendarOnlyValue} onCommit={setCalendarOnlyValue} precision="day" features={{ calendar: true, textInput: false, timezoneSelector: false }} labels={{ trigger: "Choose reporting days" }} />
-          </Scenario>
-          <Scenario title="Unavailable controls" description="Disabled and read-only states remain visibly distinct and cannot open.">
-            <div className="scenario-stack">
-              <DateTimeRangePicker value={EMPTY_RANGE} onChange={() => undefined} onCommit={() => undefined} labels={{ trigger: "Disabled range" }} disabled />
-              <DateTimeRangePicker value={EMPTY_RANGE} onChange={() => undefined} onCommit={() => undefined} labels={{ trigger: "Read-only range" }} readOnly />
-            </div>
-          </Scenario>
-        </div>
-      </section>
-
-      <section className="edge-cases" aria-labelledby="edge-title">
-        <div className="section-heading">
-          <div>
-            <p className="section-kicker">Timezone and validation lab</p>
-            <h2 id="edge-title">Make failure inspectable</h2>
+            <DateTimeRangePicker
+              value={EMPTY_RANGE}
+              onChange={ignoreRangeChange}
+              onCommit={ignoreRangeChange}
+              labels={{ trigger: "Read-only range" }}
+              readOnly
+            />
           </div>
-          <p>Open a case to see how invalid ranges and DST boundaries are communicated.</p>
-        </div>
-        <div className="edge-list">
-          <Scenario title="Spring-forward gap" description="America/New_York skips 02:00–02:59 on March 10, 2024.">
-            <DateTimeRangePicker value={{ startTimestamp: Date.UTC(2024, 2, 10, 7, 30), endTimestamp: Date.UTC(2024, 2, 10, 8, 30) }} onChange={() => undefined} onCommit={() => undefined} timezone="America/New_York" labels={{ trigger: "DST gap example" }} />
-          </Scenario>
-          <Scenario title="Invalid controlled range" description="The end is earlier than the start, so Apply stays unavailable and validation explains why.">
-            <DateTimeRangePicker value={{ startTimestamp: Date.UTC(2026, 7, 2), endTimestamp: Date.UTC(2026, 7, 1) }} onChange={() => undefined} onCommit={() => undefined} labels={{ trigger: "Invalid controlled value" }} />
-          </Scenario>
-          <Scenario title="Fall-back overlap" description="Enter 2024-11-03 01:30:00 to choose between the repeated local-time offsets.">
-            <DateTimeRangePicker value={EMPTY_RANGE} onChange={() => undefined} onCommit={() => undefined} timezone="America/New_York" labels={{ trigger: "DST overlap example" }} />
-          </Scenario>
-        </div>
-      </section>
+        </Scenario>
+      </div>
+    </section>
+  );
+}
 
-      <footer>
-        <span>MIT licensed · no runtime dependencies</span>
-        <a href="https://github.com/ntustRay/react-datetime-range-picker">View source on GitHub ↗</a>
-      </footer>
+function EdgeCases(): React.JSX.Element {
+  const [gapValue, setGapValue] = useState<DateTimeRangeValue>(EMPTY_RANGE);
+  const [overlapValue, setOverlapValue] =
+    useState<DateTimeRangeValue>(EMPTY_RANGE);
+
+  return (
+    <section className="edge-cases" aria-labelledby="edge-title">
+      <div className="section-heading">
+        <div>
+          <p className="section-kicker">Timezone and validation lab</p>
+          <h2 id="edge-title">Make failure inspectable</h2>
+        </div>
+        <p>Open a case to see how invalid ranges and DST boundaries are communicated.</p>
+      </div>
+      <div className="edge-list">
+        <Scenario
+          title="Spring-forward gap"
+          description="Enter 2024-03-10 02:30:00. New York skips that local time, so the picker explains the gap."
+        >
+          <DateTimeRangePicker
+            value={gapValue}
+            onChange={setGapValue}
+            onCommit={setGapValue}
+            timezone="America/New_York"
+            labels={{ trigger: "DST gap example" }}
+          />
+        </Scenario>
+        <Scenario
+          title="Invalid controlled range"
+          description="The end is earlier than the start, so Apply stays unavailable and validation explains why."
+        >
+          <DateTimeRangePicker
+            value={{
+              startTimestamp: Date.UTC(2026, 7, 2),
+              endTimestamp: Date.UTC(2026, 7, 1),
+            }}
+            onChange={ignoreRangeChange}
+            onCommit={ignoreRangeChange}
+            labels={{ trigger: "Invalid controlled value" }}
+          />
+        </Scenario>
+        <Scenario
+          title="Fall-back overlap"
+          description="Enter 2024-11-03 01:30:00 to choose between the repeated local-time offsets."
+        >
+          <DateTimeRangePicker
+            value={overlapValue}
+            onChange={setOverlapValue}
+            onCommit={setOverlapValue}
+            timezone="America/New_York"
+            labels={{ trigger: "DST overlap example" }}
+          />
+        </Scenario>
+      </div>
+    </section>
+  );
+}
+
+function Footer(): React.JSX.Element {
+  return (
+    <footer>
+      <span>MIT licensed · no runtime dependencies</span>
+      <a href="https://github.com/ntustRay/react-datetime-range-picker">
+        View source on GitHub ↗
+      </a>
+    </footer>
+  );
+}
+
+function Demo(): React.JSX.Element {
+  return (
+    <main>
+      <Hero />
+      <Playground />
+      <QuickStart />
+      <ProductionScenarios />
+      <EdgeCases />
+      <Footer />
     </main>
   );
 }
