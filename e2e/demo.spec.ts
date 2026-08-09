@@ -7,6 +7,19 @@ test("opens the picker and exposes exactly one calendar month", async ({ page })
   await expect(page.getByRole("grid").first()).toBeVisible();
   const grids = page.getByRole("grid").filter({ visible: true });
   await expect(grids).toHaveCount(1);
+  await expect(page.locator(".dtrp-time-column-label")).toHaveText([
+    "HH",
+    "MM",
+    "SS",
+  ]);
+  const timeColumnStyle = await page.getByTestId("dtrp-hour-column").evaluate(
+    (column) => {
+      const style = getComputedStyle(column);
+      return { overflowY: style.overflowY, paddingTop: style.paddingTop };
+    },
+  );
+  expect(timeColumnStyle).toEqual({ overflowY: "scroll", paddingTop: "0px" });
+  await expect(page.locator("[data-time-scrollbar]")).toHaveCount(3);
 });
 
 test("playground exposes every public precision and controls the timezone", async ({ page }) => {
@@ -24,7 +37,13 @@ test("playground exposes every public precision and controls the timezone", asyn
 
   await page.getByTestId("dtrp-trigger").first().click();
   await page.getByTestId("dtrp-timezone").selectOption("Asia/Taipei");
-  await expect(page.getByText("Asia/Taipei", { exact: true }).first()).toBeVisible();
+  await expect(page.locator(".stage-label")).toContainText("Asia/Taipei · light");
+  await expect(page.getByLabel("Theme")).toHaveValue("light");
+  await page.getByLabel("Theme").selectOption("dark");
+  await expect(page.getByTestId("dtrp-root").first()).toHaveAttribute(
+    "data-color-scheme",
+    "dark",
+  );
 });
 
 test("demo language selection supplies Japanese formatting and wording", async ({
@@ -54,6 +73,15 @@ test("public CSS custom properties remain available to consumers", async ({ page
   });
 
   expect(values.every((value) => value !== "")).toBe(true);
+});
+
+test("range inputs have no default outline", async ({ page }) => {
+  await page.goto("/");
+
+  await expect(page.getByTestId("dtrp-start-input").first()).toHaveCSS(
+    "outline-style",
+    "none",
+  );
 });
 
 test("feature examples expose text-only and calendar-only modes", async ({ page }) => {

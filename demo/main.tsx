@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   DateTimeRangePicker,
+  type ColorScheme,
   type DateTimeRangeChangeHandler,
   type DateTimeRangeValidationResult,
   type DateTimeRangeValue,
@@ -49,6 +50,8 @@ const TIMEZONES: readonly Timezone[] = [
   "America/New_York",
 ];
 
+const COLOR_SCHEMES: readonly ColorScheme[] = ["light", "dark"];
+
 interface ScenarioProps {
   title: string;
   description: string;
@@ -67,6 +70,10 @@ function isWeekday(value: string): value is Weekday {
 
 function isDemoLocale(value: string): value is DemoLocale {
   return LOCALE_OPTIONS.some((option) => option.value === value);
+}
+
+function isColorScheme(value: string): value is ColorScheme {
+  return COLOR_SCHEMES.some((colorScheme) => colorScheme === value);
 }
 
 function formatValue(value: DateTimeRangeValue): string {
@@ -141,6 +148,7 @@ function Playground(): React.JSX.Element {
   const [precision, setPrecision] = useState<Precision>("second");
   const [timezone, setTimezone] = useState<Timezone>("UTC");
   const [hourCycle, setHourCycle] = useState<HourCycle>("h24");
+  const [colorScheme, setColorScheme] = useState<ColorScheme>("light");
   const [locale, setLocale] = useState<DemoLocale>("zh-TW");
   const [firstWeekday, setFirstWeekday] = useState<Weekday>("sunday");
   const [required, setRequired] = useState(false);
@@ -213,6 +221,23 @@ function Playground(): React.JSX.Element {
               ))}
             </select>
           </label>
+          <label>
+            Theme
+            <select
+              value={colorScheme}
+              onChange={(event) => {
+                if (isColorScheme(event.currentTarget.value)) {
+                  setColorScheme(event.currentTarget.value);
+                }
+              }}
+            >
+              {COLOR_SCHEMES.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </label>
           <div className="toggle-row">
             <label>
               <input
@@ -236,7 +261,7 @@ function Playground(): React.JSX.Element {
         <div className="picker-stage">
           <div className="stage-label">
             <span>Live component</span>
-            <span>{timezone}</span>
+            <span>{timezone} · {colorScheme}</span>
           </div>
           <DateTimeRangePicker
             value={value}
@@ -248,6 +273,7 @@ function Playground(): React.JSX.Element {
             onTimezoneChange={setTimezone}
             hourCycle={hourCycle}
             onHourCycleChange={setHourCycle}
+            colorScheme={colorScheme}
             locale={locale}
             localeText={LOCALE_TEXT[locale]}
             firstWeekday={firstWeekday}

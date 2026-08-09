@@ -31,6 +31,18 @@ test("pointer calendar selection works in the production demo", async ({ page })
   await expect(page.getByTestId("dtrp-apply")).toBeVisible();
 });
 
+test("visible time scrollbar updates the selected hour", async ({ page }) => {
+  const stage = page.locator(".picker-stage");
+  await stage.getByTestId("dtrp-trigger").click();
+  await page.locator('[data-testid^="dtrp-date-"]:visible').nth(10).click();
+  const scrollbar = stage.locator("[data-time-scrollbar]").first();
+  await expect(scrollbar).toBeVisible();
+  await scrollbar.click({ position: { x: 4, y: 126 } });
+  await expect(stage.getByTestId("dtrp-start-input")).toHaveValue(
+    / 11:00:00$/,
+  );
+});
+
 test("text entry and Apply update the committed filter", async ({ page }) => {
   const stage = page.locator(".picker-stage");
   await stage.getByTestId("dtrp-start-input").fill("2026/08/09 12:00:00");

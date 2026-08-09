@@ -14,6 +14,23 @@ const COMPLETE_RANGE: DateTimeRangeValue = {
 afterEach(() => vi.useRealTimers());
 
 describe("DateTimeRangePicker", () => {
+  test("defaults to light and supports an explicit dark color scheme", () => {
+    const props = {
+      value: COMPLETE_RANGE,
+      onChange: vi.fn(),
+      onCommit: vi.fn(),
+    };
+    const { rerender } = render(<DateTimeRangePicker {...props} />);
+    expect(screen.getByTestId("dtrp-root").getAttribute("data-color-scheme")).toBe(
+      "light",
+    );
+
+    rerender(<DateTimeRangePicker {...props} colorScheme="dark" />);
+    expect(screen.getByTestId("dtrp-root").getAttribute("data-color-scheme")).toBe(
+      "dark",
+    );
+  });
+
   test("renders two text inputs and disables End until Start is valid", () => {
     render(
       <DateTimeRangePicker

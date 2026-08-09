@@ -1,6 +1,7 @@
 import { describe, expectTypeOf, test } from "vitest";
 
 import type {
+  ColorScheme,
   DateTimeRangeConstraints,
   DateTimeRangeFeatures,
   DateTimeRangeLocaleText,
@@ -50,6 +51,7 @@ describe("public domain types", () => {
   test("precision and weekday expose every fixed value", () => {
     expectTypeOf<Timezone>().toEqualTypeOf<string>();
     expectTypeOf<HourCycle>().toEqualTypeOf<"h12" | "h24">();
+    expectTypeOf<ColorScheme>().toEqualTypeOf<"light" | "dark">();
     expectTypeOf<Precision>().toEqualTypeOf<
       | "year"
       | "month"

@@ -3,6 +3,7 @@ import type {
   DateTimeRangeConstraints,
   DateTimeRangeLocaleText,
   DateTimeRangePickerProps,
+  ColorScheme,
   DateTimeRangePreset,
   DateTimeRangeSteps,
   DateTimeRangeTestIds,
@@ -29,6 +30,7 @@ const DEFAULT_STEPS: DateTimeRangeSteps = {
 export interface PickerConfiguration {
   timezone: Timezone;
   hourCycle: HourCycle;
+  colorScheme: ColorScheme;
   precision: Precision;
   locale: string;
   localeText: DateTimeRangeLocaleText;
@@ -61,6 +63,7 @@ export function resolvePickerConfiguration(
   return {
     timezone,
     hourCycle,
+    colorScheme: props.colorScheme ?? "light",
     precision,
     locale: props.locale ?? "en",
     localeText: resolveLocaleText(props.localeText, precision, hourCycle),

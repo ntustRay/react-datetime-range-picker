@@ -88,13 +88,14 @@ export function CalendarMonthGrid(
                 props.selection.endDay,
                 props.selection.constraints,
               );
-              const selectedStart =
-                props.selection.target === "start" &&
-                day.timestamp === props.selection.startDay;
-              const selectedEnd =
-                props.selection.target === "end" &&
-                day.timestamp === props.selection.endDay;
-              const inRange = false;
+              const selectedStart = day.timestamp === props.selection.startDay;
+              const selectedEnd = day.timestamp === props.selection.endDay;
+              const inRange =
+                day.timestamp !== null &&
+                props.selection.startDay !== null &&
+                props.selection.endDay !== null &&
+                day.timestamp > props.selection.startDay &&
+                day.timestamp < props.selection.endDay;
               const label = new Intl.DateTimeFormat(props.presentation.locale, {
                 dateStyle: "full",
                 timeZone: props.presentation.timezone,
@@ -121,6 +122,12 @@ export function CalendarMonthGrid(
                   data-calendar-index={index}
                   data-current-month={day.currentMonth}
                   data-in-range={inRange}
+                  data-range-complete={
+                    props.selection.startDay !== null &&
+                    props.selection.endDay !== null
+                  }
+                  data-range-start={selectedStart}
+                  data-range-end={selectedEnd}
                   data-testid={dateTestId}
                   onFocus={() => props.focus.onFocus(index)}
                   onKeyDown={(event) =>
@@ -131,15 +138,21 @@ export function CalendarMonthGrid(
                     props.onSelect(day.timestamp);
                   }}
                 >
-                  {day.day}
+                  <span className="dtrp-day-value">{day.day}</span>
                   {selectedStart ? (
-                    <span> {props.presentation.startDateStatusLabel}</span>
+                    <span className="dtrp-visually-hidden">
+                      {props.presentation.startDateStatusLabel}
+                    </span>
                   ) : null}
                   {selectedEnd ? (
-                    <span> {props.presentation.endDateStatusLabel}</span>
+                    <span className="dtrp-visually-hidden">
+                      {props.presentation.endDateStatusLabel}
+                    </span>
                   ) : null}
                   {inRange ? (
-                    <span> {props.presentation.inRangeStatusLabel}</span>
+                    <span className="dtrp-visually-hidden">
+                      {props.presentation.inRangeStatusLabel}
+                    </span>
                   ) : null}
                 </button>
               );

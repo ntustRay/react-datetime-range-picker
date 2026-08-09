@@ -17,6 +17,8 @@ import type {
 } from "../types.js";
 
 const ITEM_HEIGHT_PIXELS = 36;
+const VISIBLE_ITEM_COUNT = 7;
+const SCROLLBAR_THUMB_HEIGHT_PIXELS = 40;
 
 interface TimeColumnOption {
   value: number;
@@ -25,6 +27,7 @@ interface TimeColumnOption {
 
 interface TimeColumnProps {
   label: string;
+  shortLabel: string;
   options: readonly TimeColumnOption[];
   value: number;
   disabled: boolean;
@@ -61,6 +64,7 @@ function createNumericOptions(
 
 function TimeColumn(props: TimeColumnProps): React.JSX.Element {
   const listRef = useRef<HTMLDivElement>(null);
+  const scrollbarRef = useRef<HTMLDivElement>(null);
   const scrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const selectedIndex = Math.max(
     0,
@@ -93,6 +97,24 @@ function TimeColumn(props: TimeColumnProps): React.JSX.Element {
     }
   };
 
+  const selectPointerPosition = (clientY: number): void => {
+    const scrollbar = scrollbarRef.current;
+    if (scrollbar === null) return;
+    const bounds = scrollbar.getBoundingClientRect();
+    const availableHeight = bounds.height - SCROLLBAR_THUMB_HEIGHT_PIXELS;
+    if (availableHeight <= 0) return;
+    const thumbTop = Math.max(
+      0,
+      Math.min(
+        availableHeight,
+        clientY - bounds.top - SCROLLBAR_THUMB_HEIGHT_PIXELS / 2,
+      ),
+    );
+    selectIndex(
+      Math.round((thumbTop / availableHeight) * (props.options.length - 1)),
+    );
+  };
+
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>): void => {
     let nextIndex = selectedIndex;
     if (event.key === "ArrowUp") nextIndex -= 1;
@@ -108,48 +130,91 @@ function TimeColumn(props: TimeColumnProps): React.JSX.Element {
 
   return (
     <div className="dtrp-time-column">
-      <span className="dtrp-time-column-label">{props.label}</span>
+      <span className="dtrp-time-column-label" aria-hidden="true">
+        {props.shortLabel}
+      </span>
       <div
-        ref={listRef}
-        role="listbox"
-        aria-label={props.label}
-        aria-disabled={props.disabled}
-        tabIndex={props.disabled ? -1 : 0}
-        className="dtrp-time-column-list"
-        data-testid={props.testId}
-        onKeyDown={handleKeyDown}
-        onScroll={(event) => {
-          if (props.disabled) return;
-          if (scrollTimerRef.current !== null) {
-            clearTimeout(scrollTimerRef.current);
-          }
-          const scrollTop = event.currentTarget.scrollTop;
-          scrollTimerRef.current = setTimeout(() => {
-            selectIndex(
-              Math.max(
-                0,
-                Math.min(
-                  props.options.length - 1,
-                  Math.round(scrollTop / ITEM_HEIGHT_PIXELS),
-                ),
-              ),
-            );
-          }, 100);
-        }}
+        className="dtrp-time-column-body"
+        data-scrollable={props.options.length > VISIBLE_ITEM_COUNT}
       >
-        {props.options.map((option) => (
-          <button
-            key={option.value}
-            type="button"
-            role="option"
-            aria-selected={option.value === props.value}
-            tabIndex={-1}
-            disabled={props.disabled}
-            onClick={() => props.onChange(option.value)}
+        <div
+          ref={listRef}
+          role="listbox"
+          aria-label={props.label}
+          aria-disabled={props.disabled}
+          tabIndex={props.disabled ? -1 : 0}
+          className="dtrp-time-column-list"
+          data-testid={props.testId}
+          onKeyDown={handleKeyDown}
+          onScroll={(event) => {
+            if (props.disabled) return;
+            if (scrollTimerRef.current !== null) {
+              clearTimeout(scrollTimerRef.current);
+            }
+            const scrollTop = event.currentTarget.scrollTop;
+            scrollTimerRef.current = setTimeout(() => {
+              selectIndex(
+                Math.max(
+                  0,
+                  Math.min(
+                    props.options.length - 1,
+                    Math.round(scrollTop / ITEM_HEIGHT_PIXELS),
+                  ),
+                ),
+              );
+            }, 100);
+          }}
+        >
+          {props.options.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              role="option"
+              aria-selected={option.value === props.value}
+              tabIndex={-1}
+              disabled={props.disabled}
+              onClick={() => props.onChange(option.value)}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+        {props.options.length > VISIBLE_ITEM_COUNT ? (
+          <div
+            ref={scrollbarRef}
+            className="dtrp-time-scrollbar"
+            aria-hidden="true"
+            data-time-scrollbar
+            onPointerDown={(event) => {
+              if (props.disabled) return;
+              event.currentTarget.setPointerCapture(event.pointerId);
+              selectPointerPosition(event.clientY);
+            }}
+            onPointerMove={(event) => {
+              if (
+                !props.disabled &&
+                event.currentTarget.hasPointerCapture(event.pointerId)
+              ) {
+                selectPointerPosition(event.clientY);
+              }
+            }}
+            onPointerUp={(event) => {
+              if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+                event.currentTarget.releasePointerCapture(event.pointerId);
+              }
+            }}
           >
-            {option.label}
-          </button>
-        ))}
+            <span
+              style={{
+                top: `${
+                  (selectedIndex / Math.max(1, props.options.length - 1)) *
+                  (VISIBLE_ITEM_COUNT * ITEM_HEIGHT_PIXELS -
+                    SCROLLBAR_THUMB_HEIGHT_PIXELS)
+                }px`,
+              }}
+            />
+          </div>
+        ) : null}
       </div>
     </div>
   );
@@ -183,6 +248,7 @@ export function TimeColumnPicker(
       <div className="dtrp-time-column-grid">
         <TimeColumn
           label={props.localeText.hourColumnLabel}
+          shortLabel="HH"
           options={createNumericOptions(
             props.hourCycle === "h12" ? 13 : 24,
             1,
@@ -203,6 +269,7 @@ export function TimeColumnPicker(
         {isUnitVisible("minute", props.precision) ? (
           <TimeColumn
             label={props.localeText.minuteColumnLabel}
+            shortLabel="MM"
             options={createNumericOptions(60, props.steps.minute, 2)}
             value={local?.minute ?? 0}
             disabled={local === null}
@@ -215,6 +282,7 @@ export function TimeColumnPicker(
         {isUnitVisible("second", props.precision) ? (
           <TimeColumn
             label={props.localeText.secondColumnLabel}
+            shortLabel="SS"
             options={createNumericOptions(60, props.steps.second, 2)}
             value={local?.second ?? 0}
             disabled={local === null}
@@ -227,6 +295,7 @@ export function TimeColumnPicker(
         {isUnitVisible("millisecond", props.precision) ? (
           <TimeColumn
             label={props.localeText.millisecondColumnLabel}
+            shortLabel="SSS"
             options={createNumericOptions(1_000, props.steps.millisecond, 3)}
             value={local?.millisecond ?? 0}
             disabled={local === null}
@@ -242,6 +311,7 @@ export function TimeColumnPicker(
         {props.hourCycle === "h12" ? (
           <TimeColumn
             label={props.localeText.periodColumnLabel}
+            shortLabel="AM/PM"
             options={[
               { value: 0, label: props.localeText.amLabel },
               { value: 1, label: props.localeText.pmLabel },

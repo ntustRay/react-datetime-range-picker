@@ -51,7 +51,7 @@ timestamps, but each popover session edits either Start or End.
 ### Time columns
 
 - Each visible unit is a seven-row scroll-snap column.
-- The selected row stays centered and has a non-color-only selected state.
+- The selected row has a non-color-only selected state.
 - Columns support pointer selection, wheel/scrollbar scrolling, and keyboard
   arrow movement.
 - Scrollbars are slim, visible, and themed for light, dark, and forced-colors
@@ -64,6 +64,9 @@ timestamps, but each popover session edits either Start or End.
   - millisecond: HH, MM, SS, SSS
 - Minute, second, and millisecond choices respect configured steps.
 - The 12-hour mode adds an AM/PM column.
+- Headers use `HH`, `MM`, `SS`, `SSS`, and `AM/PM`; localized full names remain
+  the accessible labels.
+- The seven visible rows contain actual options without decorative top padding.
 
 ### Footer
 
@@ -85,10 +88,12 @@ The footer is one row at desktop widths and follows this order:
 
 ```ts
 export type HourCycle = "h12" | "h24";
+export type ColorScheme = "light" | "dark";
 
 export interface DateTimeRangePickerProps {
   hourCycle?: HourCycle;
   onHourCycleChange?: (hourCycle: HourCycle) => void;
+  colorScheme?: ColorScheme;
 }
 ```
 
@@ -126,6 +131,10 @@ the aligned set of scrollable time columns, not decorative chrome.
 
 Generic card decoration, duplicate target toggles, and a second set of date
 inputs inside the popover are explicitly excluded.
+
+The Start endpoint remains marked while End is active. Once End is selected, a
+continuous range band connects both circular endpoints. `colorScheme` defaults
+to `"light"`; consumers may explicitly select `"dark"`.
 
 ## Implementation TODO
 

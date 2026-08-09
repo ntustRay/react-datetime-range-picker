@@ -4,6 +4,8 @@ export type Timezone = string;
 
 export type HourCycle = "h12" | "h24";
 
+export type ColorScheme = "light" | "dark";
+
 export interface DateTimeRangeValue {
   startTimestamp: Timestamp | null;
   endTimestamp: Timestamp | null;
@@ -198,6 +200,7 @@ export interface DateTimeRangePickerProps {
   onTimezoneChange?: DateTimeRangeTimezoneChangeHandler;
   hourCycle?: HourCycle;
   onHourCycleChange?: DateTimeRangeHourCycleChangeHandler;
+  colorScheme?: ColorScheme;
   onValidationChange?: DateTimeRangeValidationChangeHandler;
   precision?: Precision;
   locale?: string;

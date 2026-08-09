@@ -172,6 +172,11 @@ export function CalendarView(props: CalendarViewProps): React.JSX.Element {
           ‹
         </button>
         <div className="dtrp-calendar-months" aria-live="polite">
+          <span className="dtrp-active-target">
+            {props.target === "start"
+              ? props.localeText.startLabel
+              : props.localeText.endLabel}
+          </span>
           <h2>{monthLabel}</h2>
         </div>
         <button

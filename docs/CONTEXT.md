@@ -81,9 +81,15 @@ _Avoid_: Built-in range
   switch.
 - The popover always displays exactly one month. Navigation replaces the
   visible month.
+- Start and End remain visibly marked while editing End, with a continuous
+  range band between the two endpoints.
 - Time units use seven-row scroll-snap columns with visible themed scrollbars.
+- Time-column headers use the compact `HH`, `MM`, `SS`, and `SSS` notation;
+  localized full names remain available to assistive technology.
 - Hour display is controlled as 12-hour or 24-hour; 12-hour mode adds an AM/PM
   column without changing represented timestamps.
+- The component supports explicit light and dark color schemes and defaults to
+  light rather than inheriting the operating-system preference.
 - The first weekday follows the locale by default and can be overridden with a
   weekday name such as `"monday"`.
 - Locale defaults to English and can be set to a BCP 47 language tag such as

@@ -23,19 +23,19 @@
   line-height: 1.4;
 }
 
-@media (prefers-color-scheme: dark) {
-  .dtrp-root {
-    --dtrp-surface: #202126;
-    --dtrp-surface-muted: #292b32;
-    --dtrp-surface-hover: #333640;
-    --dtrp-text: #f5f5f7;
-    --dtrp-text-muted: #b1b5c0;
-    --dtrp-border: #454852;
-    --dtrp-accent: #8ab4ff;
-    --dtrp-accent-hover: #a8c7fa;
-    --dtrp-range: #24385d;
-    --dtrp-focus: #8ab4ff;
-  }
+.dtrp-root[data-color-scheme="dark"] {
+  --dtrp-surface: #202126;
+  --dtrp-surface-muted: #292b32;
+  --dtrp-surface-hover: #333640;
+  --dtrp-text: #f5f5f7;
+  --dtrp-text-muted: #b1b5c0;
+  --dtrp-border: #454852;
+  --dtrp-accent: #8ab4ff;
+  --dtrp-accent-hover: #a8c7fa;
+  --dtrp-range: #24385d;
+  --dtrp-focus: #8ab4ff;
+  --dtrp-error: #ff8a80;
+  --dtrp-shadow: 0 18px 48px rgb(0 0 0 / 36%), 0 3px 10px rgb(0 0 0 / 24%);
 }
 
 .dtrp-root *,
@@ -85,6 +85,7 @@
   min-width: 0;
   height: 100%;
   padding: 0.75rem 1rem;
+  outline: none;
   border: 0 !important;
   border-radius: 0 !important;
   background: transparent !important;
@@ -175,9 +176,18 @@
   border-color: transparent;
   font-size: 1.35rem;
 }
-.dtrp-calendar-months { display: grid; text-align: center; }
+.dtrp-calendar-months { display: grid; place-items: center; text-align: center; }
+.dtrp-active-target {
+  color: var(--dtrp-accent);
+  font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+}
 .dtrp-calendar-months h2 {
-  margin: 0;
+  margin: 0.25rem 0 0;
   color: var(--dtrp-text);
   font-size: 0.9375rem;
   font-weight: 650;
@@ -197,15 +207,27 @@
 }
 .dtrp-calendar-region [role="gridcell"] {
   position: relative;
+  display: grid;
   min-width: 0;
   min-height: 2.5rem;
+  place-items: center;
   padding: 0;
   border-color: transparent;
-  border-radius: 50%;
+  border-radius: 0;
   background: transparent;
   font-variant-numeric: tabular-nums;
 }
-.dtrp-calendar-region [role="gridcell"] span {
+.dtrp-day-value {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 50%;
+}
+.dtrp-visually-hidden {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -214,14 +236,24 @@
   white-space: nowrap;
 }
 .dtrp-root [data-current-month="false"] { color: var(--dtrp-text-muted); opacity: 0.5; }
-.dtrp-calendar-region [aria-selected="true"] {
+.dtrp-calendar-region [data-in-range="true"] { background: var(--dtrp-range); }
+.dtrp-calendar-region [data-range-complete="true"][data-range-start="true"] {
+  background: var(--dtrp-range);
+}
+.dtrp-calendar-region [data-range-complete="true"][data-range-end="true"] {
+  background: var(--dtrp-range);
+}
+.dtrp-calendar-region [data-range-complete="true"][data-range-start="true"][data-range-end="true"] {
+  background: transparent;
+}
+.dtrp-calendar-region [aria-selected="true"] .dtrp-day-value {
   border-color: var(--dtrp-accent);
   background: var(--dtrp-accent);
   color: #fff;
   font-weight: 700;
   box-shadow: 0 3px 9px color-mix(in srgb, var(--dtrp-accent) 30%, transparent);
 }
-.dtrp-calendar-region button[aria-selected="true"]:hover:not(:disabled) {
+.dtrp-calendar-region button[aria-selected="true"]:hover:not(:disabled) .dtrp-day-value {
   background: var(--dtrp-accent-hover);
 }
 .dtrp-root [aria-current="date"]::after {
@@ -257,23 +289,37 @@
   font-weight: 750;
   text-transform: uppercase;
 }
-.dtrp-time-column-list {
+.dtrp-time-column-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 0.625rem;
   height: 15.75rem;
-  padding-block: 6.75rem;
+}
+.dtrp-time-column-body[data-scrollable="false"] { grid-template-columns: minmax(0, 1fr); }
+.dtrp-time-column-list {
+  height: 100%;
+  padding: 0;
   overflow-y: scroll;
   border: 0;
   scroll-behavior: smooth;
   scroll-snap-type: y mandatory;
-  scrollbar-color: var(--dtrp-accent) var(--dtrp-surface-muted);
-  scrollbar-gutter: stable;
-  scrollbar-width: thin;
+  scrollbar-width: none;
 }
-.dtrp-time-column-list::-webkit-scrollbar { width: 0.5rem; }
-.dtrp-time-column-list::-webkit-scrollbar-track { background: var(--dtrp-surface-muted); }
-.dtrp-time-column-list::-webkit-scrollbar-thumb {
-  border: 2px solid var(--dtrp-surface-muted);
+.dtrp-time-column-list::-webkit-scrollbar { display: none; }
+.dtrp-time-scrollbar {
+  position: relative;
+  border-left: 1px solid var(--dtrp-border);
+  background: color-mix(in srgb, var(--dtrp-surface-muted) 80%, var(--dtrp-border));
+  cursor: ns-resize;
+  touch-action: none;
+}
+.dtrp-time-scrollbar span {
+  position: absolute;
+  right: 0.125rem;
+  left: 0.125rem;
+  height: 2.5rem;
   border-radius: 999px;
   background: var(--dtrp-accent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--dtrp-accent) 72%, var(--dtrp-text));
 }
 .dtrp-time-column-list button {
   display: block;
@@ -287,7 +333,7 @@
   font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
   font-size: 0.78rem;
   font-variant-numeric: tabular-nums;
-  scroll-snap-align: center;
+  scroll-snap-align: start;
 }
 .dtrp-time-column-list button[aria-selected="true"] {
   border-color: var(--dtrp-accent);
@@ -312,25 +358,27 @@
 .dtrp-footer {
   display: grid;
   grid-template-columns: auto minmax(10rem, 1fr) auto minmax(8rem, auto) auto auto;
-  align-items: end;
+  align-items: center;
   gap: 0.6rem;
   padding: 0.75rem 1rem;
   border-top: 1px solid var(--dtrp-border);
   background: var(--dtrp-surface);
 }
-.dtrp-reset { align-self: end; border-color: transparent !important; color: var(--dtrp-error) !important; }
+.dtrp-reset { align-self: center; border-color: transparent !important; color: var(--dtrp-error) !important; }
 .dtrp-range-summary {
+  display: grid;
   align-self: center;
   min-width: 0;
   overflow: hidden;
   color: var(--dtrp-text-muted);
   font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
-  text-overflow: ellipsis;
+  line-height: 1.35;
   white-space: nowrap;
 }
-.dtrp-footer-field { display: grid; gap: 0.2rem; color: var(--dtrp-text-muted); font-size: 0.64rem; font-weight: 700; }
+.dtrp-range-summary span { overflow: hidden; text-overflow: ellipsis; }
+.dtrp-footer-field { display: grid; align-self: center; gap: 0.2rem; color: var(--dtrp-text-muted); font-size: 0.64rem; font-weight: 700; }
 .dtrp-footer-field select { min-height: 2.5rem; padding: 0.4rem 1.8rem 0.4rem 0.55rem; }
 .dtrp-primary-action {
   min-width: 5.75rem;
@@ -349,7 +397,8 @@
   .dtrp-picker-body { grid-template-columns: 1fr; }
   .dtrp-picker-controls { border-top: 1px solid var(--dtrp-border); border-left: 0; }
   .dtrp-footer { grid-template-columns: auto minmax(0, 1fr) auto auto; }
-  .dtrp-range-summary { grid-column: 1 / -1; grid-row: 1; }
+  .dtrp-reset { grid-column: 1; grid-row: 1; justify-self: center; }
+  .dtrp-range-summary { grid-column: 2 / -1; grid-row: 1; text-align: center; }
   .dtrp-footer-field { grid-row: 2; }
   .dtrp-footer > button { grid-row: 3; }
   .dtrp-reset { justify-self: start; }
@@ -363,11 +412,17 @@
   .dtrp-footer { grid-template-columns: 1fr 1fr; }
   .dtrp-footer-field { grid-row: auto; }
   .dtrp-footer > button { grid-row: auto; }
-  .dtrp-range-summary { grid-column: 1 / -1; }
-  .dtrp-reset { grid-column: 1 / -1; grid-row: 4; }
+  .dtrp-reset { grid-column: 1; grid-row: 1; }
+  .dtrp-range-summary { grid-column: 2; grid-row: 1; }
+  .dtrp-footer-field { justify-items: stretch; text-align: center; }
 }
 
 @media (forced-colors: active) {
+  .dtrp-calendar-region [data-in-range="true"],
+  .dtrp-calendar-region [data-range-complete="true"][data-range-start="true"],
+  .dtrp-calendar-region [data-range-complete="true"][data-range-end="true"] { border-block: 2px solid Highlight; background: transparent; }
+  .dtrp-calendar-region [role="gridcell"] { border: 0; }
+  .dtrp-calendar-region [aria-selected="true"] .dtrp-day-value { outline: 2px solid Highlight; }
   .dtrp-time-column-list button[aria-selected="true"] { outline: 2px solid Highlight; outline-offset: -2px; }
 }
 

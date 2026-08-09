@@ -71,6 +71,8 @@ defaults to seconds and supports year, month, day, hour, minute, second, and
 millisecond. Units below the selected precision normalize to zero.
 The controlled `hourCycle` prop accepts `"h12"` or `"h24"`; omitted values
 default to 24-hour text and columns.
+Set `colorScheme` to `"light"` or `"dark"` for an explicit component theme;
+the default is always `"light"`.
 
 Constraints, steps, presets, localization, validation formatting, stable test
 IDs, feature visibility, and disabled/read-only/required behavior are documented

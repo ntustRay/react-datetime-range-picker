@@ -51,9 +51,6 @@ export function PickerPopover(props: PickerPopoverProps): React.JSX.Element {
   );
   const canContinue =
     props.draft.value.startTimestamp !== null && !startHasBlockingError;
-  const rangeSummary = `${props.draft.start.text || "—"} ~ ${
-    props.draft.end.text || "—"
-  }`;
   const timeEnabled = isUnitVisible("hour", configuration.precision);
 
   return (
@@ -177,10 +174,13 @@ export function PickerPopover(props: PickerPopoverProps): React.JSX.Element {
             "dtrp-range-summary",
           )}
         >
-          {rangeSummary}
+          <span>{props.draft.start.text || "—"}</span>
+          <span>~ {props.draft.end.text || "—"}</span>
         </output>
         <label className="dtrp-footer-field">
-          <span>{configuration.localeText.hourCycleLabel}</span>
+          <span className="dtrp-visually-hidden">
+            {configuration.localeText.hourCycleLabel}
+          </span>
           <select
             value={configuration.hourCycle}
             disabled={!isUnitVisible("hour", configuration.precision)}
@@ -204,7 +204,9 @@ export function PickerPopover(props: PickerPopoverProps): React.JSX.Element {
         </label>
         {configuration.timezoneSelectorEnabled ? (
           <label className="dtrp-footer-field">
-            <span>{configuration.localeText.timezoneLabel}</span>
+            <span className="dtrp-visually-hidden">
+              {configuration.localeText.timezoneLabel}
+            </span>
             <select
               data-testid={getTestId(
                 configuration.testIds.timezone,

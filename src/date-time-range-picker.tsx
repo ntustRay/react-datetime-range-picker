@@ -177,6 +177,7 @@ export function DateTimeRangePicker(
     <div
       ref={rootRef}
       className="dtrp-root"
+      data-color-scheme={configuration.colorScheme}
       data-testid={getTestId(configuration.testIds.root, "dtrp-root")}
     >
       <RangeFields

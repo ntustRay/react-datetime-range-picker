@@ -4,6 +4,7 @@ export { validateDateTimeRange } from "./validate-date-time-range.js";
 
 export type {
   DateTimeRangeChangeHandler,
+  ColorScheme,
   DateTimeRangeCommitHandler,
   DateTimeRangeConstraints,
   DateTimeRangeFeatures,

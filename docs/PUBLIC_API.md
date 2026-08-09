@@ -13,6 +13,8 @@ export type Timezone = string;
 
 export type HourCycle = "h12" | "h24";
 
+export type ColorScheme = "light" | "dark";
+
 export interface DateTimeRangeValue {
   startTimestamp: Timestamp | null;
   endTimestamp: Timestamp | null;
@@ -249,6 +251,7 @@ export interface DateTimeRangePickerProps {
   onTimezoneChange?: (timezone: Timezone) => void;
   hourCycle?: HourCycle;
   onHourCycleChange?: (hourCycle: HourCycle) => void;
+  colorScheme?: ColorScheme;
   onValidationChange?: (result: DateTimeRangeValidationResult) => void;
 
   precision?: Precision;
@@ -275,12 +278,13 @@ export declare function DateTimeRangePicker(
 
 Omitted optional props select documented defaults; they do not represent
 missing domain fields. Defaults are UTC, second precision, English locale and
-English locale text, 24-hour time,
+English locale text, 24-hour time, explicit light color scheme,
 locale-derived first weekday, no constraints, unit steps of `1`, no presets,
 and enabled Reset. The range remains controlled. `onChange` reports draft
 edits, while `onCommit` fires only after Apply accepts a complete valid range.
 The hour cycle is controlled separately and changes formatting without changing
-the timestamps.
+the timestamps. `colorScheme` is an explicit presentation choice and does not
+follow the operating-system preference; omit it to use light mode.
 Callbacks do not receive metadata in Version 1 because no agreed behavior
 requires interaction provenance.
 

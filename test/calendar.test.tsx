@@ -116,6 +116,39 @@ describe("calendar", () => {
     });
   });
 
+  test("End keeps the Start marker and extends range color through the selected End", async () => {
+    const user = userEvent.setup();
+    render(
+      <DateTimeRangePicker
+        value={{ startTimestamp: Date.UTC(2026, 7, 10), endTimestamp: null }}
+        onChange={vi.fn()}
+        onCommit={vi.fn()}
+      />,
+    );
+    await user.click(screen.getByRole("textbox", { name: "End" }));
+    const start = screen.getByRole("gridcell", {
+      name: "Monday, August 10, 2026",
+    });
+    expect(start.getAttribute("aria-selected")).toBe("true");
+    expect(start.getAttribute("data-range-start")).toBe("true");
+    expect(start.getAttribute("data-range-complete")).toBe("false");
+
+    await user.click(
+      screen.getByRole("gridcell", { name: "Wednesday, August 12, 2026" }),
+    );
+    expect(
+      screen
+        .getByRole("gridcell", { name: "Tuesday, August 11, 2026" })
+        .getAttribute("data-in-range"),
+    ).toBe("true");
+    expect(
+      screen
+        .getByRole("gridcell", { name: "Wednesday, August 12, 2026" })
+        .getAttribute("data-range-end"),
+    ).toBe("true");
+    expect(start.getAttribute("data-range-complete")).toBe("true");
+  });
+
   test("target-specific constraints disable invalid dates", async () => {
     const user = userEvent.setup();
     render(

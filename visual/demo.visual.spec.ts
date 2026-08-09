@@ -71,6 +71,20 @@ test("desktop selected range", async ({ page }) => {
   );
 });
 
+test("End target keeps the selected Start marker", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await openStableDemo(page);
+  await page.getByTestId("dtrp-trigger").first().click();
+  await page.locator('[data-testid^="dtrp-date-"]:visible').nth(10).click();
+  await page.getByTestId("dtrp-next").click();
+  await clearPointerHover(page);
+
+  await expect(page.locator(".picker-stage")).toHaveScreenshot(
+    "picker-end-target-draft.png",
+    { animations: "disabled" },
+  );
+});
+
 test("mobile selected range", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openStableDemo(page);
@@ -89,8 +103,8 @@ test("mobile selected range", async ({ page }) => {
 
 test("dark picker", async ({ page }) => {
   await page.setViewportSize({ width: 760, height: 900 });
-  await page.emulateMedia({ colorScheme: "dark" });
   await openStableDemo(page);
+  await page.getByLabel("Theme").selectOption("dark");
   await page.getByTestId("dtrp-trigger").first().click();
   await clearPointerHover(page);
 
