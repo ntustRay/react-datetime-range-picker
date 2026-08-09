@@ -595,20 +595,20 @@ Follow the owner/agent runbook in
 Local Windows build and packed-consumer commands are documented in
 [MANUAL_BUILD_GUIDE.md](MANUAL_BUILD_GUIDE.md).
 
-- [ ] Add a GitHub Actions CI workflow.
-- [ ] Use the supported Node.js LTS version.
-- [ ] Install dependencies with `npm ci`.
-- [ ] Run formatting or lint checks if configured.
-- [ ] Run TypeScript checks.
-- [ ] Run unit and component tests.
-- [ ] Build the package before E2E tests.
-- [ ] Run Playwright E2E tests against the fresh build.
-- [ ] Upload Playwright traces only when useful.
-- [ ] Run the package-content check.
-- [ ] Run consumer-fixture checks.
-- [ ] Cache only safe, reproducible dependency data.
-- [ ] Cancel obsolete runs on the same branch.
-- [ ] Keep the workflow token permissions minimal.
+- [x] Add a GitHub Actions CI workflow.
+- [x] Use the supported Node.js LTS version.
+- [x] Install dependencies with `npm ci`.
+- [x] Run formatting or lint checks if configured.
+- [x] Run TypeScript checks.
+- [x] Run unit and component tests.
+- [x] Build the package before E2E tests.
+- [x] Run Playwright E2E tests against the fresh build.
+- [x] Upload Playwright traces only when useful.
+- [x] Run the package-content check.
+- [x] Run consumer-fixture checks.
+- [x] Cache only safe, reproducible dependency data.
+- [x] Cancel obsolete runs on the same branch.
+- [x] Keep the workflow token permissions minimal.
 - [ ] Add a status badge only after CI is stable.
 - [ ] Require CI before merging once branch protection is enabled.
 
