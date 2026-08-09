@@ -46,8 +46,10 @@ export function FilterControl(): React.JSX.Element {
 }
 ```
 
-`onChange` receives draft edits. `onCommit` fires only after Apply accepts a
-complete valid range. Ranges use half-open semantics:
+The Start and End fields accept local text in `YYYY/MM/DD HH:mm:ss` format and
+parse 300 ms after typing stops. Start opens first; Next switches the same
+single-month popover to End; Apply then accepts a complete range. `onChange`
+receives valid draft edits, while `onCommit` is Apply-only. Ranges use half-open semantics:
 `startTimestamp <= timestamp < endTimestamp`. Clearing produces two explicit
 `null` fields.
 
@@ -58,7 +60,7 @@ English defaults:
 ```tsx
 <DateTimeRangePicker
   locale="zh-TW"
-  localeText={{ triggerLabel: "選擇日期與時間範圍", applyButtonLabel: "套用" }}
+  localeText={{ calendarButtonLabel: "開啟日曆", applyButtonLabel: "套用" }}
   // value, onChange, and onCommit omitted here for brevity
 />
 ```
@@ -67,6 +69,8 @@ The default display timezone is UTC. Changing the controlled timezone changes
 display and editing only; it does not change represented instants. Precision
 defaults to seconds and supports year, month, day, hour, minute, second, and
 millisecond. Units below the selected precision normalize to zero.
+The controlled `hourCycle` prop accepts `"h12"` or `"h24"`; omitted values
+default to 24-hour text and columns.
 
 Constraints, steps, presets, localization, validation formatting, stable test
 IDs, feature visibility, and disabled/read-only/required behavior are documented

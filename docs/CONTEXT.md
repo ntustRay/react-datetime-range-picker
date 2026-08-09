@@ -40,6 +40,11 @@ The controlled IANA time zone used to display and edit a timestamp. Changing it
 does not change the instant represented by the timestamp; the default is UTC.
 _Avoid_: Timestamp time zone, fixed offset
 
+**Active Target**:
+The one endpoint currently edited by the popover, either Start or End. A
+popover session never edits both endpoints at once.
+_Avoid_: Range mode toggle
+
 **Preset**:
 A consumer-provided shortcut that calculates a range when selected. Relative
 presets calculate against the current time at the moment of selection.
@@ -63,13 +68,22 @@ _Avoid_: Built-in range
 - The picker is controlled and exposes distinct change, commit, time-zone
   change, and validation notifications.
 - Draft changes do not trigger a committed chart query.
-- Apply commits only a complete, valid range; Cancel discards the draft.
-- Clear is shown by default and produces an empty range.
+- The closed control contains separate Start and End text inputs plus a calendar
+  button. End remains disabled until Start is valid.
+- Text uses `YYYY/MM/DD HH:mm:ss` in 24-hour mode and parses after a 300 ms
+  debounce; blur and Enter parse immediately.
+- The popover edits one active target. Start uses Next to move to End; End uses
+  Apply to commit a complete valid range.
+- Reset restores the controlled value captured when the popover opened. Cancel
+  restores that value, closes, and returns focus to the active input.
 - Calendar, text input, and time-zone selector regions can be configured.
 - Time fields are determined by precision rather than a separate visibility
   switch.
-- The popover displays two months when its CSS container has enough width and
-  one month when it does not.
+- The popover always displays exactly one month. Navigation replaces the
+  visible month.
+- Time units use seven-row scroll-snap columns with visible themed scrollbars.
+- Hour display is controlled as 12-hour or 24-hour; 12-hour mode adds an AM/PM
+  column without changing represented timestamps.
 - The first weekday follows the locale by default and can be overridden with a
   weekday name such as `"monday"`.
 - Locale defaults to English and can be set to a BCP 47 language tag such as
@@ -94,8 +108,8 @@ _Avoid_: Built-in range
 ## Accessibility and Test Contract
 
 - The component targets WCAG 2.2 AA and supports complete keyboard operation.
-- Focus moves into the popover when opened and returns to its trigger when
-  closed; Escape cancels and closes it.
+- The calendar button moves focus into the popover. Closing returns focus to
+  the active Start or End input; Escape cancels and closes it.
 - State is never communicated by color alone, and errors are associated with
   their fields through accessible descriptions.
 - Stable `data-testid` attributes are present by default and cannot be

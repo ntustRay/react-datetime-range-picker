@@ -11,6 +11,8 @@ export type Timestamp = number;
 
 export type Timezone = string;
 
+export type HourCycle = "h12" | "h24";
+
 export interface DateTimeRangeValue {
   startTimestamp: Timestamp | null;
   endTimestamp: Timestamp | null;
@@ -137,10 +139,24 @@ export interface DateTimeRangeLocaleText {
   endLabel: string;
   previousMonthLabel: string;
   nextMonthLabel: string;
+  calendarButtonLabel: string;
   timezoneLabel: string;
   applyButtonLabel: string;
+  nextButtonLabel: string;
   cancelButtonLabel: string;
   clearButtonLabel: string;
+  resetButtonLabel: string;
+  rangeSummaryLabel: string;
+  hourCycleLabel: string;
+  hourCycle12Label: string;
+  hourCycle24Label: string;
+  hourColumnLabel: string;
+  minuteColumnLabel: string;
+  secondColumnLabel: string;
+  millisecondColumnLabel: string;
+  periodColumnLabel: string;
+  amLabel: string;
+  pmLabel: string;
   startFormatHint: string;
   endFormatHint: string;
   startTimeLabel: string;
@@ -179,11 +195,20 @@ export interface DateTimeRangeTestIds {
   endInput: string;
   startTime: string;
   endTime: string;
+  hourColumn: string;
+  minuteColumn: string;
+  secondColumn: string;
+  millisecondColumn: string;
+  periodColumn: string;
+  hourCycle: string;
   timezone: string;
   presets: string;
   apply: string;
+  next: string;
   cancel: string;
   clear: string;
+  reset: string;
+  rangeSummary: string;
   validation: string;
   dateCell: (timestamp: Timestamp) => string;
   preset: (presetId: string) => string;
@@ -201,7 +226,7 @@ language mapping or a single replacement:
 <DateTimeRangePicker
   locale="zh-TW"
   localeText={{
-    triggerLabel: "選擇日期與時間範圍",
+    calendarButtonLabel: "開啟日曆",
     applyButtonLabel: "套用",
     validationRequired: "請選擇日期與時間範圍。",
   }}
@@ -222,6 +247,8 @@ export interface DateTimeRangePickerProps {
 
   timezone?: Timezone;
   onTimezoneChange?: (timezone: Timezone) => void;
+  hourCycle?: HourCycle;
+  onHourCycleChange?: (hourCycle: HourCycle) => void;
   onValidationChange?: (result: DateTimeRangeValidationResult) => void;
 
   precision?: Precision;
@@ -248,10 +275,12 @@ export declare function DateTimeRangePicker(
 
 Omitted optional props select documented defaults; they do not represent
 missing domain fields. Defaults are UTC, second precision, English locale and
-English locale text,
+English locale text, 24-hour time,
 locale-derived first weekday, no constraints, unit steps of `1`, no presets,
-and enabled Clear. The range remains controlled. `onChange` reports draft
+and enabled Reset. The range remains controlled. `onChange` reports draft
 edits, while `onCommit` fires only after Apply accepts a complete valid range.
+The hour cycle is controlled separately and changes formatting without changing
+the timestamps.
 Callbacks do not receive metadata in Version 1 because no agreed behavior
 requires interaction provenance.
 
@@ -316,4 +345,5 @@ properties:
 --dtrp-disabled-opacity
 ```
 
-The popover switches from one month to two at a `40rem` container inline size.
+The popover always renders one month. Previous and next controls replace that
+month rather than adding a second grid.

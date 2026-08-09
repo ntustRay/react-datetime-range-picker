@@ -5,6 +5,7 @@ import {
   type DateTimeRangeChangeHandler,
   type DateTimeRangeValidationResult,
   type DateTimeRangeValue,
+  type HourCycle,
   type Precision,
   type Timezone,
   type Weekday,
@@ -139,6 +140,7 @@ function Playground(): React.JSX.Element {
   const [committed, setCommitted] = useState<DateTimeRangeValue>(EMPTY_RANGE);
   const [precision, setPrecision] = useState<Precision>("second");
   const [timezone, setTimezone] = useState<Timezone>("UTC");
+  const [hourCycle, setHourCycle] = useState<HourCycle>("h24");
   const [locale, setLocale] = useState<DemoLocale>("zh-TW");
   const [firstWeekday, setFirstWeekday] = useState<Weekday>("sunday");
   const [required, setRequired] = useState(false);
@@ -226,7 +228,7 @@ function Playground(): React.JSX.Element {
                 checked={clearable}
                 onChange={(event) => setClearable(event.currentTarget.checked)}
               />
-              Clear action
+              Reset action
             </label>
           </div>
         </aside>
@@ -244,6 +246,8 @@ function Playground(): React.JSX.Element {
             onValidationChange={setValidation}
             timezone={timezone}
             onTimezoneChange={setTimezone}
+            hourCycle={hourCycle}
+            onHourCycleChange={setHourCycle}
             locale={locale}
             localeText={LOCALE_TEXT[locale]}
             firstWeekday={firstWeekday}
@@ -419,7 +423,7 @@ function EdgeCases(): React.JSX.Element {
       <div className="edge-list">
         <Scenario
           title="Spring-forward gap"
-          description="Enter 2024-03-10 02:30:00. New York skips that local time, so the picker explains the gap."
+          description="Enter 2024/03/10 02:30:00. New York skips that local time, so the picker explains the gap."
         >
           <DateTimeRangePicker
             value={gapValue}
@@ -445,7 +449,7 @@ function EdgeCases(): React.JSX.Element {
         </Scenario>
         <Scenario
           title="Fall-back overlap"
-          description="Enter 2024-11-03 01:30:00 to choose between the repeated local-time offsets."
+          description="Enter 2024/11/03 01:30:00 to choose between the repeated local-time offsets."
         >
           <DateTimeRangePicker
             value={overlapValue}
