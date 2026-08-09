@@ -609,8 +609,8 @@ Local Windows build and packed-consumer commands are documented in
 - [x] Cache only safe, reproducible dependency data.
 - [x] Cancel obsolete runs on the same branch.
 - [x] Keep the workflow token permissions minimal.
-- [ ] Add a status badge only after CI is stable.
-- [ ] Require CI before merging once branch protection is enabled.
+- [x] Add a status badge only after CI is stable.
+- [x] Require CI before merging once branch protection is enabled.
 
 ## 22. Pre-Release Audit
 
