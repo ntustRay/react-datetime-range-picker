@@ -319,17 +319,17 @@ the current clock when a deterministic relative preset requires it.
 
 ## 10. Develop Time and Precision UI in Vertical Slices
 
-- [ ] Render hour input when precision includes hour.
-- [ ] Render minute input when precision includes minute.
-- [ ] Render second input when precision includes second.
-- [ ] Render millisecond input when precision includes millisecond.
-- [ ] Hide all time inputs for year, month, and day precision.
-- [ ] Apply minute-step choices.
-- [ ] Apply second-step choices.
-- [ ] Apply millisecond-step choices.
+- [x] Render hour input when precision includes hour.
+- [x] Render minute input when precision includes minute.
+- [x] Render second input when precision includes second.
+- [x] Render millisecond input when precision includes millisecond.
+- [x] Hide all time inputs for year, month, and day precision.
+- [x] Apply minute-step choices.
+- [x] Apply second-step choices.
+- [x] Apply millisecond-step choices.
 - [ ] Prevent step-mismatched graphical selections.
-- [ ] Normalize units below precision after selection.
-- [ ] Label start and end time controls distinctly.
+- [x] Normalize units below precision after selection.
+- [x] Label start and end time controls distinctly.
 - [ ] Support keyboard increment and decrement.
 - [ ] Respect min/max constraints at boundary dates.
 - [ ] Respect maximum duration while editing the end time.

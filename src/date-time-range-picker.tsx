@@ -6,6 +6,8 @@ import {
   getEditableDateTimeFormat,
   parseEditableDateTime,
 } from "./internal/date-time-text.js";
+import { getLocalDateTime } from "./internal/timezone.js";
+import { isUnitVisible } from "./internal/precision.js";
 import { CalendarView } from "./internal/calendar-view.js";
 import type {
   DateTimeRangePickerProps,
@@ -55,6 +57,31 @@ function safelyFormatTimestamp(
   } catch {
     return String(timestamp);
   }
+}
+
+function formatTimeInput(
+  timestamp: number | null,
+  timezone: string,
+  precision: Precision,
+): string {
+  if (timestamp === null || !isUnitVisible("hour", precision)) return "";
+  const local = getLocalDateTime(timestamp, timezone);
+  const pad = (value: number, length = 2): string =>
+    String(value).padStart(length, "0");
+  let value = `${pad(local.hour)}:${pad(local.minute)}`;
+  if (isUnitVisible("second", precision)) value += `:${pad(local.second)}`;
+  if (isUnitVisible("millisecond", precision)) {
+    value += `.${pad(local.millisecond, 3)}`;
+  }
+  return value;
+}
+
+function timeInputStep(precision: Precision, step: number): string {
+  if (precision === "hour") return "3600";
+  if (precision === "minute") return String(step * 60);
+  if (precision === "second") return String(step);
+  if (precision === "millisecond") return String(step / 1_000);
+  return "60";
 }
 
 export function DateTimeRangePicker(
@@ -220,6 +247,46 @@ export function DateTimeRangePicker(
     updateDraft(value);
   };
 
+  const applyTimeValue = (target: "start" | "end", time: string): void => {
+    const currentText = target === "start" ? startText : endText;
+    const dateText = currentText.split(" ")[0];
+    if (dateText === undefined || time === "") return;
+    const editableTime =
+      precision === "hour"
+        ? time.slice(0, 2)
+        : precision === "minute"
+          ? time.slice(0, 5)
+          : precision === "second"
+            ? time.slice(0, 8)
+            : time;
+    const result = parseEditableDateTime(
+      `${dateText} ${editableTime}`,
+      timezone,
+      precision,
+    );
+    const setError = target === "start" ? setStartTextError : setEndTextError;
+    if (result.status !== "valid") {
+      setError(
+        result.status === "nonexistent"
+          ? "nonexistent-local-time"
+          : result.status === "ambiguous"
+            ? "ambiguous-local-time"
+            : "invalid-text",
+      );
+      return;
+    }
+    const timestamp = result.candidates[0]?.timestamp;
+    if (timestamp === undefined) {
+      setError("invalid-text");
+      return;
+    }
+    setError(null);
+    updateDraft({
+      startTimestamp: target === "start" ? timestamp : draft.startTimestamp,
+      endTimestamp: target === "end" ? timestamp : draft.endTimestamp,
+    });
+  };
+
   return (
     <div ref={rootRef} data-testid={props.testIds?.root ?? "dtrp-root"}>
       <button
@@ -294,6 +361,50 @@ export function DateTimeRangePicker(
               <span id="dtrp-end-format">
                 {props.labels?.endFormatHint ?? getEditableDateTimeFormat(precision)}
               </span>
+              {isUnitVisible("hour", precision) ? (
+                <div>
+                  <label>
+                    {props.labels?.start ?? "Start"} time
+                    <input
+                      type={isUnitVisible("millisecond", precision) ? "text" : "time"}
+                      step={timeInputStep(
+                        precision,
+                        props.steps?.[isUnitVisible("minute", precision)
+                          ? "minute"
+                          : isUnitVisible("second", precision)
+                            ? "second"
+                            : "millisecond"] ?? 1,
+                      )}
+                      data-testid={props.testIds?.startTime ?? "dtrp-start-time"}
+                      value={formatTimeInput(draft.startTimestamp, timezone, precision)}
+                      disabled={props.disabled === true || props.readOnly === true}
+                      onChange={(event) =>
+                        applyTimeValue("start", event.currentTarget.value)
+                      }
+                    />
+                  </label>
+                  <label>
+                    {props.labels?.end ?? "End"} time
+                    <input
+                      type={isUnitVisible("millisecond", precision) ? "text" : "time"}
+                      step={timeInputStep(
+                        precision,
+                        props.steps?.[isUnitVisible("minute", precision)
+                          ? "minute"
+                          : isUnitVisible("second", precision)
+                            ? "second"
+                            : "millisecond"] ?? 1,
+                      )}
+                      data-testid={props.testIds?.endTime ?? "dtrp-end-time"}
+                      value={formatTimeInput(draft.endTimestamp, timezone, precision)}
+                      disabled={props.disabled === true || props.readOnly === true}
+                      onChange={(event) =>
+                        applyTimeValue("end", event.currentTarget.value)
+                      }
+                    />
+                  </label>
+                </div>
+              ) : null}
             </div>
           ) : null}
           {validation.errors.length > 0 ? (

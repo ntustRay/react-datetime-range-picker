@@ -339,6 +339,33 @@ describe("DateTimeRangePicker", () => {
   });
 
   test.each([
+    ["hour", true, "time"],
+    ["minute", true, "time"],
+    ["second", true, "time"],
+    ["millisecond", true, "text"],
+  ] as const)(
+    "precision %s renders the corresponding time controls",
+    async (precision, visible, inputType) => {
+      const user = userEvent.setup();
+      render(
+        <DateTimeRangePicker
+          precision={precision}
+          value={{
+            startTimestamp: Date.UTC(2026, 7, 9, 12, 34, 56, 789),
+            endTimestamp: Date.UTC(2026, 7, 9, 13, 34, 56, 789),
+          }}
+          onChange={vi.fn()}
+          onCommit={vi.fn()}
+        />,
+      );
+      await user.click(screen.getByRole("button", { name: "Select date and time range" }));
+      const startTime = screen.queryByTestId("dtrp-start-time");
+      expect(startTime !== null).toBe(visible);
+      if (startTime !== null) expect(startTime.getAttribute("type")).toBe(inputType);
+    },
+  );
+
+  test.each([
     ["2024-03-10 02:30:00", "nonexistent-local-time"],
     ["2024-11-03 01:30:00", "ambiguous-local-time"],
   ] as const)("DST-invalid text reports %s", async (text, errorCode) => {
