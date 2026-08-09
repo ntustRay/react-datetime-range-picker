@@ -5,47 +5,39 @@ import { DateTimeFields } from "./date-time-fields.js";
 import { getTestId } from "./test-id.js";
 import { validateTimezone } from "./timezone.js";
 import { getValidationMessage } from "./locale-text.js";
+import type { PickerConfiguration } from "./picker-configuration.js";
+import { validateDateTimeRange } from "./validate-date-time-range.js";
 import type { DateTimeRangeDraftController } from "./use-date-time-range-draft.js";
-import type {
-  DateTimeRangePickerProps,
-  DateTimeRangeLocaleText,
-  DateTimeRangeValidationError,
-  Precision,
-} from "../types.js";
-import { validateDateTimeRange } from "../validate-date-time-range.js";
+import type { DateTimeRangeValidationError } from "../types.js";
 
 const EMPTY_RANGE = { startTimestamp: null, endTimestamp: null };
-const DEFAULT_CONSTRAINTS = {
-  minTimestamp: null,
-  maxTimestamp: null,
-  maxDurationMilliseconds: null,
-};
+
+interface PickerPopoverDialog {
+  id: string;
+  label: string;
+  ref: RefObject<HTMLDivElement | null>;
+}
 
 interface PickerPopoverProps {
-  pickerProps: DateTimeRangePickerProps;
-  localeText: DateTimeRangeLocaleText;
+  configuration: PickerConfiguration;
   draft: DateTimeRangeDraftController;
-  timezone: string;
-  precision: Precision;
-  calendarEnabled: boolean;
-  textInputEnabled: boolean;
-  dialogId: string;
-  triggerLabel: string;
-  dialogRef: RefObject<HTMLDivElement | null>;
+  dialog: PickerPopoverDialog;
   onCancel: () => void;
   onApply: () => void;
 }
 
 export function PickerPopover(props: PickerPopoverProps): React.JSX.Element {
-  const timezoneOptions = props.pickerProps.timezoneOptions ?? [props.timezone];
-  const invalidTimezoneOptions = timezoneOptions.filter((option) => {
-    try {
-      validateTimezone(option);
-      return false;
-    } catch {
-      return true;
-    }
-  });
+  const { configuration } = props;
+  const invalidTimezoneOptions = configuration.timezoneOptions.filter(
+    (option) => {
+      try {
+        validateTimezone(option);
+        return false;
+      } catch {
+        return true;
+      }
+    },
+  );
   const validationDescriptionIds = (
     target: DateTimeRangeValidationError["target"],
   ): string =>
@@ -54,38 +46,38 @@ export function PickerPopover(props: PickerPopoverProps): React.JSX.Element {
       .map((item) => `dtrp-${item.target}-${item.code}-error`)
       .join(" ");
   const validationMessage = (item: DateTimeRangeValidationError): string => {
-    return getValidationMessage(props.localeText, item.code);
+    return getValidationMessage(configuration.localeText, item.code);
   };
 
   return (
     <div
-      ref={props.dialogRef}
-      id={props.dialogId}
+      ref={props.dialog.ref}
+      id={props.dialog.id}
       className="dtrp-popover"
       role="dialog"
-      aria-label={props.triggerLabel}
+      aria-label={props.dialog.label}
       tabIndex={-1}
-      data-testid={getTestId(props.pickerProps.testIds?.popover, "dtrp-popover")}
+      data-testid={getTestId(configuration.testIds.popover, "dtrp-popover")}
     >
-      {props.calendarEnabled ? (
+      {configuration.calendarEnabled ? (
         <CalendarView
           value={props.draft.value}
-          timezone={props.timezone}
-          locale={props.pickerProps.locale ?? "en"}
-          firstWeekday={props.pickerProps.firstWeekday}
-          constraints={props.pickerProps.constraints ?? DEFAULT_CONSTRAINTS}
-          localeText={props.localeText}
-          testIds={props.pickerProps.testIds}
+          timezone={configuration.timezone}
+          locale={configuration.locale}
+          firstWeekday={configuration.firstWeekday}
+          constraints={configuration.constraints}
+          localeText={configuration.localeText}
+          testIds={configuration.testIds}
           onChange={props.draft.replaceValue}
         />
       ) : null}
-      {props.textInputEnabled ? (
+      {configuration.textInputEnabled ? (
         <DateTimeFields
           draft={props.draft}
-          precision={props.precision}
-          steps={props.pickerProps.steps}
-          localeText={props.localeText}
-          testIds={props.pickerProps.testIds}
+          precision={configuration.precision}
+          steps={configuration.steps}
+          localeText={configuration.localeText}
+          testIds={configuration.testIds}
           startDescriptionIds={
             `dtrp-start-format ${validationDescriptionIds("start")}`.trim()
           }
@@ -94,27 +86,29 @@ export function PickerPopover(props: PickerPopoverProps): React.JSX.Element {
           }
         />
       ) : null}
-      {props.pickerProps.features?.timezoneSelector !== false ? (
+      {configuration.timezoneSelectorEnabled ? (
         <label className="dtrp-field dtrp-timezone-field">
-          {props.localeText.timezoneLabel}
+          {configuration.localeText.timezoneLabel}
           <select
             data-testid={getTestId(
-              props.pickerProps.testIds?.timezone,
+              configuration.testIds.timezone,
               "dtrp-timezone",
             )}
-            value={props.timezone}
-            aria-invalid={invalidTimezoneOptions.includes(props.timezone)}
+            value={configuration.timezone}
+            aria-invalid={invalidTimezoneOptions.includes(
+              configuration.timezone,
+            )}
             onChange={(event) => {
               const nextTimezone = event.currentTarget.value;
               try {
                 validateTimezone(nextTimezone);
-                props.pickerProps.onTimezoneChange?.(nextTimezone);
+                configuration.onTimezoneChange?.(nextTimezone);
               } catch {
                 return;
               }
             }}
           >
-            {timezoneOptions.map((option) => (
+            {configuration.timezoneOptions.map((option) => (
               <option
                 key={option}
                 value={option}
@@ -131,7 +125,7 @@ export function PickerPopover(props: PickerPopoverProps): React.JSX.Element {
           className="dtrp-validation"
           aria-live="polite"
           data-testid={getTestId(
-            props.pickerProps.testIds?.validation,
+            configuration.testIds.validation,
             "dtrp-validation",
           )}
         >
@@ -145,34 +139,29 @@ export function PickerPopover(props: PickerPopoverProps): React.JSX.Element {
           ))}
         </ul>
       ) : null}
-      {props.pickerProps.presets !== undefined &&
-      props.pickerProps.presets.length > 0 ? (
+      {configuration.presets.length > 0 ? (
         <div
           className="dtrp-presets"
-          data-testid={props.pickerProps.testIds?.presets ?? "dtrp-presets"}
+          data-testid={configuration.testIds.presets ?? "dtrp-presets"}
         >
-          {props.pickerProps.presets.map((preset) => (
+          {configuration.presets.map((preset) => (
             <button
               key={preset.id}
               type="button"
               data-testid={getTestId(
-                props.pickerProps.testIds?.preset?.(preset.id),
+                configuration.testIds.preset?.(preset.id),
                 `dtrp-preset-${preset.id}`,
               )}
               onClick={() => {
                 const presetValue = preset.getValue({
                   nowTimestamp: Date.now(),
-                  timezone: props.timezone,
-                  precision: props.precision,
+                  timezone: configuration.timezone,
+                  precision: configuration.precision,
                 });
                 const presetValidation = validateDateTimeRange(presetValue, {
-                  ...(props.pickerProps.constraints === undefined
-                    ? {}
-                    : { constraints: props.pickerProps.constraints }),
-                  ...(props.pickerProps.steps === undefined
-                    ? {}
-                    : { steps: props.pickerProps.steps }),
-                  timezone: props.timezone,
+                  constraints: configuration.constraints,
+                  steps: configuration.steps,
+                  timezone: configuration.timezone,
                 });
                 if (presetValidation.status === "complete") {
                   props.draft.replaceValue(presetValue);
@@ -185,17 +174,17 @@ export function PickerPopover(props: PickerPopoverProps): React.JSX.Element {
         </div>
       ) : null}
       <div className="dtrp-actions">
-        {props.pickerProps.clearable !== false ? (
+        {configuration.clearable ? (
           <button
             className="dtrp-clear"
             type="button"
             data-testid={getTestId(
-              props.pickerProps.testIds?.clear,
+              configuration.testIds.clear,
               "dtrp-clear",
             )}
             onClick={() => props.draft.replaceValue(EMPTY_RANGE)}
           >
-            {props.localeText.clearButtonLabel}
+            {configuration.localeText.clearButtonLabel}
           </button>
         ) : (
           <span />
@@ -203,24 +192,24 @@ export function PickerPopover(props: PickerPopoverProps): React.JSX.Element {
         <button
           type="button"
           data-testid={getTestId(
-            props.pickerProps.testIds?.cancel,
+            configuration.testIds.cancel,
             "dtrp-cancel",
           )}
           onClick={props.onCancel}
         >
-          {props.localeText.cancelButtonLabel}
+          {configuration.localeText.cancelButtonLabel}
         </button>
         <button
           className="dtrp-apply"
           type="button"
           data-testid={getTestId(
-            props.pickerProps.testIds?.apply,
+            configuration.testIds.apply,
             "dtrp-apply",
           )}
           disabled={props.draft.validation.status !== "complete"}
           onClick={props.onApply}
         >
-          {props.localeText.applyButtonLabel}
+          {configuration.localeText.applyButtonLabel}
         </button>
       </div>
     </div>

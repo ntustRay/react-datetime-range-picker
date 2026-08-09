@@ -27,9 +27,9 @@ const WEEKDAY_INDEX: Record<Weekday, number> = {
 
 export function getFirstWeekdayIndex(
   locale: string,
-  override: Weekday | undefined,
+  override: Weekday | null,
 ): number {
-  if (override !== undefined) return WEEKDAY_INDEX[override];
+  if (override !== null) return WEEKDAY_INDEX[override];
   const localeInfo: unknown = new Intl.Locale(locale);
   let firstDay: number;
   if (

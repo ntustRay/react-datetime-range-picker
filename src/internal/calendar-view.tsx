@@ -6,9 +6,9 @@ import {
   getFirstWeekdayIndex,
   moveCalendarMonth,
 } from "./calendar.js";
+import { normalizeTimestamp } from "./normalize-timestamp.js";
 import { getLocalDateTime } from "./timezone.js";
 import { getTestId } from "./test-id.js";
-import { normalizeTimestamp } from "../normalize-timestamp.js";
 import type {
   DateTimeRangeConstraints,
   DateTimeRangeLocaleText,
@@ -24,7 +24,7 @@ interface CalendarViewProps {
   value: DateTimeRangeValue;
   timezone: string;
   locale: string;
-  firstWeekday: Weekday | undefined;
+  firstWeekday: Weekday | null;
   constraints: DateTimeRangeConstraints;
   localeText: DateTimeRangeLocaleText;
   testIds: Partial<DateTimeRangeTestIds> | undefined;

@@ -16,7 +16,7 @@ import type {
 interface DateTimeFieldsProps {
   draft: DateTimeRangeDraftController;
   precision: Precision;
-  steps: DateTimeRangeSteps | undefined;
+  steps: DateTimeRangeSteps;
   localeText: DateTimeRangeLocaleText;
   testIds: Partial<DateTimeRangeTestIds> | undefined;
   startDescriptionIds: string;
@@ -79,10 +79,12 @@ export function DateTimeFields(props: DateTimeFieldsProps): React.JSX.Element {
   const startLabel = props.localeText.startLabel;
   const endLabel = props.localeText.endLabel;
   const showTime = isUnitVisible("hour", props.precision);
-  const timeType = isUnitVisible("millisecond", props.precision) ? "text" : "time";
+  const timeType = isUnitVisible("millisecond", props.precision)
+    ? "text"
+    : "time";
   const step = timeInputStep(
     props.precision,
-    props.steps?.[stepUnit(props.precision)] ?? 1,
+    props.steps[stepUnit(props.precision)],
   );
 
   return (

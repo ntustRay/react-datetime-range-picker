@@ -1,42 +1,33 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
-  formatEditableTimestamp,
-  parseEditableDateTime,
-} from "./date-time-text.js";
-import { isUnitVisible } from "./precision.js";
-import { getLocalDateTime, type LocalDateTimeCandidate } from "./timezone.js";
+  createDateTimeRangeDraft,
+  transitionDateTimeRangeDraft,
+  validateDateTimeRangeDraft,
+  type DateTimeRangeDraftAction,
+  type DateTimeRangeDraftField,
+  type DateTimeRangeDraftState,
+  type DateTimeRangeDraftTarget,
+} from "./date-time-range-draft.js";
 import type {
   DateTimeRangeChangeHandler,
   DateTimeRangeConstraints,
   DateTimeRangeSteps,
   DateTimeRangeValidationChangeHandler,
-  DateTimeRangeValidationError,
-  DateTimeRangeValidationErrorCode,
   DateTimeRangeValidationResult,
   DateTimeRangeValue,
   Precision,
 } from "../types.js";
-import { validateDateTimeRange } from "../validate-date-time-range.js";
-
-export type DateTimeRangeDraftTarget = "start" | "end";
 
 interface UseDateTimeRangeDraftOptions {
   value: DateTimeRangeValue;
   timezone: string;
   precision: Precision;
-  constraints: DateTimeRangeConstraints | undefined;
-  steps: DateTimeRangeSteps | undefined;
-  required: boolean | undefined;
+  constraints: DateTimeRangeConstraints;
+  steps: DateTimeRangeSteps;
+  required: boolean;
   onChange: DateTimeRangeChangeHandler;
   onValidationChange: DateTimeRangeValidationChangeHandler | undefined;
-}
-
-export interface DateTimeRangeDraftField {
-  text: string;
-  time: string;
-  error: DateTimeRangeValidationErrorCode | null;
-  ambiguousCandidates: readonly LocalDateTimeCandidate[];
 }
 
 export interface DateTimeRangeDraftController {
@@ -52,44 +43,6 @@ export interface DateTimeRangeDraftController {
   chooseOffset: (target: DateTimeRangeDraftTarget, index: number) => void;
 }
 
-function safelyFormatTimestamp(
-  timestamp: number | null,
-  timezone: string,
-  precision: Precision,
-): string {
-  if (timestamp === null) return "";
-  try {
-    return formatEditableTimestamp(timestamp, timezone, precision);
-  } catch {
-    return String(timestamp);
-  }
-}
-
-function formatTimeInput(
-  timestamp: number | null,
-  timezone: string,
-  precision: Precision,
-): string {
-  if (timestamp === null || !isUnitVisible("hour", precision)) return "";
-  const local = getLocalDateTime(timestamp, timezone);
-  const pad = (value: number, length = 2): string =>
-    String(value).padStart(length, "0");
-  let value = `${pad(local.hour)}:${pad(local.minute)}`;
-  if (isUnitVisible("second", precision)) value += `:${pad(local.second)}`;
-  if (isUnitVisible("millisecond", precision)) {
-    value += `.${pad(local.millisecond, 3)}`;
-  }
-  return value;
-}
-
-function getTextErrorCode(
-  status: "ambiguous" | "invalid" | "nonexistent",
-): DateTimeRangeValidationErrorCode {
-  if (status === "nonexistent") return "nonexistent-local-time";
-  if (status === "ambiguous") return "ambiguous-local-time";
-  return "invalid-text";
-}
-
 function getValidationKey(validation: DateTimeRangeValidationResult): string {
   return `${validation.status}|${validation.errors
     .map((error) => `${error.target}:${error.code}`)
@@ -99,56 +52,31 @@ function getValidationKey(validation: DateTimeRangeValidationResult): string {
 export function useDateTimeRangeDraft(
   options: UseDateTimeRangeDraftOptions,
 ): DateTimeRangeDraftController {
-  const [value, setValue] = useState(options.value);
-  const [startText, setStartText] = useState(() =>
-    safelyFormatTimestamp(
-      options.value.startTimestamp,
-      options.timezone,
-      options.precision,
-    ),
+  const context = {
+    timezone: options.timezone,
+    precision: options.precision,
+  };
+  const [state, setState] = useState<DateTimeRangeDraftState>(() =>
+    createDateTimeRangeDraft(options.value, context),
   );
-  const [endText, setEndText] = useState(() =>
-    safelyFormatTimestamp(
-      options.value.endTimestamp,
-      options.timezone,
-      options.precision,
-    ),
-  );
-  const [startError, setStartError] =
-    useState<DateTimeRangeValidationErrorCode | null>(null);
-  const [endError, setEndError] =
-    useState<DateTimeRangeValidationErrorCode | null>(null);
-  const [startCandidates, setStartCandidates] = useState<
-    readonly LocalDateTimeCandidate[]
-  >([]);
-  const [endCandidates, setEndCandidates] = useState<
-    readonly LocalDateTimeCandidate[]
-  >([]);
+  const stateRef = useRef(state);
   const validationKeyRef = useRef<string | null>(null);
 
+  const replaceState = (nextState: DateTimeRangeDraftState): void => {
+    stateRef.current = nextState;
+    setState(nextState);
+  };
+
   const reset = useCallback(
-    (nextValue: DateTimeRangeValue): void => {
-      setValue(nextValue);
-      setStartText(
-        safelyFormatTimestamp(
-          nextValue.startTimestamp,
-          options.timezone,
-          options.precision,
-        ),
-      );
-      setEndText(
-        safelyFormatTimestamp(
-          nextValue.endTimestamp,
-          options.timezone,
-          options.precision,
-        ),
-      );
-      setStartError(null);
-      setEndError(null);
-      setStartCandidates([]);
-      setEndCandidates([]);
+    (value: DateTimeRangeValue): void => {
+      const nextState = createDateTimeRangeDraft(value, {
+        timezone: options.timezone,
+        precision: options.precision,
+      });
+      stateRef.current = nextState;
+      setState(nextState);
     },
-    [options.timezone, options.precision],
+    [options.precision, options.timezone],
   );
 
   useEffect(() => {
@@ -161,28 +89,12 @@ export function useDateTimeRangeDraft(
     reset,
   ]);
 
-  const rangeValidation = validateDateTimeRange(value, {
-    ...(options.constraints === undefined
-      ? {}
-      : { constraints: options.constraints }),
-    ...(options.steps === undefined ? {} : { steps: options.steps }),
-    ...(options.required === undefined ? {} : { required: options.required }),
+  const validation = validateDateTimeRangeDraft(state, {
+    constraints: options.constraints,
+    steps: options.steps,
+    required: options.required,
     timezone: options.timezone,
   });
-  const textErrors: DateTimeRangeValidationError[] = [];
-  if (startError !== null) {
-    textErrors.push({ code: startError, target: "start" });
-  }
-  if (endError !== null) {
-    textErrors.push({ code: endError, target: "end" });
-  }
-  const validation: DateTimeRangeValidationResult =
-    textErrors.length === 0
-      ? rangeValidation
-      : {
-          status: "invalid",
-          errors: [...rangeValidation.errors, ...textErrors],
-        };
   const validationKey = getValidationKey(validation);
 
   useEffect(() => {
@@ -195,154 +107,33 @@ export function useDateTimeRangeDraft(
     }
   }, [options.onValidationChange, validation, validationKey]);
 
-  const replaceValue = (nextValue: DateTimeRangeValue): void => {
-    setValue(nextValue);
-    setStartText(
-      safelyFormatTimestamp(
-        nextValue.startTimestamp,
-        options.timezone,
-        options.precision,
-      ),
+  const dispatch = (action: DateTimeRangeDraftAction): void => {
+    const transition = transitionDateTimeRangeDraft(
+      stateRef.current,
+      action,
+      context,
     );
-    setEndText(
-      safelyFormatTimestamp(
-        nextValue.endTimestamp,
-        options.timezone,
-        options.precision,
-      ),
-    );
-    options.onChange(nextValue);
-  };
-
-  const changeText = (
-    target: DateTimeRangeDraftTarget,
-    text: string,
-  ): void => {
-    if (target === "start") {
-      setStartText(text);
-      setStartError("invalid-text");
-    } else {
-      setEndText(text);
-      setEndError("invalid-text");
+    replaceState(transition.state);
+    if (transition.changedValue !== null) {
+      options.onChange(transition.changedValue);
     }
-  };
-
-  const commitText = (target: DateTimeRangeDraftTarget): void => {
-    const text = target === "start" ? startText : endText;
-    const setError = target === "start" ? setStartError : setEndError;
-    const setCandidates =
-      target === "start" ? setStartCandidates : setEndCandidates;
-    if (text === "") {
-      setError(null);
-      setCandidates([]);
-      replaceValue({
-        startTimestamp: target === "start" ? null : value.startTimestamp,
-        endTimestamp: target === "end" ? null : value.endTimestamp,
-      });
-      return;
-    }
-    const result = parseEditableDateTime(
-      text,
-      options.timezone,
-      options.precision,
-    );
-    if (result.status !== "valid") {
-      setCandidates(result.status === "ambiguous" ? [...result.candidates] : []);
-      setError(getTextErrorCode(result.status));
-      return;
-    }
-    const timestamp = result.candidates[0]?.timestamp;
-    if (timestamp === undefined) {
-      setCandidates([]);
-      setError("invalid-text");
-      return;
-    }
-    setError(null);
-    setCandidates([]);
-    replaceValue({
-      startTimestamp: target === "start" ? timestamp : value.startTimestamp,
-      endTimestamp: target === "end" ? timestamp : value.endTimestamp,
-    });
-  };
-
-  const chooseOffset = (
-    target: DateTimeRangeDraftTarget,
-    index: number,
-  ): void => {
-    const candidates = target === "start" ? startCandidates : endCandidates;
-    const candidate = candidates[index];
-    if (candidate === undefined) return;
-    if (target === "start") {
-      setStartCandidates([]);
-      setStartError(null);
-    } else {
-      setEndCandidates([]);
-      setEndError(null);
-    }
-    replaceValue({
-      startTimestamp:
-        target === "start" ? candidate.timestamp : value.startTimestamp,
-      endTimestamp: target === "end" ? candidate.timestamp : value.endTimestamp,
-    });
-  };
-
-  const changeTime = (
-    target: DateTimeRangeDraftTarget,
-    time: string,
-  ): void => {
-    const currentText = target === "start" ? startText : endText;
-    const dateText = currentText.split(" ")[0];
-    if (dateText === undefined || time === "") return;
-    const editableTime =
-      options.precision === "hour"
-        ? time.slice(0, 2)
-        : options.precision === "minute"
-          ? time.slice(0, 5)
-          : options.precision === "second"
-            ? time.slice(0, 8)
-            : time;
-    const result = parseEditableDateTime(
-      `${dateText} ${editableTime}`,
-      options.timezone,
-      options.precision,
-    );
-    const setError = target === "start" ? setStartError : setEndError;
-    if (result.status !== "valid") {
-      setError(getTextErrorCode(result.status));
-      return;
-    }
-    const timestamp = result.candidates[0]?.timestamp;
-    if (timestamp === undefined) {
-      setError("invalid-text");
-      return;
-    }
-    setError(null);
-    replaceValue({
-      startTimestamp: target === "start" ? timestamp : value.startTimestamp,
-      endTimestamp: target === "end" ? timestamp : value.endTimestamp,
-    });
   };
 
   return {
-    value,
-    start: {
-      text: startText,
-      time: formatTimeInput(value.startTimestamp, options.timezone, options.precision),
-      error: startError,
-      ambiguousCandidates: startCandidates,
-    },
-    end: {
-      text: endText,
-      time: formatTimeInput(value.endTimestamp, options.timezone, options.precision),
-      error: endError,
-      ambiguousCandidates: endCandidates,
-    },
+    value: state.value,
+    start: state.start,
+    end: state.end,
     validation,
-    replaceValue,
+    replaceValue: (value) => dispatch({ type: "replace-value", value }),
     reset,
-    changeText,
-    commitText,
-    changeTime,
-    chooseOffset,
+    changeText: (target, text) =>
+      dispatch({ type: "change-text", target, text }),
+    commitText: (target) => dispatch({ type: "commit-text", target }),
+    changeTime: (target, time) =>
+      dispatch({ type: "change-time", target, time }),
+    chooseOffset: (target, index) =>
+      dispatch({ type: "choose-offset", target, index }),
   };
 }
+
+export type { DateTimeRangeDraftField, DateTimeRangeDraftTarget };

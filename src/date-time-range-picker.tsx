@@ -1,8 +1,8 @@
 import { useEffect, useId, useRef, useState } from "react";
 
 import { formatDisplayTimestamp } from "./internal/date-time-text.js";
+import { resolvePickerConfiguration } from "./internal/picker-configuration.js";
 import { PickerPopover } from "./internal/picker-popover.js";
-import { resolveLocaleText } from "./internal/locale-text.js";
 import { getTestId } from "./internal/test-id.js";
 import { useDateTimeRangeDraft } from "./internal/use-date-time-range-draft.js";
 import type {
@@ -29,44 +29,39 @@ export function DateTimeRangePicker(
   const triggerRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const openedValueRef = useRef(props.value);
-  const timezone = props.timezone ?? "UTC";
-  const precision = props.precision ?? "second";
+  const configuration = resolvePickerConfiguration(props);
   const draft = useDateTimeRangeDraft({
     value: props.value,
-    timezone,
-    precision,
-    constraints: props.constraints,
-    steps: props.steps,
-    required: props.required,
+    timezone: configuration.timezone,
+    precision: configuration.precision,
+    constraints: configuration.constraints,
+    steps: configuration.steps,
+    required: configuration.required,
     onChange: props.onChange,
     onValidationChange: props.onValidationChange,
   });
-  const localeText = resolveLocaleText(props.localeText, precision);
 
-  const calendarEnabled = props.features?.calendar !== false;
-  const textInputEnabled =
-    props.features?.textInput !== false || calendarEnabled === false;
-  const triggerLabel = localeText.triggerLabel;
+  const triggerLabel = configuration.localeText.triggerLabel;
   const rangeSummary =
     props.value.startTimestamp === null
       ? triggerLabel
       : props.value.endTimestamp === null
         ? `${formatDisplayTimestamp(
             props.value.startTimestamp,
-            timezone,
-            props.locale ?? "en",
-            precision,
+            configuration.timezone,
+            configuration.locale,
+            configuration.precision,
           )} – …`
         : `${formatDisplayTimestamp(
             props.value.startTimestamp,
-            timezone,
-            props.locale ?? "en",
-            precision,
+            configuration.timezone,
+            configuration.locale,
+            configuration.precision,
           )} – ${formatDisplayTimestamp(
             props.value.endTimestamp,
-            timezone,
-            props.locale ?? "en",
-            precision,
+            configuration.timezone,
+            configuration.locale,
+            configuration.precision,
           )}`;
 
   const restoreTriggerFocus = (): void => {
@@ -124,13 +119,13 @@ export function DateTimeRangePicker(
     <div
       ref={rootRef}
       className="dtrp-root"
-      data-testid={getTestId(props.testIds?.root, "dtrp-root")}
+      data-testid={getTestId(configuration.testIds.root, "dtrp-root")}
     >
       <button
         ref={triggerRef}
         type="button"
-        data-testid={getTestId(props.testIds?.trigger, "dtrp-trigger")}
-        disabled={props.disabled === true || props.readOnly === true}
+        data-testid={getTestId(configuration.testIds.trigger, "dtrp-trigger")}
+        disabled={!configuration.canOpen}
         aria-label={triggerLabel}
         aria-haspopup="dialog"
         aria-expanded={isOpen}
@@ -142,16 +137,9 @@ export function DateTimeRangePicker(
       </button>
       {isOpen ? (
         <PickerPopover
-          pickerProps={props}
-          localeText={localeText}
+          configuration={configuration}
           draft={draft}
-          timezone={timezone}
-          precision={precision}
-          calendarEnabled={calendarEnabled}
-          textInputEnabled={textInputEnabled}
-          dialogId={dialogId}
-          triggerLabel={triggerLabel}
-          dialogRef={dialogRef}
+          dialog={{ id: dialogId, label: triggerLabel, ref: dialogRef }}
           onCancel={closeAndDiscard}
           onApply={applyDraft}
         />
