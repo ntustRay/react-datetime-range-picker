@@ -1,5 +1,7 @@
 # React DateTime Range Picker
 
+[![CI](https://github.com/ntustRay/react-datetime-range-picker/actions/workflows/ci.yml/badge.svg)](https://github.com/ntustRay/react-datetime-range-picker/actions/workflows/ci.yml)
+
 An accessible controlled React date-time range picker for timestamp-based
 chart filters. Values are Unix epoch milliseconds, displayed in a selectable
 IANA timezone, with UTC as the default.
