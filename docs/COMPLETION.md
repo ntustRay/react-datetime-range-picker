@@ -70,3 +70,16 @@ Verification: full package build and test check.
 - Added `demo` and `demo:build` scripts and excluded generated demo output.
 
 Verification: `npm.cmd run demo:build`.
+
+## Coverage and Documentation (Sections 16, 18, and 20)
+
+- Recorded the configured Vitest/RTL/user-event harness and existing public
+  component coverage in the TODO ledger.
+- Documented the ARIA dialog/grid, accessible names, and error association
+  review covered by the component tests.
+- Replaced the scaffold README with install, CSS import, controlled usage,
+  timestamp semantics, timezone, precision, and development instructions.
+
+Sections 17 (Playwright E2E infrastructure) and 19 (React consumer fixtures)
+remain explicitly unchecked because they require additional browser/fixture
+execution and are not claimed complete by this log.

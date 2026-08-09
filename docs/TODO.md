@@ -454,9 +454,9 @@ the current clock when a deterministic relative preset requires it.
 
 ## 16. Expand Unit and Component Coverage Slice by Slice
 
-- [ ] Configure Vitest with a DOM test environment.
-- [ ] Configure React Testing Library.
-- [ ] Configure user-event.
+- [x] Configure Vitest with a DOM test environment.
+- [x] Configure React Testing Library.
+- [x] Configure user-event.
 - [ ] Co-locate tests with their source modules.
 - [ ] Confirm each new test fails before its production change is written.
 - [ ] Prefer public package or component seams over internal module seams.
@@ -464,19 +464,19 @@ the current clock when a deterministic relative preset requires it.
 - [ ] Mock the clock only where relative-time behavior requires determinism.
 - [ ] Keep one logical behavior assertion per test.
 - [ ] Reject expected values calculated with the same algorithm under test.
-- [ ] Add public-export smoke tests.
-- [ ] Add controlled-prop synchronization tests.
-- [ ] Add callback ordering tests.
-- [ ] Add Apply behavior tests.
-- [ ] Add Cancel behavior tests.
-- [ ] Add Clear behavior tests.
-- [ ] Add outside-click behavior tests.
-- [ ] Add Escape behavior tests.
-- [ ] Add disabled behavior tests.
-- [ ] Add read-only behavior tests.
-- [ ] Add required behavior tests.
-- [ ] Add validation-message association tests.
-- [ ] Add locale-label override tests.
+- [x] Add public-export smoke tests.
+- [x] Add controlled-prop synchronization tests.
+- [x] Add callback ordering tests.
+- [x] Add Apply behavior tests.
+- [x] Add Cancel behavior tests.
+- [x] Add Clear behavior tests.
+- [x] Add outside-click behavior tests.
+- [x] Add Escape behavior tests.
+- [x] Add disabled behavior tests.
+- [x] Add read-only behavior tests.
+- [x] Add required behavior tests.
+- [x] Add validation-message association tests.
+- [x] Add locale-label override tests.
 - [ ] Add light- and dark-theme class/state tests.
 - [ ] Add SSR render smoke tests.
 - [ ] Add tests proving no render-time side effects.
@@ -517,12 +517,12 @@ the current clock when a deterministic relative preset requires it.
 
 ## 18. Verify Accessibility
 
-- [ ] Review the popover against the ARIA dialog pattern.
-- [ ] Review the calendar against the ARIA grid pattern.
-- [ ] Verify every interactive control has an accessible name.
-- [ ] Verify start and end controls are distinguishable to screen readers.
-- [ ] Verify errors use `aria-invalid` where appropriate.
-- [ ] Verify errors are linked with `aria-describedby`.
+- [x] Review the popover against the ARIA dialog pattern.
+- [x] Review the calendar against the ARIA grid pattern.
+- [x] Verify every interactive control has an accessible name.
+- [x] Verify start and end controls are distinguishable to screen readers.
+- [x] Verify errors use `aria-invalid` where appropriate.
+- [x] Verify errors are linked with `aria-describedby`.
 - [ ] Verify validation updates are announced appropriately.
 - [ ] Verify disabled controls expose the correct semantics.
 - [ ] Verify read-only controls expose the correct semantics.
@@ -559,31 +559,31 @@ the current clock when a deterministic relative preset requires it.
 
 ## 20. Documentation
 
-- [ ] Replace the README status text when implementation begins.
-- [ ] Document installation.
-- [ ] Document CSS import requirements.
-- [ ] Document the minimal controlled example.
-- [ ] Document timestamp millisecond semantics prominently.
-- [ ] Document half-open range semantics prominently.
-- [ ] Document UTC as the default display time zone.
-- [ ] Document time-zone changes as display-only changes.
-- [ ] Document every public prop.
-- [ ] Document every callback and when it fires.
-- [ ] Document draft versus committed ranges.
-- [ ] Document every precision value.
-- [ ] Document constraints and defaults.
-- [ ] Document time steps and defaults.
-- [ ] Document presets with a relative-time example.
-- [ ] Document localization and custom labels.
-- [ ] Document weekday override strings.
-- [ ] Document validation error codes.
-- [ ] Document default and custom test IDs.
-- [ ] Document disabled, read-only, and required behavior.
-- [ ] Document DST gap and overlap behavior.
-- [ ] Document CSS custom properties.
-- [ ] Document light and dark theming.
-- [ ] Document supported React and browser versions.
-- [ ] Document SSR expectations.
+- [x] Replace the README status text when implementation begins.
+- [x] Document installation.
+- [x] Document CSS import requirements.
+- [x] Document the minimal controlled example.
+- [x] Document timestamp millisecond semantics prominently.
+- [x] Document half-open range semantics prominently.
+- [x] Document UTC as the default display time zone.
+- [x] Document time-zone changes as display-only changes.
+- [x] Document every public prop.
+- [x] Document every callback and when it fires.
+- [x] Document draft versus committed ranges.
+- [x] Document every precision value.
+- [x] Document constraints and defaults.
+- [x] Document time steps and defaults.
+- [x] Document presets with a relative-time example.
+- [x] Document localization and custom labels.
+- [x] Document weekday override strings.
+- [x] Document validation error codes.
+- [x] Document default and custom test IDs.
+- [x] Document disabled, read-only, and required behavior.
+- [x] Document DST gap and overlap behavior.
+- [x] Document CSS custom properties.
+- [x] Document light and dark theming.
+- [x] Document supported React and browser versions.
+- [x] Document SSR expectations.
 - [ ] Add a migration section before any breaking release.
 - [ ] Keep [CONTEXT.md](CONTEXT.md) aligned with domain-language changes.
 - [ ] Keep [AGENTS.md](../AGENTS.md) aligned with durable tooling conventions.

@@ -1,46 +1,77 @@
 # React DateTime Range Picker
 
-An accessible React date-time range picker designed for timestamp-based chart
-filters. The package will use Unix epoch milliseconds, display values in a
-selectable IANA time zone, and default to UTC.
+An accessible controlled React date-time range picker for timestamp-based
+chart filters. Values are Unix epoch milliseconds, displayed in a selectable
+IANA timezone, with UTC as the default.
 
-## Status
+## Install
 
-The project is currently in the implementation stage. The package scaffold and
-test harness are in place; product behavior has not been implemented yet. The
-agreed behavior is documented in [docs/CONTEXT.md](docs/CONTEXT.md). See
-[docs/PUBLIC_API.md](docs/PUBLIC_API.md) for the reviewed Version 1 interface,
-[docs/TODO.md](docs/TODO.md) for the implementation backlog, and
-[docs/WORKFLOW.md](docs/WORKFLOW.md) for the autonomous TDD loop.
-
-The planned public npm package name is:
-
-```text
-@ntustray/react-datetime-range-picker
+```sh
+npm install @ntustray/react-datetime-range-picker
 ```
 
-## Product Direction
+Import the stylesheet once:
 
-- Controlled React component for selecting a start and end timestamp
-- Half-open ranges: `[start, end)`
-- Configurable precision from year through millisecond, defaulting to second
-- IANA time-zone display and editing, defaulting to UTC
-- Calendar, text input, keyboard input, presets, and immediate validation
-- Accessible interaction targeting WCAG 2.2 AA
-- Stable, customizable `data-testid` attributes
-- No runtime dependencies; React 18 and 19 as peer dependencies
+```ts
+import "@ntustray/react-datetime-range-picker/styles.css";
+```
 
-## Tooling
+## Minimal controlled example
 
-- npm for package management
-- tsdown for the publishable ESM library build
-- Vite for the demo application
-- TypeScript in strict mode
-- Vitest and React Testing Library for unit and component tests
-- Playwright for end-to-end tests
+```tsx
+import { useState } from "react";
+import {
+  DateTimeRangePicker,
+  type DateTimeRangeValue,
+} from "@ntustray/react-datetime-range-picker";
+import "@ntustray/react-datetime-range-picker/styles.css";
 
-Use Node 24 and npm 11. Run `npm run check` for type checking, tests, and the
-publishable library build.
+const emptyRange: DateTimeRangeValue = {
+  startTimestamp: null,
+  endTimestamp: null,
+};
+
+export function FilterControl(): React.JSX.Element {
+  const [draft, setDraft] = useState(emptyRange);
+  const [committed, setCommitted] = useState(emptyRange);
+
+  return (
+    <DateTimeRangePicker
+      value={draft}
+      onChange={setDraft}
+      onCommit={setCommitted}
+      timezone="UTC"
+    />
+  );
+}
+```
+
+`onChange` receives draft edits. `onCommit` fires only after Apply accepts a
+complete valid range. Ranges use half-open semantics:
+`startTimestamp <= timestamp < endTimestamp`. Clearing produces two explicit
+`null` fields.
+
+The default display timezone is UTC. Changing the controlled timezone changes
+display and editing only; it does not change represented instants. Precision
+defaults to seconds and supports year, month, day, hour, minute, second, and
+millisecond. Units below the selected precision normalize to zero.
+
+Constraints, steps, presets, localization, validation formatting, stable test
+IDs, feature visibility, and disabled/read-only/required behavior are documented
+in [docs/PUBLIC_API.md](docs/PUBLIC_API.md). The product and accessibility
+contract is in [docs/CONTEXT.md](docs/CONTEXT.md).
+
+## Development
+
+```sh
+npm run check       # typecheck, tests, and package build
+npm run demo:build  # build the Vite demo
+npm run demo        # serve the demo locally
+```
+
+The package is ESM-only, has no runtime dependencies, and supports React 18
+and React 19 as peer dependencies. Date calculations avoid direct browser
+globals so server-side React rendering remains safe.
 
 ## License
 
