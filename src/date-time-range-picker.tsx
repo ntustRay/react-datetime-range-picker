@@ -355,6 +355,7 @@ export function DateTimeRangePicker(
         data-testid={testId(props.testIds?.trigger, "dtrp-trigger")}
         disabled={props.disabled === true || props.readOnly === true}
         aria-label={triggerLabel}
+        className="dtrp-trigger"
         onClick={() => {
           setDraft(props.value);
           setStartText(safelyFormatTimestamp(props.value.startTimestamp, timezone, precision));
@@ -387,10 +388,11 @@ export function DateTimeRangePicker(
             />
           ) : null}
           {textInputEnabled ? (
-            <div>
-              <label>
+            <div className="dtrp-fields">
+              <label className="dtrp-field dtrp-field-start">
                 {props.labels?.start ?? "Start"}
                 <input
+                  aria-label={props.labels?.start ?? "Start"}
                   aria-describedby={`dtrp-start-format ${validationDescriptionIds("start")}`.trim()}
                   data-testid={testId(props.testIds?.startInput, "dtrp-start-input")}
                   value={startText}
@@ -401,13 +403,14 @@ export function DateTimeRangePicker(
                   }}
                   onBlur={() => applyTextValue("start", startText)}
                 />
+                <span className="dtrp-format-hint" id="dtrp-start-format">
+                  {props.labels?.startFormatHint ?? getEditableDateTimeFormat(precision)}
+                </span>
               </label>
-              <span id="dtrp-start-format">
-                {props.labels?.startFormatHint ?? getEditableDateTimeFormat(precision)}
-              </span>
-              <label>
+              <label className="dtrp-field dtrp-field-end">
                 {props.labels?.end ?? "End"}
                 <input
+                  aria-label={props.labels?.end ?? "End"}
                   aria-describedby={`dtrp-end-format ${validationDescriptionIds("end")}`.trim()}
                   data-testid={testId(props.testIds?.endInput, "dtrp-end-input")}
                   value={endText}
@@ -418,13 +421,13 @@ export function DateTimeRangePicker(
                   }}
                   onBlur={() => applyTextValue("end", endText)}
                 />
+                <span className="dtrp-format-hint" id="dtrp-end-format">
+                  {props.labels?.endFormatHint ?? getEditableDateTimeFormat(precision)}
+                </span>
               </label>
-              <span id="dtrp-end-format">
-                {props.labels?.endFormatHint ?? getEditableDateTimeFormat(precision)}
-              </span>
           {isUnitVisible("hour", precision) ? (
-                <div>
-                  <label>
+                <div className="dtrp-time-fields">
+                  <label className="dtrp-field">
                     {props.labels?.start ?? "Start"} time
                     <input
                       type={isUnitVisible("millisecond", precision) ? "text" : "time"}
@@ -444,7 +447,7 @@ export function DateTimeRangePicker(
                       }
                     />
                   </label>
-                  <label>
+                  <label className="dtrp-field">
                     {props.labels?.end ?? "End"} time
                     <input
                       type={isUnitVisible("millisecond", precision) ? "text" : "time"}
@@ -469,7 +472,7 @@ export function DateTimeRangePicker(
             </div>
           ) : null}
           {startAmbiguousCandidates.length > 0 ? (
-            <label>
+            <label className="dtrp-field">
               {props.labels?.start ?? "Start"} offset
               <select
                 aria-label={`${props.labels?.start ?? "Start"} offset`}
@@ -509,7 +512,7 @@ export function DateTimeRangePicker(
             </label>
           ) : null}
           {props.features?.timezoneSelector !== false ? (
-            <label>
+            <label className="dtrp-field dtrp-timezone-field">
               {props.labels?.timezone ?? "Time zone"}
               <select
                 data-testid={testId(props.testIds?.timezone, "dtrp-timezone")}
@@ -539,6 +542,7 @@ export function DateTimeRangePicker(
           ) : null}
           {validation.errors.length > 0 ? (
             <ul
+              className="dtrp-validation"
               aria-live="polite"
               data-testid={testId(props.testIds?.validation, "dtrp-validation")}
             >
@@ -553,7 +557,7 @@ export function DateTimeRangePicker(
             </ul>
           ) : null}
           {props.presets !== undefined && props.presets.length > 0 ? (
-            <div data-testid={props.testIds?.presets ?? "dtrp-presets"}>
+            <div className="dtrp-presets" data-testid={props.testIds?.presets ?? "dtrp-presets"}>
               {props.presets.map((preset) => (
                 <button
                   key={preset.id}
@@ -587,34 +591,38 @@ export function DateTimeRangePicker(
               ))}
             </div>
           ) : null}
-          <button
-            type="button"
-            data-testid={testId(props.testIds?.apply, "dtrp-apply")}
-            disabled={validation.status !== "complete"}
-            onClick={() => {
-              props.onCommit(draft);
-              setIsOpen(false);
-              triggerRef.current?.focus();
-            }}
-          >
-            {applyLabel}
-          </button>
-          <button
-            type="button"
-            data-testid={testId(props.testIds?.cancel, "dtrp-cancel")}
-            onClick={closeAndDiscard}
-          >
-            {cancelLabel}
-          </button>
-          {props.clearable !== false ? (
+          <div className="dtrp-actions">
+            {props.clearable !== false ? (
+              <button
+                className="dtrp-clear"
+                type="button"
+                data-testid={testId(props.testIds?.clear, "dtrp-clear")}
+                onClick={() => updateDraft(EMPTY_RANGE)}
+              >
+                {clearLabel}
+              </button>
+            ) : <span />}
             <button
               type="button"
-              data-testid={testId(props.testIds?.clear, "dtrp-clear")}
-              onClick={() => updateDraft(EMPTY_RANGE)}
+              data-testid={testId(props.testIds?.cancel, "dtrp-cancel")}
+              onClick={closeAndDiscard}
             >
-              {clearLabel}
+              {cancelLabel}
             </button>
-          ) : null}
+            <button
+              className="dtrp-apply"
+              type="button"
+              data-testid={testId(props.testIds?.apply, "dtrp-apply")}
+              disabled={validation.status !== "complete"}
+              onClick={() => {
+                props.onCommit(draft);
+                setIsOpen(false);
+                triggerRef.current?.focus();
+              }}
+            >
+              {applyLabel}
+            </button>
+          </div>
         </div>
       ) : null}
     </div>

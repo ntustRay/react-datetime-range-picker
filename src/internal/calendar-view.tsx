@@ -140,7 +140,7 @@ export function CalendarView(props: CalendarViewProps): React.JSX.Element {
 
   return (
     <section aria-label="Calendar" className="dtrp-calendar-region">
-      <div>
+      <div className="dtrp-calendar-navigation">
         <button
           type="button"
           aria-label="Previous month"
@@ -149,7 +149,10 @@ export function CalendarView(props: CalendarViewProps): React.JSX.Element {
         >
           ‹
         </button>
-        <h2 aria-live="polite">{monthLabel}</h2>
+        <div className="dtrp-calendar-months" aria-live="polite">
+          <h2>{monthLabel}</h2>
+          <h2 className="dtrp-calendar-wide">{followingMonthLabel}</h2>
+        </div>
         <button
           type="button"
           aria-label="Next month"

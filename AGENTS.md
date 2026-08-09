@@ -30,3 +30,9 @@ Build a reusable, accessible React date-time range picker component library.
 
 Use the smallest relevant checks configured in `package.json`. If tooling has
 not been selected yet, state that clearly rather than inventing commands.
+
+For UI changes, run `npm run test:visual`, inspect the rendered desktop and
+mobile screenshots yourself, and compare them with the committed baselines.
+Update baselines with `npm run test:visual:update` only after confirming that
+the visual differences are intentional. Keep the baseline images committed so
+future UI work has durable before-and-after evidence.

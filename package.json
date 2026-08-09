@@ -42,6 +42,8 @@
     "demo": "vite demo --host 127.0.0.1",
     "demo:build": "vite build demo --base ./",
     "test:e2e": "playwright test",
+    "test:visual": "playwright test --config=playwright.visual.config.ts",
+    "test:visual:update": "playwright test --config=playwright.visual.config.ts --update-snapshots",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "check": "npm run typecheck && npm test && npm run build"
