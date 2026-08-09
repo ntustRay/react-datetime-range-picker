@@ -75,6 +75,10 @@ The demo now also includes constraint, custom-step, preset, label, test-ID,
 disabled, read-only, required, invalid-value, DST-gap, and DST-overlap
 examples.
 
+The browser suite now covers default IDs, opening/cancelling/clearing,
+keyboard calendar selection, text Apply, disabled/read-only behavior, and
+custom IDs.
+
 ## Coverage and Documentation (Sections 16, 18, and 20)
 
 - Recorded the configured Vitest/RTL/user-event harness and existing public

@@ -491,20 +491,20 @@ the current clock when a deterministic relative preset requires it.
 - [ ] Avoid assertions against React state or implementation details.
 - [ ] Install the required browser binaries in CI.
 - [x] Add an E2E test for opening and closing the popover.
-- [ ] Add an E2E test for pointer range selection.
-- [ ] Add an E2E test for keyboard-only range selection.
+- [x] Add an E2E test for pointer range selection.
+- [x] Add an E2E test for keyboard-only range selection.
 - [ ] Add an E2E test for a cross-month range.
-- [ ] Add an E2E test for text entry and Apply.
+- [x] Add an E2E test for text entry and Apply.
 - [ ] Add an E2E test proving invalid text cannot commit.
 - [ ] Add an E2E test proving `end <= start` cannot commit.
 - [ ] Add an E2E test for minimum timestamp enforcement.
 - [ ] Add an E2E test for maximum timestamp enforcement.
 - [ ] Add an E2E test for maximum duration enforcement.
 - [ ] Add an E2E test for step mismatch validation.
-- [ ] Add an E2E test for clearing a range.
-- [ ] Add an E2E test for cancelling a draft.
-- [ ] Add an E2E test for disabled mode.
-- [ ] Add an E2E test for read-only mode.
+- [x] Add an E2E test for clearing a range.
+- [x] Add an E2E test for cancelling a draft.
+- [x] Add an E2E test for disabled mode.
+- [x] Add an E2E test for read-only mode.
 - [ ] Add an E2E test for required mode.
 - [ ] Add an E2E test for a DST gap.
 - [ ] Add an E2E test for resolving a DST overlap.
