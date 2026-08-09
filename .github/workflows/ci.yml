@@ -1,0 +1,97 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm pack --dry-run
+
+  browser:
+    name: Browser and Visual
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - name: Build current package before browser tests
+        run: npm run build
+      - name: Install the browser required by this repository
+        run: npm exec -- playwright install chromium
+      - run: npm run test:e2e
+      - run: npm run test:visual
+      - name: Upload Playwright diagnostics
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: playwright-diagnostics-${{ github.run_id }}
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  consumers:
+    name: Packed React Consumers
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Pack the exact artifact
+        id: pack
+        shell: bash
+        run: |
+          mkdir package-artifacts
+          filename="$(npm pack --pack-destination package-artifacts --json | node -e "let input=''; process.stdin.on('data', chunk => input += chunk); process.stdin.on('end', () => process.stdout.write(JSON.parse(input)[0].filename));")"
+          echo "tarball=$GITHUB_WORKSPACE/package-artifacts/$filename" >> "$GITHUB_OUTPUT"
+      - name: Verify React 18 consumer
+        env:
+          TARBALL: ${{ steps.pack.outputs.tarball }}
+        run: |
+          fixture="$(mktemp -d "$RUNNER_TEMP/react18.XXXXXX")"
+          cp -R fixtures/react18/. "$fixture"
+          cd "$fixture"
+          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); p.dependencies['@ntustray/react-datetime-range-picker']='file:' + process.env.TARBALL; fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\n');"
+          rm package-lock.json
+          npm install
+          npm run typecheck
+      - name: Verify React 19 consumer
+        env:
+          TARBALL: ${{ steps.pack.outputs.tarball }}
+        run: |
+          fixture="$(mktemp -d "$RUNNER_TEMP/react19.XXXXXX")"
+          cp -R fixtures/react19/. "$fixture"
+          cd "$fixture"
+          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); p.dependencies['@ntustray/react-datetime-range-picker']='file:' + process.env.TARBALL; fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\n');"
+          rm package-lock.json
+          npm install
+          npm run typecheck
