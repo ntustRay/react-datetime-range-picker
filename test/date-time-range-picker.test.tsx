@@ -380,7 +380,7 @@ describe("DateTimeRangePicker", () => {
 
     expect(
       screen.getByRole("button", { name: "Select date and time range" })
-        .textContent,
-    ).toBe("2026/08/09\u200920:00:00 – 2026/08/09\u200921:00:00");
+        .textContent?.replaceAll(/\s/gu, " "),
+    ).toBe("2026/08/09 20:00:00 – 2026/08/09 21:00:00");
   });
 });

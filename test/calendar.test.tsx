@@ -29,6 +29,18 @@ async function renderOpenCalendar(
 }
 
 describe("calendar", () => {
+  test("renders the current and following month for responsive layout", async () => {
+    await renderOpenCalendar();
+
+    expect(screen.getByRole("grid", { name: "August 2026" })).not.toBeNull();
+    expect(screen.getByRole("grid", { name: "September 2026" })).not.toBeNull();
+    expect(
+      screen.getByRole("grid", { name: "September 2026" }).getAttribute(
+        "data-responsive-calendar",
+      ),
+    ).toBe("wide");
+  });
+
   test("renders a complete six-week month grid with locale weekdays", async () => {
     await renderOpenCalendar();
     const grid = screen.getByRole("grid", { name: "August 2026" });
@@ -46,8 +58,9 @@ describe("calendar", () => {
 
   test("locale and explicit weekday override control grid order", async () => {
     await renderOpenCalendar(AUGUST_RANGE, { locale: "en-GB" });
+    const grid = screen.getByRole("grid", { name: "August 2026" });
     expect(
-      screen.getAllByRole("columnheader").map((header) => header.textContent),
+      within(grid).getAllByRole("columnheader").map((header) => header.textContent),
     ).toEqual(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]);
   });
 
@@ -70,8 +83,11 @@ describe("calendar", () => {
       endTimestamp: Date.UTC(2024, 1, 2),
     });
 
+    const grid = screen.getByRole("grid", { name: "February 2024" });
     expect(
-      screen.getByRole("gridcell", { name: "Thursday, February 29, 2024" }),
+      within(grid).getByRole("gridcell", {
+        name: "Thursday, February 29, 2024",
+      }),
     ).not.toBeNull();
   });
 
@@ -131,6 +147,30 @@ describe("calendar", () => {
     expect(onChange).toHaveBeenNthCalledWith(2, {
       startTimestamp: Date.UTC(2026, 7, 10),
       endTimestamp: Date.UTC(2026, 7, 12),
+    });
+  });
+
+  test("pointer selection spans the two displayed months", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    await renderOpenCalendar(AUGUST_RANGE, { onChange });
+
+    await user.click(
+      within(screen.getByRole("grid", { name: "August 2026" })).getByRole(
+        "gridcell",
+        { name: "Sunday, August 30, 2026" },
+      ),
+    );
+    await user.click(
+      within(screen.getByRole("grid", { name: "September 2026" })).getByRole(
+        "gridcell",
+        { name: "Wednesday, September 2, 2026" },
+      ),
+    );
+
+    expect(onChange).toHaveBeenLastCalledWith({
+      startTimestamp: Date.UTC(2026, 7, 30),
+      endTimestamp: Date.UTC(2026, 8, 2),
     });
   });
 

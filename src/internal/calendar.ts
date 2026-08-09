@@ -30,7 +30,21 @@ export function getFirstWeekdayIndex(
   override: Weekday | undefined,
 ): number {
   if (override !== undefined) return WEEKDAY_INDEX[override];
-  const firstDay = new Intl.Locale(locale).getWeekInfo().firstDay;
+  const localeInfo: unknown = new Intl.Locale(locale);
+  let firstDay: number;
+  if (
+    typeof localeInfo === "object" &&
+    localeInfo !== null &&
+    "weekInfo" in localeInfo &&
+    typeof localeInfo.weekInfo === "object" &&
+    localeInfo.weekInfo !== null &&
+    "firstDay" in localeInfo.weekInfo &&
+    typeof localeInfo.weekInfo.firstDay === "number"
+  ) {
+    firstDay = localeInfo.weekInfo.firstDay;
+  } else {
+    firstDay = new Intl.Locale(locale).getWeekInfo().firstDay;
+  }
   return firstDay === 7 ? 0 : firstDay;
 }
 

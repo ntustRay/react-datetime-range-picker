@@ -69,6 +69,22 @@ export function CalendarView(props: CalendarViewProps): React.JSX.Element {
       ),
     [displayed.year, displayed.month, props.timezone, firstWeekdayIndex],
   );
+  const followingMonth = moveCalendarMonth(displayed.year, displayed.month, 1);
+  const followingCalendar = useMemo(
+    () =>
+      createCalendarMonth(
+        followingMonth.year,
+        followingMonth.month,
+        props.timezone,
+        firstWeekdayIndex,
+      ),
+    [
+      followingMonth.year,
+      followingMonth.month,
+      props.timezone,
+      firstWeekdayIndex,
+    ],
+  );
   const selectingEnd =
     props.value.startTimestamp !== null && props.value.endTimestamp === null;
   const startDay =
@@ -112,9 +128,14 @@ export function CalendarView(props: CalendarViewProps): React.JSX.Element {
     month: "long",
     timeZone: "UTC",
   }).format(Date.UTC(displayed.year, displayed.month - 1, 1));
+  const followingMonthLabel = new Intl.DateTimeFormat(props.locale, {
+    year: "numeric",
+    month: "long",
+    timeZone: "UTC",
+  }).format(Date.UTC(followingMonth.year, followingMonth.month - 1, 1));
 
   return (
-    <section aria-label="Calendar">
+    <section aria-label="Calendar" className="dtrp-calendar-region">
       <div>
         <button
           type="button"
@@ -203,6 +224,79 @@ export function CalendarView(props: CalendarViewProps): React.JSX.Element {
                       else return;
                       event.preventDefault();
                     }}
+                    onClick={() => {
+                      if (day.timestamp === null) return;
+                      props.onChange(
+                        selectingEnd
+                          ? {
+                              startTimestamp: props.value.startTimestamp,
+                              endTimestamp: day.timestamp,
+                            }
+                          : {
+                              startTimestamp: day.timestamp,
+                              endTimestamp: null,
+                            },
+                      );
+                    }}
+                  >
+                    {day.day}
+                    {selectedStart ? <span> Start</span> : null}
+                    {selectedEnd ? <span> End</span> : null}
+                    {inRange ? <span> In range</span> : null}
+                  </button>
+                );
+              })}
+          </div>
+        ))}
+      </div>
+      <div
+        role="grid"
+        aria-label={followingMonthLabel}
+        className="dtrp-calendar-wide"
+        data-responsive-calendar="wide"
+      >
+        <div role="row">
+          {weekdayLabels(props.locale, firstWeekdayIndex).map((label) => (
+            <span key={label} role="columnheader">
+              {label}
+            </span>
+          ))}
+        </div>
+        {Array.from({ length: 6 }, (_, rowIndex) => (
+          <div key={rowIndex} role="row">
+            {followingCalendar.days
+              .slice(rowIndex * 7, rowIndex * 7 + 7)
+              .map((day) => {
+                const disabled = isCalendarDayDisabled(
+                  day.timestamp,
+                  selectingEnd,
+                  props.value.startTimestamp,
+                  props.constraints,
+                );
+                const selectedStart = day.timestamp === startDay;
+                const selectedEnd = day.timestamp === endDay;
+                const inRange =
+                  day.timestamp !== null &&
+                  startDay !== null &&
+                  endDay !== null &&
+                  day.timestamp > startDay &&
+                  day.timestamp < endDay;
+                const label = new Intl.DateTimeFormat(props.locale, {
+                  dateStyle: "full",
+                  timeZone: props.timezone,
+                }).format(day.timestamp ?? 0);
+                return (
+                  <button
+                    key={`${day.year}-${day.month}-${day.day}`}
+                    type="button"
+                    role="gridcell"
+                    aria-label={label}
+                    aria-selected={selectedStart || selectedEnd}
+                    aria-current={day.timestamp === today ? "date" : undefined}
+                    disabled={disabled}
+                    tabIndex={-1}
+                    data-current-month={day.currentMonth}
+                    data-in-range={inRange}
                     onClick={() => {
                       if (day.timestamp === null) return;
                       props.onChange(

@@ -1,1 +1,23 @@
-/* Base component styles will be added with the first rendered UI slice. */
+.dtrp-calendar-region {
+  container-type: inline-size;
+}
+
+.dtrp-calendar-wide {
+  display: none;
+}
+
+@container (min-width: 40rem) {
+  .dtrp-calendar-region {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--dtrp-space, 1rem);
+  }
+
+  .dtrp-calendar-region > :first-child {
+    grid-column: 1 / -1;
+  }
+
+  .dtrp-calendar-wide {
+    display: block;
+  }
+}

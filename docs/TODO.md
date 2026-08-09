@@ -296,26 +296,26 @@ the current clock when a deterministic relative preset requires it.
 
 ## 9. Develop Calendar UI in Vertical Slices
 
-- [ ] Render a semantic calendar dialog inside the popover.
-- [ ] Render the calendar as an accessible grid.
-- [ ] Render weekday headers in locale order.
-- [ ] Render previous- and next-month controls.
-- [ ] Render one calendar month by default at narrow widths.
-- [ ] Render two calendar months at the chosen container breakpoint.
-- [ ] Implement the responsive change with CSS container queries.
-- [ ] Avoid JavaScript viewport listeners for month count.
+- [x] Render a semantic calendar dialog inside the popover.
+- [x] Render the calendar as an accessible grid.
+- [x] Render weekday headers in locale order.
+- [x] Render previous- and next-month controls.
+- [x] Render one calendar month by default at narrow widths.
+- [x] Render two calendar months at the chosen container breakpoint.
+- [x] Implement the responsive change with CSS container queries.
+- [x] Avoid JavaScript viewport listeners for month count.
 - [ ] Add visible start, end, in-range, today, disabled, and focus states.
 - [ ] Ensure states are distinguishable without color alone.
-- [ ] Support arrow-key movement by day and week.
-- [ ] Support Home and End movement within a week.
-- [ ] Support Page Up and Page Down month movement.
+- [x] Support arrow-key movement by day and week.
+- [x] Support Home and End movement within a week.
+- [x] Support Page Up and Page Down month movement.
 - [ ] Support Enter and Space selection.
 - [ ] Prevent disabled dates from being selected by pointer.
 - [ ] Prevent disabled dates from being selected by keyboard.
-- [ ] Restore focus predictably after month navigation.
+- [x] Restore focus predictably after month navigation.
 - [ ] Component-test single-month rendering.
-- [ ] Component-test two-month rendering.
-- [ ] Component-test range selection across months.
+- [x] Component-test two-month rendering.
+- [x] Component-test range selection across months.
 
 ## 10. Develop Time and Precision UI in Vertical Slices
 
@@ -409,7 +409,7 @@ the current clock when a deterministic relative preset requires it.
 ## 14. Add Styling
 
 - [ ] Create a framework-independent base stylesheet.
-- [ ] Export the stylesheet through the package exports map.
+- [x] Export the stylesheet through the package exports map.
 - [ ] Define typography custom properties.
 - [ ] Define spacing custom properties.
 - [ ] Define radius custom properties.
