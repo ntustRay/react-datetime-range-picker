@@ -63,6 +63,57 @@ function Demo(): React.JSX.Element {
         locale="zh-TW"
         timezoneOptions={["UTC", "Asia/Taipei", "America/New_York"]}
       />
+      <div className="demo-examples">
+        <h2>Configuration examples</h2>
+        <DateTimeRangePicker
+          value={value}
+          onChange={setValue}
+          onCommit={setCommitted}
+          required
+          constraints={{
+            minTimestamp: Date.UTC(2026, 0, 1),
+            maxTimestamp: Date.UTC(2027, 0, 1),
+            maxDurationMilliseconds: 7 * 86_400_000,
+          }}
+          steps={{ minute: 5, second: 10, millisecond: 100 }}
+          presets={[
+            {
+              id: "today",
+              label: "Today",
+              getValue: ({ nowTimestamp }) => ({
+                startTimestamp: nowTimestamp - 86_400_000,
+                endTimestamp: nowTimestamp,
+              }),
+            },
+          ]}
+          labels={{ trigger: "Constrained range", apply: "Use range" }}
+          testIds={{ root: "dtrp-constrained" }}
+        />
+        <DateTimeRangePicker
+          value={EMPTY_RANGE}
+          onChange={() => undefined}
+          onCommit={() => undefined}
+          labels={{ trigger: "Disabled range" }}
+          disabled
+        />
+        <DateTimeRangePicker
+          value={EMPTY_RANGE}
+          onChange={() => undefined}
+          onCommit={() => undefined}
+          labels={{ trigger: "Read-only range" }}
+          readOnly
+        />
+        <DateTimeRangePicker
+          value={{
+            startTimestamp: Date.UTC(2024, 2, 10, 7, 30),
+            endTimestamp: Date.UTC(2024, 2, 10, 8, 30),
+          }}
+          onChange={() => undefined}
+          onCommit={() => undefined}
+          timezone="America/New_York"
+          labels={{ trigger: "DST gap example" }}
+        />
+      </div>
       <dl className="demo-status">
         <div>
           <dt>Draft</dt>

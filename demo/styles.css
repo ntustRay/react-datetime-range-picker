@@ -53,6 +53,20 @@ h1 {
   background: #e7eeec;
 }
 
+.demo-examples {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #b7c9c4;
+}
+
+.demo-examples h2 {
+  margin: 0;
+  color: #163c38;
+  font-size: 1.2rem;
+}
+
 dt {
   color: #0b6e69;
   font-size: 0.75rem;
