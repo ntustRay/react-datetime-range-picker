@@ -55,7 +55,8 @@ const DEFAULT_LOCALE_TEXT: DateTimeRangeLocaleText = {
   validationInvalidText: "Enter a valid date and time.",
   validationInvalidTimezone: "Choose a valid IANA timezone.",
   validationNonexistentLocalTime: "This local time does not exist.",
-  validationAmbiguousLocalTime: "Choose an offset for this repeated local time.",
+  validationAmbiguousLocalTime:
+    "Choose an offset for this repeated local time.",
 };
 
 const VALIDATION_MESSAGE_KEYS: Record<

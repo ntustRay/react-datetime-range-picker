@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 
 import type { DateTimeRangeDraftTarget } from "./internal/date-time-range-draft.js";
 import { resolvePickerConfiguration } from "./internal/picker-configuration.js";
@@ -6,10 +6,7 @@ import { PickerPopover } from "./internal/picker-popover.js";
 import { RangeFields } from "./internal/range-fields.js";
 import { getTestId } from "./internal/test-id.js";
 import { useDateTimeRangeDraft } from "./internal/use-date-time-range-draft.js";
-import type {
-  DateTimeRangePickerProps,
-  DateTimeRangeValue,
-} from "./types.js";
+import type { DateTimeRangePickerProps, DateTimeRangeValue } from "./types.js";
 
 interface DebounceTimers {
   start: ReturnType<typeof setTimeout> | null;
@@ -53,17 +50,23 @@ export function DateTimeRangePicker(
     onChange: props.onChange,
     onValidationChange: props.onValidationChange,
   });
+  const resetDraft = draft.reset;
+  const controlledValue = props.value;
+  const onChange = props.onChange;
 
-  const clearDebounce = (target: DateTimeRangeDraftTarget): void => {
-    const timer = debounceTimersRef.current[target];
-    if (timer !== null) clearTimeout(timer);
-    debounceTimersRef.current[target] = null;
-  };
+  const clearDebounce = useCallback(
+    (target: DateTimeRangeDraftTarget): void => {
+      const timer = debounceTimersRef.current[target];
+      if (timer !== null) clearTimeout(timer);
+      debounceTimersRef.current[target] = null;
+    },
+    [],
+  );
 
-  const clearAllDebounces = (): void => {
+  const clearAllDebounces = useCallback((): void => {
     clearDebounce("start");
     clearDebounce("end");
-  };
+  }, [clearDebounce]);
 
   const commitInput = (target: DateTimeRangeDraftTarget): void => {
     clearDebounce(target);
@@ -82,31 +85,34 @@ export function DateTimeRangePicker(
     }, 300);
   };
 
-  const focusTargetInput = (target: DateTimeRangeDraftTarget): void => {
-    suppressFocusOpenRef.current = true;
-    if (target === "start") startInputRef.current?.focus();
-    else endInputRef.current?.focus();
-    suppressFocusOpenRef.current = false;
-  };
+  const focusTargetInput = useCallback(
+    (target: DateTimeRangeDraftTarget): void => {
+      suppressFocusOpenRef.current = true;
+      if (target === "start") startInputRef.current?.focus();
+      else endInputRef.current?.focus();
+      suppressFocusOpenRef.current = false;
+    },
+    [],
+  );
 
   const handleInputFocus = (target: DateTimeRangeDraftTarget): void => {
     if (!suppressFocusOpenRef.current) openPicker(target, false);
   };
 
-  const restoreOpenedValue = (): void => {
+  const restoreOpenedValue = useCallback((): void => {
     clearAllDebounces();
     const openedValue = openedValueRef.current;
-    draft.reset(openedValue);
-    if (!rangesEqual(props.value, openedValue)) {
-      props.onChange(openedValue);
+    resetDraft(openedValue);
+    if (!rangesEqual(controlledValue, openedValue)) {
+      onChange(openedValue);
     }
-  };
+  }, [clearAllDebounces, controlledValue, onChange, resetDraft]);
 
-  const closeAndDiscard = (): void => {
+  const closeAndDiscard = useCallback((): void => {
     restoreOpenedValue();
     setIsOpen(false);
     focusTargetInput(activeTarget);
-  };
+  }, [activeTarget, focusTargetInput, restoreOpenedValue]);
 
   const openPicker = (
     target: DateTimeRangeDraftTarget,
@@ -130,9 +136,7 @@ export function DateTimeRangePicker(
     focusTargetInput("end");
   };
 
-  const validationDescriptionIds = (
-    target: DateTimeRangeDraftTarget,
-  ): string =>
+  const validationDescriptionIds = (target: DateTimeRangeDraftTarget): string =>
     draft.validation.errors
       .filter((error) => error.target === target || error.target === "range")
       .map((error) => `dtrp-${error.target}-${error.code}-error`)
@@ -145,7 +149,7 @@ export function DateTimeRangePicker(
 
   useEffect(() => {
     return () => clearAllDebounces();
-  }, []);
+  }, [clearAllDebounces]);
 
   useEffect(() => {
     if (!isOpen) return undefined;
@@ -211,7 +215,11 @@ export function DateTimeRangePicker(
           configuration={configuration}
           draft={draft}
           activeTarget={activeTarget}
-          dialog={{ id: dialogId, label: configuration.localeText.triggerLabel, ref: dialogRef }}
+          dialog={{
+            id: dialogId,
+            label: configuration.localeText.triggerLabel,
+            ref: dialogRef,
+          }}
           onReset={restoreOpenedValue}
           onCancel={closeAndDiscard}
           onNext={() => {

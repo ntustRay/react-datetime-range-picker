@@ -21,14 +21,14 @@ describe("DateTimeRangePicker", () => {
       onCommit: vi.fn(),
     };
     const { rerender } = render(<DateTimeRangePicker {...props} />);
-    expect(screen.getByTestId("dtrp-root").getAttribute("data-color-scheme")).toBe(
-      "light",
-    );
+    expect(
+      screen.getByTestId("dtrp-root").getAttribute("data-color-scheme"),
+    ).toBe("light");
 
     rerender(<DateTimeRangePicker {...props} colorScheme="dark" />);
-    expect(screen.getByTestId("dtrp-root").getAttribute("data-color-scheme")).toBe(
-      "dark",
-    );
+    expect(
+      screen.getByTestId("dtrp-root").getAttribute("data-color-scheme"),
+    ).toBe("dark");
   });
 
   test("renders two text inputs and disables End until Start is valid", () => {
@@ -40,13 +40,17 @@ describe("DateTimeRangePicker", () => {
       />,
     );
 
-    expect(screen.getByRole("textbox", { name: "Start" }).getAttribute("placeholder")).toBe(
-      "YYYY/MM/DD HH:mm:ss",
-    );
+    expect(
+      screen
+        .getByRole("textbox", { name: "Start" })
+        .getAttribute("placeholder"),
+    ).toBe("YYYY/MM/DD HH:mm:ss");
     expect(
       screen.getByRole("textbox", { name: "End" }).hasAttribute("disabled"),
     ).toBe(true);
-    expect(screen.getByRole("button", { name: "Open calendar" })).not.toBeNull();
+    expect(
+      screen.getByRole("button", { name: "Open calendar" }),
+    ).not.toBeNull();
   });
 
   test("locale overrides use defaults for omitted wording", async () => {
@@ -54,7 +58,10 @@ describe("DateTimeRangePicker", () => {
     render(
       <DateTimeRangePicker
         value={COMPLETE_RANGE}
-        localeText={{ calendarButtonLabel: "開啟日期", nextButtonLabel: "下一步" }}
+        localeText={{
+          calendarButtonLabel: "開啟日期",
+          nextButtonLabel: "下一步",
+        }}
         onChange={vi.fn()}
         onCommit={vi.fn()}
       />,
@@ -143,7 +150,9 @@ describe("DateTimeRangePicker", () => {
 
     expect(onCommit).toHaveBeenCalledWith(COMPLETE_RANGE);
     expect(screen.queryByRole("dialog")).toBeNull();
-    expect(document.activeElement).toBe(screen.getByRole("textbox", { name: "End" }));
+    expect(document.activeElement).toBe(
+      screen.getByRole("textbox", { name: "End" }),
+    );
   });
 
   test("Reset restores the range captured when the popover opened", async () => {
@@ -172,16 +181,22 @@ describe("DateTimeRangePicker", () => {
     await user.click(screen.getByRole("button", { name: "Other range" }));
     await user.click(screen.getByRole("button", { name: "Reset" }));
 
-    expect(screen.getByRole("textbox", { name: "Start" }).getAttribute("value")).toBe(
-      "2026/08/09 12:34:56",
+    expect(
+      screen.getByRole("textbox", { name: "Start" }).getAttribute("value"),
+    ).toBe("2026/08/09 12:34:56");
+    expect(screen.getByRole("dialog").getAttribute("data-target")).toBe(
+      "start",
     );
-    expect(screen.getByRole("dialog").getAttribute("data-target")).toBe("start");
   });
 
   test("Cancel restores opening text, closes, and returns focus", async () => {
     const user = userEvent.setup();
     render(
-      <DateTimeRangePicker value={COMPLETE_RANGE} onChange={vi.fn()} onCommit={vi.fn()} />,
+      <DateTimeRangePicker
+        value={COMPLETE_RANGE}
+        onChange={vi.fn()}
+        onCommit={vi.fn()}
+      />,
     );
     const start = screen.getByRole("textbox", { name: "Start" });
     await user.click(start);
@@ -197,7 +212,11 @@ describe("DateTimeRangePicker", () => {
   test("Escape and outside pointer both discard the session", async () => {
     const user = userEvent.setup();
     render(
-      <DateTimeRangePicker value={COMPLETE_RANGE} onChange={vi.fn()} onCommit={vi.fn()} />,
+      <DateTimeRangePicker
+        value={COMPLETE_RANGE}
+        onChange={vi.fn()}
+        onCommit={vi.fn()}
+      />,
     );
     await user.click(screen.getByRole("textbox", { name: "Start" }));
     await user.keyboard("{Escape}");
@@ -234,15 +253,18 @@ describe("DateTimeRangePicker", () => {
       />,
     );
     expect(screen.getByTestId("dtrp-period-column")).not.toBeNull();
-    expect(screen.getByRole("textbox", { name: "Start" }).getAttribute("value")).toBe(
-      "2026/08/09 12:34:56 PM",
-    );
+    expect(
+      screen.getByRole("textbox", { name: "Start" }).getAttribute("value"),
+    ).toBe("2026/08/09 12:34:56 PM");
   });
 
   test.each([
     ["hour", ["dtrp-hour-column"]],
     ["minute", ["dtrp-hour-column", "dtrp-minute-column"]],
-    ["second", ["dtrp-hour-column", "dtrp-minute-column", "dtrp-second-column"]],
+    [
+      "second",
+      ["dtrp-hour-column", "dtrp-minute-column", "dtrp-second-column"],
+    ],
     [
       "millisecond",
       [
@@ -252,26 +274,34 @@ describe("DateTimeRangePicker", () => {
         "dtrp-millisecond-column",
       ],
     ],
-  ] as const)("precision %s renders only its time columns", async (precision, testIds) => {
-    const user = userEvent.setup();
-    render(
-      <DateTimeRangePicker
-        precision={precision}
-        value={COMPLETE_RANGE}
-        onChange={vi.fn()}
-        onCommit={vi.fn()}
-      />,
-    );
-    await user.click(screen.getByRole("button", { name: "Open calendar" }));
-    expect(screen.getAllByRole("listbox")).toHaveLength(testIds.length);
-    for (const testId of testIds) expect(screen.getByTestId(testId)).not.toBeNull();
-  });
+  ] as const)(
+    "precision %s renders only its time columns",
+    async (precision, testIds) => {
+      const user = userEvent.setup();
+      render(
+        <DateTimeRangePicker
+          precision={precision}
+          value={COMPLETE_RANGE}
+          onChange={vi.fn()}
+          onCommit={vi.fn()}
+        />,
+      );
+      await user.click(screen.getByRole("button", { name: "Open calendar" }));
+      expect(screen.getAllByRole("listbox")).toHaveLength(testIds.length);
+      for (const testId of testIds)
+        expect(screen.getByTestId(testId)).not.toBeNull();
+    },
+  );
 
   test("time columns support keyboard selection", async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
     render(
-      <DateTimeRangePicker value={COMPLETE_RANGE} onChange={onChange} onCommit={vi.fn()} />,
+      <DateTimeRangePicker
+        value={COMPLETE_RANGE}
+        onChange={onChange}
+        onCommit={vi.fn()}
+      />,
     );
     await user.click(screen.getByRole("button", { name: "Open calendar" }));
     const hour = screen.getByTestId("dtrp-hour-column");
@@ -287,7 +317,11 @@ describe("DateTimeRangePicker", () => {
     vi.useFakeTimers();
     const onChange = vi.fn();
     render(
-      <DateTimeRangePicker value={COMPLETE_RANGE} onChange={onChange} onCommit={vi.fn()} />,
+      <DateTimeRangePicker
+        value={COMPLETE_RANGE}
+        onChange={onChange}
+        onCommit={vi.fn()}
+      />,
     );
     fireEvent.click(screen.getByRole("button", { name: "Open calendar" }));
     const hour = screen.getByTestId("dtrp-hour-column");
@@ -314,7 +348,10 @@ describe("DateTimeRangePicker", () => {
       />,
     );
     await user.click(screen.getByTestId("calendar-control"));
-    await user.selectOptions(screen.getByTestId("dtrp-timezone"), "Asia/Taipei");
+    await user.selectOptions(
+      screen.getByTestId("dtrp-timezone"),
+      "Asia/Taipei",
+    );
     expect(onTimezoneChange).toHaveBeenCalledWith("Asia/Taipei");
     expect(screen.getByTestId("hours")).not.toBeNull();
   });

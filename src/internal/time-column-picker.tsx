@@ -2,10 +2,7 @@ import { useEffect, useRef } from "react";
 
 import { isUnitVisible } from "./precision.js";
 import { getTestId } from "./test-id.js";
-import {
-  formatTimezoneOffset,
-  getLocalDateTime,
-} from "./timezone.js";
+import { formatTimezoneOffset, getLocalDateTime } from "./timezone.js";
 import type { DateTimeRangeDraftTarget } from "./date-time-range-draft.js";
 import type { DateTimeRangeDraftController } from "./use-date-time-range-draft.js";
 import type {
@@ -261,7 +258,7 @@ export function TimeColumnPicker(
           onChange={(value) => {
             const nextHour =
               props.hourCycle === "h12"
-                ? value % 12 + (isPm ? 12 : 0)
+                ? (value % 12) + (isPm ? 12 : 0)
                 : value;
             props.draft.changeTimeUnit(props.target, "hour", nextHour);
           }}
@@ -320,10 +317,7 @@ export function TimeColumnPicker(
             disabled={local === null}
             testId={getTestId(props.testIds.periodColumn, "dtrp-period-column")}
             onChange={(value) =>
-              props.draft.changePeriod(
-                props.target,
-                value === 0 ? "am" : "pm",
-              )
+              props.draft.changePeriod(props.target, value === 0 ? "am" : "pm")
             }
           />
         ) : null}

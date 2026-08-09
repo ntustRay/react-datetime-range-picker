@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
 
-test("opens the picker and exposes exactly one calendar month", async ({ page }) => {
+test("opens the picker and exposes exactly one calendar month", async ({
+  page,
+}) => {
   await page.goto("/");
   await page.getByRole("button", { name: "開啟日曆" }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
@@ -12,17 +14,19 @@ test("opens the picker and exposes exactly one calendar month", async ({ page })
     "MM",
     "SS",
   ]);
-  const timeColumnStyle = await page.getByTestId("dtrp-hour-column").evaluate(
-    (column) => {
+  const timeColumnStyle = await page
+    .getByTestId("dtrp-hour-column")
+    .evaluate((column) => {
       const style = getComputedStyle(column);
       return { overflowY: style.overflowY, paddingTop: style.paddingTop };
-    },
-  );
+    });
   expect(timeColumnStyle).toEqual({ overflowY: "scroll", paddingTop: "0px" });
   await expect(page.locator("[data-time-scrollbar]")).toHaveCount(3);
 });
 
-test("playground exposes every public precision and controls the timezone", async ({ page }) => {
+test("playground exposes every public precision and controls the timezone", async ({
+  page,
+}) => {
   await page.goto("/");
   const precision = page.getByLabel("Precision");
   await expect(precision.locator("option")).toHaveText([
@@ -37,7 +41,9 @@ test("playground exposes every public precision and controls the timezone", asyn
 
   await page.getByTestId("dtrp-trigger").first().click();
   await page.getByTestId("dtrp-timezone").selectOption("Asia/Taipei");
-  await expect(page.locator(".stage-label")).toContainText("Asia/Taipei · light");
+  await expect(page.locator(".stage-label")).toContainText(
+    "Asia/Taipei · light",
+  );
   await expect(page.getByLabel("Theme")).toHaveValue("light");
   await page.getByLabel("Theme").selectOption("dark");
   await expect(page.getByTestId("dtrp-root").first()).toHaveAttribute(
@@ -61,16 +67,19 @@ test("demo language selection supplies Japanese formatting and wording", async (
   await expect(page.getByRole("button", { name: "次へ" })).toBeVisible();
 });
 
-test("public CSS custom properties remain available to consumers", async ({ page }) => {
+test("public CSS custom properties remain available to consumers", async ({
+  page,
+}) => {
   await page.goto("/");
-  const values = await page.getByTestId("dtrp-root").first().evaluate((root) => {
-    const styles = getComputedStyle(root);
-    return [
-      "--dtrp-space",
-      "--dtrp-radius",
-      "--dtrp-disabled-opacity",
-    ].map((property) => styles.getPropertyValue(property).trim());
-  });
+  const values = await page
+    .getByTestId("dtrp-root")
+    .first()
+    .evaluate((root) => {
+      const styles = getComputedStyle(root);
+      return ["--dtrp-space", "--dtrp-radius", "--dtrp-disabled-opacity"].map(
+        (property) => styles.getPropertyValue(property).trim(),
+      );
+    });
 
   expect(values.every((value) => value !== "")).toBe(true);
 });
@@ -84,18 +93,28 @@ test("range inputs have no default outline", async ({ page }) => {
   );
 });
 
-test("feature examples expose text-only and calendar-only modes", async ({ page }) => {
+test("feature examples expose text-only and calendar-only modes", async ({
+  page,
+}) => {
   await page.goto("/");
 
-  const textScenario = page.locator(".scenario-card").filter({ hasText: "Text-only toolbar" });
+  const textScenario = page
+    .locator(".scenario-card")
+    .filter({ hasText: "Text-only toolbar" });
   await textScenario.getByRole("button", { name: "Open calendar" }).click();
-  const textDialog = textScenario.getByRole("dialog", { name: "Enter exact range" });
+  const textDialog = textScenario.getByRole("dialog", {
+    name: "Enter exact range",
+  });
   await expect(textDialog.getByRole("grid")).toHaveCount(0);
   await textDialog.getByTestId("dtrp-cancel").click();
 
-  const calendarScenario = page.locator(".scenario-card").filter({ hasText: "Calendar-only selection" });
+  const calendarScenario = page
+    .locator(".scenario-card")
+    .filter({ hasText: "Calendar-only selection" });
   await calendarScenario.getByRole("button", { name: "Open calendar" }).click();
-  const calendarDialog = calendarScenario.getByRole("dialog", { name: "Choose reporting days" });
+  const calendarDialog = calendarScenario.getByRole("dialog", {
+    name: "Choose reporting days",
+  });
   await expect(calendarDialog.getByRole("grid").first()).toBeVisible();
   await expect(calendarScenario.getByRole("textbox")).toHaveCount(2);
 });
@@ -103,7 +122,9 @@ test("feature examples expose text-only and calendar-only modes", async ({ page 
 test("constrained preset produces a complete draft", async ({ page }) => {
   await page.goto("/");
   await page.clock.setFixedTime(new Date("2026-08-09T00:00:00.000Z"));
-  const scenario = page.locator(".scenario-card").filter({ hasText: "Guardrailed reporting window" });
+  const scenario = page
+    .locator(".scenario-card")
+    .filter({ hasText: "Guardrailed reporting window" });
   await scenario.getByRole("button", { name: "Open calendar" }).click();
   const dialog = page.getByRole("dialog", { name: "Constrained range" });
   await dialog.getByTestId("dtrp-preset-today").click();
@@ -112,7 +133,9 @@ test("constrained preset produces a complete draft", async ({ page }) => {
   await expect(dialog.getByTestId("dtrp-next")).toBeEnabled();
 });
 
-test("playground reports required validation and invalid case explains failure", async ({ page }) => {
+test("playground reports required validation and invalid case explains failure", async ({
+  page,
+}) => {
   await page.goto("/");
   await page.getByLabel("Required").check();
   await page.getByTestId("dtrp-trigger").first().click();
@@ -121,7 +144,9 @@ test("playground reports required validation and invalid case explains failure",
   );
   await page.getByTestId("dtrp-cancel").first().click();
 
-  const invalidScenario = page.locator(".scenario-card").filter({ hasText: "Invalid controlled range" });
+  const invalidScenario = page
+    .locator(".scenario-card")
+    .filter({ hasText: "Invalid controlled range" });
   await invalidScenario.getByRole("button", { name: "Open calendar" }).click();
   await expect(page.getByText("End must be after start.")).toBeVisible();
 });
@@ -129,7 +154,9 @@ test("playground reports required validation and invalid case explains failure",
 test("DST examples expose gap and overlap guidance", async ({ page }) => {
   await page.goto("/");
 
-  const gapScenario = page.locator(".scenario-card").filter({ hasText: "Spring-forward gap" });
+  const gapScenario = page
+    .locator(".scenario-card")
+    .filter({ hasText: "Spring-forward gap" });
   await gapScenario.getByRole("button", { name: "Open calendar" }).click();
   let dialog = page.getByRole("dialog", { name: "DST gap example" });
   await gapScenario.getByTestId("dtrp-start-input").fill("2024/03/10 02:30:00");
@@ -137,10 +164,16 @@ test("DST examples expose gap and overlap guidance", async ({ page }) => {
   await expect(dialog).toContainText("This local time does not exist.");
   await dialog.getByTestId("dtrp-cancel").click();
 
-  const overlapScenario = page.locator(".scenario-card").filter({ hasText: "Fall-back overlap" });
+  const overlapScenario = page
+    .locator(".scenario-card")
+    .filter({ hasText: "Fall-back overlap" });
   await overlapScenario.getByRole("button", { name: "Open calendar" }).click();
   dialog = page.getByRole("dialog", { name: "DST overlap example" });
-  await overlapScenario.getByTestId("dtrp-start-input").fill("2024/11/03 01:30:00");
+  await overlapScenario
+    .getByTestId("dtrp-start-input")
+    .fill("2024/11/03 01:30:00");
   await overlapScenario.getByTestId("dtrp-start-input").blur();
-  await expect(dialog.getByRole("combobox", { name: "Start offset" })).toBeVisible();
+  await expect(
+    dialog.getByRole("combobox", { name: "Start offset" }),
+  ).toBeVisible();
 });

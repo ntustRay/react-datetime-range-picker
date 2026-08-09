@@ -39,10 +39,7 @@ function getAnchor(
   return { year: local.year, month: local.month };
 }
 
-function getWeekdayLabels(
-  locale: string,
-  firstWeekdayIndex: number,
-): string[] {
+function getWeekdayLabels(locale: string, firstWeekdayIndex: number): string[] {
   const labels: string[] = [];
   for (let index = 0; index < 7; index += 1) {
     const sundayBasedIndex = (firstWeekdayIndex + index) % 7;
@@ -70,7 +67,7 @@ export function CalendarView(props: CalendarViewProps): React.JSX.Element {
     getAnchor(
       props.target === "start"
         ? props.value.startTimestamp
-        : props.value.endTimestamp ?? props.value.startTimestamp,
+        : (props.value.endTimestamp ?? props.value.startTimestamp),
       props.timezone,
     ),
   );
@@ -144,7 +141,7 @@ export function CalendarView(props: CalendarViewProps): React.JSX.Element {
     const timestamp =
       props.target === "start"
         ? props.value.startTimestamp
-        : props.value.endTimestamp ?? props.value.startTimestamp;
+        : (props.value.endTimestamp ?? props.value.startTimestamp);
     setDisplayed(getAnchor(timestamp, props.timezone));
   }, [
     props.target,

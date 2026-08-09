@@ -41,7 +41,9 @@ describe("calendar", () => {
 
     expect(within(grid).getAllByRole("gridcell")).toHaveLength(42);
     expect(
-      within(grid).getAllByRole("columnheader").map((header) => header.textContent),
+      within(grid)
+        .getAllByRole("columnheader")
+        .map((header) => header.textContent),
     ).toEqual(["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]);
   });
 
@@ -49,7 +51,9 @@ describe("calendar", () => {
     await renderOpenCalendar(AUGUST_RANGE, { locale: "en-GB" });
     const grid = screen.getByRole("grid", { name: "August 2026" });
     expect(
-      within(grid).getAllByRole("columnheader").map((header) => header.textContent),
+      within(grid)
+        .getAllByRole("columnheader")
+        .map((header) => header.textContent),
     ).toEqual(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]);
   });
 
@@ -75,8 +79,12 @@ describe("calendar", () => {
       },
     });
 
-    expect(screen.getByRole("button", { name: "Previous billing month" })).not.toBeNull();
-    expect(screen.getByRole("button", { name: "Next billing month" })).not.toBeNull();
+    expect(
+      screen.getByRole("button", { name: "Previous billing month" }),
+    ).not.toBeNull();
+    expect(
+      screen.getByRole("button", { name: "Next billing month" }),
+    ).not.toBeNull();
   });
 
   test("start selection changes only Start and preserves End", async () => {

@@ -239,11 +239,7 @@ function transitionLocalDateTimeChange(
       state: updateField(
         state,
         target,
-        invalidField(
-          state[target],
-          resolution.status,
-          resolution.candidates,
-        ),
+        invalidField(state[target], resolution.status, resolution.candidates),
       ),
       changedValue: null,
     };
@@ -279,9 +275,7 @@ function transitionDateChange(
 ): DateTimeRangeDraftTransition {
   const selectedDate = getLocalDateTime(timestamp, context.timezone);
   const currentTimestamp =
-    target === "start"
-      ? state.value.startTimestamp
-      : state.value.endTimestamp;
+    target === "start" ? state.value.startTimestamp : state.value.endTimestamp;
   const current =
     currentTimestamp === null
       ? selectedDate
@@ -307,9 +301,7 @@ function transitionTimeUnitChange(
   context: DateTimeRangeDraftContext,
 ): DateTimeRangeDraftTransition {
   const timestamp =
-    target === "start"
-      ? state.value.startTimestamp
-      : state.value.endTimestamp;
+    target === "start" ? state.value.startTimestamp : state.value.endTimestamp;
   if (timestamp === null) return { state, changedValue: null };
   const local = getLocalDateTime(timestamp, context.timezone);
   local[unit] = value;
@@ -323,12 +315,10 @@ function transitionPeriodChange(
   context: DateTimeRangeDraftContext,
 ): DateTimeRangeDraftTransition {
   const timestamp =
-    target === "start"
-      ? state.value.startTimestamp
-      : state.value.endTimestamp;
+    target === "start" ? state.value.startTimestamp : state.value.endTimestamp;
   if (timestamp === null) return { state, changedValue: null };
   const local = getLocalDateTime(timestamp, context.timezone);
-  local.hour = local.hour % 12 + (period === "pm" ? 12 : 0);
+  local.hour = (local.hour % 12) + (period === "pm" ? 12 : 0);
   return transitionLocalDateTimeChange(state, target, local, context);
 }
 
@@ -375,12 +365,7 @@ export function transitionDateTimeRangeDraft(
     );
   }
   if (action.type === "change-period") {
-    return transitionPeriodChange(
-      state,
-      action.target,
-      action.period,
-      context,
-    );
+    return transitionPeriodChange(state, action.target, action.period, context);
   }
   const candidate = state[action.target].ambiguousCandidates[action.index];
   if (candidate === undefined) return { state, changedValue: null };

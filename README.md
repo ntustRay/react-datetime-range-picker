@@ -82,9 +82,12 @@ contract is in [docs/CONTEXT.md](docs/CONTEXT.md).
 ## Development
 
 ```sh
-npm run check       # typecheck, tests, and package build
-npm run demo:build  # build the Vite demo
-npm run demo        # serve the demo locally
+npm run lint          # ESLint with zero warnings allowed
+npm run format        # format supported files with Prettier
+npm run format:check  # verify Prettier formatting without writing
+npm run check         # lint, format check, typecheck, tests, and package build
+npm run demo:build    # build the Vite demo
+npm run demo          # serve the demo locally
 ```
 
 The package is ESM-only, has no runtime dependencies, and supports React 18

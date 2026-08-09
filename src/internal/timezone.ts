@@ -69,7 +69,9 @@ export function getLocalDateTime(
     minute === null ||
     second === null
   ) {
-    throw new RangeError("Unable to format timestamp in the selected timezone.");
+    throw new RangeError(
+      "Unable to format timestamp in the selected timezone.",
+    );
   }
 
   return {
@@ -106,8 +108,10 @@ export function getTimezoneOffsetMinutes(
   timestamp: number,
   timezone: string,
 ): number {
-  return (localAsUtc(getLocalDateTime(timestamp, timezone)) - timestamp) /
-    MILLISECONDS_PER_MINUTE;
+  return (
+    (localAsUtc(getLocalDateTime(timestamp, timezone)) - timestamp) /
+    MILLISECONDS_PER_MINUTE
+  );
 }
 
 export function formatTimezoneOffset(offsetMinutes: number): string {

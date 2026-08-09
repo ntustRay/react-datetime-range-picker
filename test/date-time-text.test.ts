@@ -34,16 +34,11 @@ describe("editable date-time text", () => {
     expect(formatEditableTimestamp(midnight, "UTC", "second", "h12")).toBe(
       "2026/08/09 12:05:06 AM",
     );
+    expect(formatEditableTimestamp(afternoon, "UTC", "second", "h12")).toBe(
+      "2026/08/09 08:05:06 PM",
+    );
     expect(
-      formatEditableTimestamp(afternoon, "UTC", "second", "h12"),
-    ).toBe("2026/08/09 08:05:06 PM");
-    expect(
-      parseEditableDateTime(
-        "2026/08/09 08:05:06 PM",
-        "UTC",
-        "second",
-        "h12",
-      ),
+      parseEditableDateTime("2026/08/09 08:05:06 PM", "UTC", "second", "h12"),
     ).toMatchObject({
       status: "valid",
       candidates: [{ timestamp: afternoon }],

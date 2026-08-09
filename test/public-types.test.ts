@@ -53,13 +53,7 @@ describe("public domain types", () => {
     expectTypeOf<HourCycle>().toEqualTypeOf<"h12" | "h24">();
     expectTypeOf<ColorScheme>().toEqualTypeOf<"light" | "dark">();
     expectTypeOf<Precision>().toEqualTypeOf<
-      | "year"
-      | "month"
-      | "day"
-      | "hour"
-      | "minute"
-      | "second"
-      | "millisecond"
+      "year" | "month" | "day" | "hour" | "minute" | "second" | "millisecond"
     >();
     expectTypeOf<Weekday>().toEqualTypeOf<
       | "sunday"
@@ -129,12 +123,12 @@ describe("public domain types", () => {
     expectTypeOf<DateTimeRangePickerProps["onCommit"]>().toEqualTypeOf<
       (value: DateTimeRangeValue) => void
     >();
-    expectTypeOf<NonNullable<DateTimeRangePickerProps["onTimezoneChange"]>>().toEqualTypeOf<
-      (timezone: string) => void
-    >();
-    expectTypeOf<NonNullable<DateTimeRangePickerProps["onHourCycleChange"]>>().toEqualTypeOf<
-      (hourCycle: HourCycle) => void
-    >();
+    expectTypeOf<
+      NonNullable<DateTimeRangePickerProps["onTimezoneChange"]>
+    >().toEqualTypeOf<(timezone: string) => void>();
+    expectTypeOf<
+      NonNullable<DateTimeRangePickerProps["onHourCycleChange"]>
+    >().toEqualTypeOf<(hourCycle: HourCycle) => void>();
 
     const preset: DateTimeRangePreset = {
       id: "last-hour",
@@ -146,10 +140,12 @@ describe("public domain types", () => {
     };
     expectTypeOf(preset).toMatchTypeOf<DateTimeRangePreset>();
 
-    expectTypeOf<DateTimeRangeLocaleText["applyButtonLabel"]>().toEqualTypeOf<string>();
-    expectTypeOf<NonNullable<DateTimeRangePickerProps["localeText"]>>().toEqualTypeOf<
-      Partial<DateTimeRangeLocaleText>
-    >();
+    expectTypeOf<
+      DateTimeRangeLocaleText["applyButtonLabel"]
+    >().toEqualTypeOf<string>();
+    expectTypeOf<
+      NonNullable<DateTimeRangePickerProps["localeText"]>
+    >().toEqualTypeOf<Partial<DateTimeRangeLocaleText>>();
     expectTypeOf<DateTimeRangeTestIds["root"]>().toEqualTypeOf<string>();
   });
 

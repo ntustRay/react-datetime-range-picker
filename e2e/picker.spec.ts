@@ -4,7 +4,9 @@ test.beforeEach(async ({ page }) => {
   await page.goto("/");
 });
 
-test("default IDs support opening, resetting, and cancelling", async ({ page }) => {
+test("default IDs support opening, resetting, and cancelling", async ({
+  page,
+}) => {
   const trigger = page.getByTestId("dtrp-trigger").first();
   await trigger.click();
   await expect(page.getByTestId("dtrp-popover")).toBeVisible();
@@ -13,7 +15,9 @@ test("default IDs support opening, resetting, and cancelling", async ({ page }) 
   await expect(page.getByTestId("dtrp-popover")).toHaveCount(0);
 });
 
-test("keyboard calendar selection works in the production demo", async ({ page }) => {
+test("keyboard calendar selection works in the production demo", async ({
+  page,
+}) => {
   await page.getByTestId("dtrp-trigger").first().click();
   const cells = page.locator('[data-testid^="dtrp-date-"]:visible');
   await cells.first().press("Enter");
@@ -22,7 +26,9 @@ test("keyboard calendar selection works in the production demo", async ({ page }
   await expect(page.getByTestId("dtrp-apply")).toBeVisible();
 });
 
-test("pointer calendar selection works in the production demo", async ({ page }) => {
+test("pointer calendar selection works in the production demo", async ({
+  page,
+}) => {
   await page.getByTestId("dtrp-trigger").first().click();
   const cells = page.locator('[data-testid^="dtrp-date-"]:visible');
   await cells.nth(10).click();
@@ -38,9 +44,7 @@ test("visible time scrollbar updates the selected hour", async ({ page }) => {
   const scrollbar = stage.locator("[data-time-scrollbar]").first();
   await expect(scrollbar).toBeVisible();
   await scrollbar.click({ position: { x: 4, y: 126 } });
-  await expect(stage.getByTestId("dtrp-start-input")).toHaveValue(
-    / 11:00:00$/,
-  );
+  await expect(stage.getByTestId("dtrp-start-input")).toHaveValue(/ 11:00:00$/);
 });
 
 test("text entry and Apply update the committed filter", async ({ page }) => {
@@ -54,9 +58,15 @@ test("text entry and Apply update the committed filter", async ({ page }) => {
 });
 
 test("disabled and read-only examples cannot open", async ({ page }) => {
-  const scenario = page.locator(".scenario-card").filter({ hasText: "Unavailable controls" });
-  await expect(scenario.getByRole("button", { name: "Open calendar" })).toHaveCount(2);
-  for (const button of await scenario.getByRole("button", { name: "Open calendar" }).all()) {
+  const scenario = page
+    .locator(".scenario-card")
+    .filter({ hasText: "Unavailable controls" });
+  await expect(
+    scenario.getByRole("button", { name: "Open calendar" }),
+  ).toHaveCount(2);
+  for (const button of await scenario
+    .getByRole("button", { name: "Open calendar" })
+    .all()) {
     await expect(button).toBeDisabled();
   }
 });

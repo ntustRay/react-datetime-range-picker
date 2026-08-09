@@ -58,14 +58,24 @@ function RangeInput(input: RangeInputProps): React.JSX.Element {
       className="dtrp-range-input"
       aria-label={label}
       aria-controls={input.props.dialogId}
-      aria-expanded={input.props.isOpen && input.props.activeTarget === input.target}
+      aria-expanded={
+        input.props.isOpen && input.props.activeTarget === input.target
+      }
       aria-invalid={input.field.error === null ? undefined : true}
-      aria-describedby={input.props.getDescriptionIds(input.target) || undefined}
+      aria-describedby={
+        input.props.getDescriptionIds(input.target) || undefined
+      }
       placeholder={placeholder}
       value={input.field.text}
-      disabled={input.target === "start" ? input.props.disabled : input.props.endDisabled}
+      disabled={
+        input.target === "start"
+          ? input.props.disabled
+          : input.props.endDisabled
+      }
       readOnly={input.props.readOnly}
-      data-active={input.props.isOpen && input.props.activeTarget === input.target}
+      data-active={
+        input.props.isOpen && input.props.activeTarget === input.target
+      }
       data-testid={getTestId(testId, `dtrp-${input.target}-input`)}
       onFocus={() => input.props.onFocus(input.target)}
       onChange={(event) =>
@@ -81,7 +91,11 @@ function RangeInput(input: RangeInputProps): React.JSX.Element {
 
 export function RangeFields(props: RangeFieldsProps): React.JSX.Element {
   return (
-    <div className="dtrp-trigger" role="group" aria-label={props.localeText.triggerLabel}>
+    <div
+      className="dtrp-trigger"
+      role="group"
+      aria-label={props.localeText.triggerLabel}
+    >
       <RangeInput
         target="start"
         field={props.start}

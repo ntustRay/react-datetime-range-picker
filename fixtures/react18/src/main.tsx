@@ -10,5 +10,11 @@ export function App(): React.JSX.Element {
     startTimestamp: null,
     endTimestamp: null,
   });
-  return <DateTimeRangePicker value={value} onChange={setValue} onCommit={setValue} />;
+  return (
+    <DateTimeRangePicker
+      value={value}
+      onChange={setValue}
+      onCommit={setValue}
+    />
+  );
 }

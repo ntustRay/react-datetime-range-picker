@@ -41,19 +41,13 @@ export interface DateTimeRangeDraftController {
   reset: (value: DateTimeRangeValue) => void;
   changeText: (target: DateTimeRangeDraftTarget, text: string) => void;
   commitText: (target: DateTimeRangeDraftTarget) => void;
-  changeDate: (
-    target: DateTimeRangeDraftTarget,
-    timestamp: number,
-  ) => void;
+  changeDate: (target: DateTimeRangeDraftTarget, timestamp: number) => void;
   changeTimeUnit: (
     target: DateTimeRangeDraftTarget,
     unit: "hour" | "minute" | "second" | "millisecond",
     value: number,
   ) => void;
-  changePeriod: (
-    target: DateTimeRangeDraftTarget,
-    period: "am" | "pm",
-  ) => void;
+  changePeriod: (target: DateTimeRangeDraftTarget, period: "am" | "pm") => void;
   chooseOffset: (target: DateTimeRangeDraftTarget, index: number) => void;
 }
 
@@ -76,6 +70,9 @@ export function useDateTimeRangeDraft(
   );
   const stateRef = useRef(state);
   const validationKeyRef = useRef<string | null>(null);
+  const startTimestamp = options.value.startTimestamp;
+  const endTimestamp = options.value.endTimestamp;
+  const onValidationChange = options.onValidationChange;
 
   const replaceState = (nextState: DateTimeRangeDraftState): void => {
     stateRef.current = nextState;
@@ -96,15 +93,8 @@ export function useDateTimeRangeDraft(
   );
 
   useEffect(() => {
-    reset(options.value);
-  }, [
-    options.value.startTimestamp,
-    options.value.endTimestamp,
-    options.timezone,
-    options.precision,
-    options.hourCycle,
-    reset,
-  ]);
+    reset({ startTimestamp, endTimestamp });
+  }, [endTimestamp, reset, startTimestamp]);
 
   const validation = validateDateTimeRangeDraft(state, {
     constraints: options.constraints,
@@ -116,13 +106,13 @@ export function useDateTimeRangeDraft(
 
   useEffect(() => {
     if (
-      options.onValidationChange !== undefined &&
+      onValidationChange !== undefined &&
       validationKeyRef.current !== validationKey
     ) {
       validationKeyRef.current = validationKey;
-      options.onValidationChange(validation);
+      onValidationChange(validation);
     }
-  }, [options.onValidationChange, validation, validationKey]);
+  }, [onValidationChange, validation, validationKey]);
 
   const dispatch = (action: DateTimeRangeDraftAction): void => {
     const transition = transitionDateTimeRangeDraft(

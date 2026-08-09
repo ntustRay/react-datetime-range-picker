@@ -2,7 +2,9 @@
   "name": "dtrp-react19-fixture",
   "private": true,
   "type": "module",
-  "scripts": { "typecheck": "tsc --noEmit" },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
   "dependencies": {
     "@ntustray/react-datetime-range-picker": "file:../..",
     "react": "^19.1.0",

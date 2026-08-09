@@ -29,13 +29,16 @@ describe("normalizeTimestamp", () => {
     ["minute", Date.UTC(2026, 7, 9, 12, 34, 0, 0)],
     ["second", Date.UTC(2026, 7, 9, 12, 34, 56, 0)],
     ["millisecond", Date.UTC(2026, 7, 9, 12, 34, 56, 789)],
-  ] as const)("%s precision clears only lower UTC units", (precision, expected) => {
-    const timestamp = Date.UTC(2026, 7, 9, 12, 34, 56, 789);
+  ] as const)(
+    "%s precision clears only lower UTC units",
+    (precision, expected) => {
+      const timestamp = Date.UTC(2026, 7, 9, 12, 34, 56, 789);
 
-    expect(normalizeTimestamp(timestamp, { precision, timezone: "UTC" })).toBe(
-      expected,
-    );
-  });
+      expect(
+        normalizeTimestamp(timestamp, { precision, timezone: "UTC" }),
+      ).toBe(expected);
+    },
+  );
 
   test("normalizes leap-day and month-end timestamps without rollover", () => {
     expect(

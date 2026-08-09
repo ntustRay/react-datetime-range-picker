@@ -8,10 +8,7 @@ import {
 import type { HourCycle, Precision } from "../types.js";
 
 type ParseLocalDateTimeStatus =
-  | "valid"
-  | "invalid"
-  | "nonexistent"
-  | "ambiguous";
+  "valid" | "invalid" | "nonexistent" | "ambiguous";
 
 interface ParseLocalDateTimeResult {
   status: ParseLocalDateTimeStatus;
@@ -25,8 +22,7 @@ const PATTERNS: Record<Precision, RegExp> = {
   hour: /^(\d{4})\/(\d{2})\/(\d{2}) (\d{2})$/,
   minute: /^(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2})$/,
   second: /^(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2}):(\d{2})$/,
-  millisecond:
-    /^(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{3})$/,
+  millisecond: /^(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{3})$/,
 };
 
 const H12_PATTERNS: Record<Precision, RegExp> = {
@@ -35,8 +31,7 @@ const H12_PATTERNS: Record<Precision, RegExp> = {
   day: PATTERNS.day,
   hour: /^(\d{4})\/(\d{2})\/(\d{2}) (\d{2}) (AM|PM)$/,
   minute: /^(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2}) (AM|PM)$/,
-  second:
-    /^(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2}):(\d{2}) (AM|PM)$/,
+  second: /^(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2}):(\d{2}) (AM|PM)$/,
   millisecond:
     /^(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{3}) (AM|PM)$/,
 };
@@ -139,9 +134,9 @@ export function parseEditableDateTime(
   precision: Precision,
   hourCycle: HourCycle = "h24",
 ): ParseLocalDateTimeResult {
-  const match = (hourCycle === "h12" ? H12_PATTERNS : PATTERNS)[
-    precision
-  ].exec(value);
+  const match = (hourCycle === "h12" ? H12_PATTERNS : PATTERNS)[precision].exec(
+    value,
+  );
   if (match === null) return { status: "invalid", candidates: [] };
   const parsedHour = Number(match[4] ?? 0);
   const periodIndex =
@@ -155,7 +150,7 @@ export function parseEditableDateTime(
   const period = match[periodIndex];
   const hour =
     hourCycle === "h12" && isUnitVisible("hour", precision)
-      ? parsedHour % 12 + (period === "PM" ? 12 : 0)
+      ? (parsedHour % 12) + (period === "PM" ? 12 : 0)
       : parsedHour;
   const parts: LocalDateTime = {
     year: Number(match[1]),
@@ -164,8 +159,7 @@ export function parseEditableDateTime(
     hour,
     minute: Number(match[5] ?? 0),
     second: Number(match[6] ?? 0),
-    millisecond:
-      precision === "millisecond" ? Number(match[7] ?? 0) : 0,
+    millisecond: precision === "millisecond" ? Number(match[7] ?? 0) : 0,
   };
   if (
     hourCycle === "h12" &&

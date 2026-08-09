@@ -21,13 +21,7 @@ export interface DateTimeRangeValue {
 }
 
 export type Precision =
-  | "year"
-  | "month"
-  | "day"
-  | "hour"
-  | "minute"
-  | "second"
-  | "millisecond";
+  "year" | "month" | "day" | "hour" | "minute" | "second" | "millisecond";
 
 export type Weekday =
   | "sunday"
@@ -105,10 +99,7 @@ export type DateTimeRangeValidationErrorCode =
   | "ambiguous-local-time";
 
 export type DateTimeRangeValidationTarget =
-  | "start"
-  | "end"
-  | "range"
-  | "timezone";
+  "start" | "end" | "range" | "timezone";
 
 export interface DateTimeRangeValidationError {
   code: DateTimeRangeValidationErrorCode;
@@ -116,10 +107,7 @@ export interface DateTimeRangeValidationError {
 }
 
 export type DateTimeRangeValidationStatus =
-  | "empty"
-  | "draft"
-  | "complete"
-  | "invalid";
+  "empty" | "draft" | "complete" | "invalid";
 
 export interface DateTimeRangeValidationResult {
   status: DateTimeRangeValidationStatus;

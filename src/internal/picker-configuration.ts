@@ -72,8 +72,7 @@ export function resolvePickerConfiguration(
     steps: props.steps ?? DEFAULT_STEPS,
     calendarEnabled,
     textInputEnabled: props.features?.textInput !== false || !calendarEnabled,
-    timezoneSelectorEnabled:
-      props.features?.timezoneSelector !== false,
+    timezoneSelectorEnabled: props.features?.timezoneSelector !== false,
     timezoneOptions: props.timezoneOptions ?? [timezone],
     presets: props.presets ?? [],
     testIds: props.testIds ?? {},

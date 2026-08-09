@@ -110,10 +110,16 @@ export function isCalendarDayDisabled(
   constraints: DateTimeRangeConstraints,
 ): boolean {
   if (timestamp === null) return true;
-  if (constraints.minTimestamp !== null && timestamp < constraints.minTimestamp) {
+  if (
+    constraints.minTimestamp !== null &&
+    timestamp < constraints.minTimestamp
+  ) {
     return true;
   }
-  if (constraints.maxTimestamp !== null && timestamp > constraints.maxTimestamp) {
+  if (
+    constraints.maxTimestamp !== null &&
+    timestamp > constraints.maxTimestamp
+  ) {
     return true;
   }
   if (target === "end" && startDay !== null) {

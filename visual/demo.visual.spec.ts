@@ -194,9 +194,7 @@ test("invalid controlled range", async ({ page }) => {
   const scenario = page.locator(".scenario-card").filter({
     hasText: "Invalid controlled range",
   });
-  await scenario
-    .getByRole("button", { name: "Open calendar" })
-    .click();
+  await scenario.getByRole("button", { name: "Open calendar" }).click();
   await clearPointerHover(page);
 
   await expect(scenario).toHaveScreenshot("scenario-invalid-range.png", {

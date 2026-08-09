@@ -12,11 +12,7 @@ import {
   type Weekday,
 } from "@ntustray/react-datetime-range-picker";
 import "@ntustray/react-datetime-range-picker/styles.css";
-import {
-  LOCALE_OPTIONS,
-  LOCALE_TEXT,
-  type DemoLocale,
-} from "./locale-text.js";
+import { LOCALE_OPTIONS, LOCALE_TEXT, type DemoLocale } from "./locale-text.js";
 import "./styles.css";
 
 const EMPTY_RANGE: DateTimeRangeValue = {
@@ -80,8 +76,7 @@ function formatValue(value: DateTimeRangeValue): string {
   if (value.startTimestamp === null || value.endTimestamp === null) {
     return "No complete range";
   }
-  const durationHours =
-    (value.endTimestamp - value.startTimestamp) / 3_600_000;
+  const durationHours = (value.endTimestamp - value.startTimestamp) / 3_600_000;
   return `${durationHours.toLocaleString()} hours · ${value.startTimestamp} → ${value.endTimestamp}`;
 }
 
@@ -165,7 +160,9 @@ function Playground(): React.JSX.Element {
           <p className="section-kicker">Interactive playground</p>
           <h2 id="playground-title">Try the complete workflow</h2>
         </div>
-        <p>Change the product settings, pick a range, then Apply to commit it.</p>
+        <p>
+          Change the product settings, pick a range, then Apply to commit it.
+        </p>
       </div>
 
       <div className="playground-grid">
@@ -261,7 +258,9 @@ function Playground(): React.JSX.Element {
         <div className="picker-stage">
           <div className="stage-label">
             <span>Live component</span>
-            <span>{timezone} · {colorScheme}</span>
+            <span>
+              {timezone} · {colorScheme}
+            </span>
           </div>
           <DateTimeRangePicker
             value={value}
@@ -304,9 +303,9 @@ function QuickStart(): React.JSX.Element {
         <p className="section-kicker">Two-state contract</p>
         <h2 id="quick-start-title">Draft freely. Commit deliberately.</h2>
         <p>
-          The picker stays controlled: <code>onChange</code> reports every draft,
-          while <code>onCommit</code> runs only when Apply receives a complete,
-          valid range.
+          The picker stays controlled: <code>onChange</code> reports every
+          draft, while <code>onCommit</code> runs only when Apply receives a
+          complete, valid range.
         </p>
       </div>
       <pre>
@@ -338,7 +337,9 @@ function ProductionScenarios(): React.JSX.Element {
           <p className="section-kicker">Configuration matrix</p>
           <h2 id="scenarios-title">Production scenarios</h2>
         </div>
-        <p>Each example owns its state, so experiments never leak between cases.</p>
+        <p>
+          Each example owns its state, so experiments never leak between cases.
+        </p>
       </div>
       <div className="scenario-grid">
         <Scenario
@@ -444,7 +445,10 @@ function EdgeCases(): React.JSX.Element {
           <p className="section-kicker">Timezone and validation lab</p>
           <h2 id="edge-title">Make failure inspectable</h2>
         </div>
-        <p>Open a case to see how invalid ranges and DST boundaries are communicated.</p>
+        <p>
+          Open a case to see how invalid ranges and DST boundaries are
+          communicated.
+        </p>
       </div>
       <div className="edge-list">
         <Scenario

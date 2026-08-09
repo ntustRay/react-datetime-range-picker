@@ -242,10 +242,7 @@ export function PickerPopover(props: PickerPopoverProps): React.JSX.Element {
         )}
         <button
           type="button"
-          data-testid={getTestId(
-            configuration.testIds.cancel,
-            "dtrp-cancel",
-          )}
+          data-testid={getTestId(configuration.testIds.cancel, "dtrp-cancel")}
           onClick={props.onCancel}
         >
           {configuration.localeText.cancelButtonLabel}
@@ -264,10 +261,7 @@ export function PickerPopover(props: PickerPopoverProps): React.JSX.Element {
           <button
             className="dtrp-primary-action"
             type="button"
-            data-testid={getTestId(
-              configuration.testIds.apply,
-              "dtrp-apply",
-            )}
+            data-testid={getTestId(configuration.testIds.apply, "dtrp-apply")}
             disabled={props.draft.validation.status !== "complete"}
             onClick={props.onApply}
           >

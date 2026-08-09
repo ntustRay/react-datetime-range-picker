@@ -1,8 +1,5 @@
 import { isCalendarDayDisabled, type CalendarMonth } from "./calendar.js";
-import type {
-  DateTimeRangeConstraints,
-  Timestamp,
-} from "../types.js";
+import type { DateTimeRangeConstraints, Timestamp } from "../types.js";
 
 interface CalendarSelection {
   constraints: DateTimeRangeConstraints;
