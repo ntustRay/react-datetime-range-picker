@@ -84,6 +84,10 @@ Constraints, steps, presets, localization, validation formatting, stable test
 IDs, feature visibility, and disabled/read-only/required behavior are documented
 in [docs/PUBLIC_API.md](docs/PUBLIC_API.md). The product and accessibility
 contract is in [docs/CONTEXT.md](docs/CONTEXT.md).
+CI ownership, pre-release auditing, and npm publication are covered by the
+[CI and npm release guide](docs/CI_AND_NPM_RELEASE_GUIDE.md).
+For a local Windows build without publishing, follow the
+[manual build guide](docs/MANUAL_BUILD_GUIDE.md).
 
 ## Development
 

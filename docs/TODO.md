@@ -590,6 +590,11 @@ the current clock when a deterministic relative preset requires it.
 
 ## 21. Continuous Integration
 
+Follow the owner/agent runbook in
+[CI_AND_NPM_RELEASE_GUIDE.md](CI_AND_NPM_RELEASE_GUIDE.md).
+Local Windows build and packed-consumer commands are documented in
+[MANUAL_BUILD_GUIDE.md](MANUAL_BUILD_GUIDE.md).
+
 - [ ] Add a GitHub Actions CI workflow.
 - [ ] Use the supported Node.js LTS version.
 - [ ] Install dependencies with `npm ci`.
