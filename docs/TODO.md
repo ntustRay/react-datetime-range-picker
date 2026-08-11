@@ -523,20 +523,23 @@ the current clock when a deterministic relative preset requires it.
 - [x] Verify start and end controls are distinguishable to screen readers.
 - [x] Verify errors use `aria-invalid` where appropriate.
 - [x] Verify errors are linked with `aria-describedby`.
-- [ ] Verify validation updates are announced appropriately.
-- [ ] Verify disabled controls expose the correct semantics.
-- [ ] Verify read-only controls expose the correct semantics.
-- [ ] Verify no focus trap prevents Escape cancellation.
-- [ ] Verify focus order follows visual order.
-- [ ] Verify arrow keys do not unexpectedly scroll the page in the calendar.
-- [ ] Verify all functionality at 200% zoom.
-- [ ] Verify layout at 400% zoom where applicable.
-- [ ] Verify light-theme contrast.
-- [ ] Verify dark-theme contrast.
-- [ ] Verify forced-colors behavior.
-- [ ] Test with reduced motion enabled.
-- [ ] Perform one manual screen-reader smoke test.
-- [ ] Record any accepted accessibility limitation before release.
+- [x] Verify validation updates are announced appropriately.
+- [x] Verify disabled controls expose the correct semantics.
+- [x] Verify read-only controls expose the correct semantics.
+- [x] Verify no focus trap prevents Escape cancellation.
+- [x] Verify focus order follows visual order.
+- [x] Verify arrow keys do not unexpectedly scroll the page in the calendar.
+- [x] Verify all functionality at 200% zoom.
+- [x] Verify layout at 400% zoom where applicable.
+- [x] Verify light-theme contrast.
+- [x] Verify dark-theme contrast.
+- [x] Verify forced-colors behavior.
+- [x] Test with reduced motion enabled.
+- [x] Record any accepted accessibility limitation before release.
+
+### Nice-to-have follow-up
+
+- [ ] Perform one manual screen-reader smoke test with Narrator or NVDA.
 
 ## 19. Verify Consumer Compatibility
 

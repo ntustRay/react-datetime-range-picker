@@ -71,6 +71,106 @@ test("disabled and read-only examples cannot open", async ({ page }) => {
   }
 });
 
+test("disabled and read-only examples expose native control semantics", async ({
+  page,
+}) => {
+  const disabledRange = page.getByRole("group", { name: "Disabled range" });
+  await expect(
+    disabledRange.getByRole("textbox", { name: "Start" }),
+  ).toBeDisabled();
+  await expect(
+    disabledRange.getByRole("textbox", { name: "End" }),
+  ).toBeDisabled();
+
+  const readOnlyRange = page.getByRole("group", { name: "Read-only range" });
+  await expect(
+    readOnlyRange.getByRole("textbox", { name: "Start" }),
+  ).toHaveAttribute("readonly", "");
+  await expect(
+    readOnlyRange.getByRole("textbox", { name: "End" }),
+  ).toHaveAttribute("readonly", "");
+  await expect(
+    readOnlyRange.getByRole("button", { name: "Open calendar" }),
+  ).toBeDisabled();
+});
+
+test("popover focus order follows its visual navigation order", async ({
+  page,
+}) => {
+  const stage = page.locator(".picker-stage");
+  await stage.getByTestId("dtrp-trigger").press("Enter");
+  await expect(stage.getByTestId("dtrp-popover")).toBeFocused();
+
+  await page.keyboard.press("Tab");
+  await expect(stage.getByTestId("dtrp-previous-month")).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(stage.getByRole("button", { name: /選擇年份/ })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(stage.getByRole("button", { name: /選擇月份/ })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(stage.getByTestId("dtrp-next-month")).toBeFocused();
+});
+
+test("calendar arrow keys move focus without scrolling the page", async ({
+  page,
+}) => {
+  const stage = page.locator(".picker-stage");
+  await stage.scrollIntoViewIfNeeded();
+  await stage.getByTestId("dtrp-trigger").press("Enter");
+  const cell = stage.locator('[role="gridcell"][tabindex="0"]');
+  await cell.focus();
+  const scrollBefore = await page.evaluate(() => ({
+    x: window.scrollX,
+    y: window.scrollY,
+  }));
+
+  await cell.press("ArrowDown");
+  await stage.locator('[role="gridcell"][tabindex="0"]').press("ArrowRight");
+
+  expect(
+    await page.evaluate(() => ({ x: window.scrollX, y: window.scrollY })),
+  ).toEqual(scrollBefore);
+});
+
+for (const zoom of [200, 400] as const) {
+  test(`${zoom}% zoom equivalent keeps the picker usable without horizontal overflow`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280 / (zoom / 100), height: 720 });
+    const stage = page.locator(".picker-stage");
+    await stage.getByTestId("dtrp-trigger").click();
+    const popover = stage.getByTestId("dtrp-popover");
+    const bounds = await popover.boundingBox();
+
+    expect(bounds).not.toBeNull();
+    expect(bounds?.x).toBeGreaterThanOrEqual(0);
+    expect((bounds?.x ?? 0) + (bounds?.width ?? 0)).toBeLessThanOrEqual(
+      1280 / (zoom / 100),
+    );
+    await stage.locator('[data-testid^="dtrp-date-"]:visible').nth(10).click();
+    await expect(stage.getByTestId("dtrp-next")).toBeEnabled();
+    await stage.getByTestId("dtrp-next").click();
+    await stage.locator('[data-testid^="dtrp-date-"]:visible').nth(12).click();
+    await stage.getByTestId("dtrp-apply").click();
+    await expect(
+      stage.locator(".state-readout > div").nth(1),
+    ).not.toContainText("No complete range");
+  });
+}
+
+test("reduced motion disables the popover entrance animation", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const stage = page.locator(".picker-stage");
+  await stage.getByTestId("dtrp-trigger").click();
+
+  await expect(stage.getByTestId("dtrp-popover")).toHaveCSS(
+    "animation-name",
+    "none",
+  );
+});
+
 test("custom test ID override is present", async ({ page }) => {
   await expect(page.getByTestId("dtrp-constrained")).toBeVisible();
 });

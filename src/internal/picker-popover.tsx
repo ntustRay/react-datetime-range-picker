@@ -98,25 +98,24 @@ export function PickerPopover(props: PickerPopoverProps): React.JSX.Element {
           </div>
         ) : null}
       </div>
-      {props.draft.validation.errors.length > 0 ? (
-        <ul
-          className="dtrp-validation"
-          aria-live="polite"
-          data-testid={getTestId(
-            configuration.testIds.validation,
-            "dtrp-validation",
-          )}
-        >
-          {props.draft.validation.errors.map((item) => (
-            <li
-              key={`${item.code}-${item.target}`}
-              id={`dtrp-${item.target}-${item.code}-error`}
-            >
-              {validationMessage(item)}
-            </li>
-          ))}
-        </ul>
-      ) : null}
+      <ul
+        className="dtrp-validation"
+        aria-live="polite"
+        aria-atomic="true"
+        data-testid={getTestId(
+          configuration.testIds.validation,
+          "dtrp-validation",
+        )}
+      >
+        {props.draft.validation.errors.map((item) => (
+          <li
+            key={`${item.code}-${item.target}`}
+            id={`dtrp-${item.target}-${item.code}-error`}
+          >
+            {validationMessage(item)}
+          </li>
+        ))}
+      </ul>
       {configuration.presets.length > 0 ? (
         <div
           className="dtrp-presets"
