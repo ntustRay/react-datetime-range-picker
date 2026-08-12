@@ -37,14 +37,11 @@ and the production demo.
   during this audit; no clipping, unintended horizontal overflow, or ambiguous
   selected state was found.
 
-## Nice-to-have follow-up
+## Manual screen-reader smoke test
 
-When practical, run one smoke test with Narrator, NVDA, or another supported
-screen reader. Confirm the dialog name, active range target, month changes,
-selected-date status, validation updates, and focus restoration are announced
-understandably. This requires audio and human interpretation, so automated DOM
-and browser checks do not mark it complete.
+On 2026-08-12, the owner ran the production demo with Windows Narrator and
+confirmed the experience was acceptable. This manual check supplements the
+automated accessible-name, keyboard, validation, and focus-restoration evidence
+above.
 
-The owner has classified this manual smoke test as a nice-to-have follow-up, not
-a first-release blocker. No accessibility limitation has otherwise been
-accepted for the first release.
+No accessibility limitation has otherwise been accepted for the first release.

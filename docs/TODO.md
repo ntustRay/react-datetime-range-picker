@@ -540,7 +540,7 @@ the current clock when a deterministic relative preset requires it.
 
 ### Nice-to-have follow-up
 
-- [ ] Perform one manual screen-reader smoke test with Narrator or NVDA.
+- [x] Perform one manual screen-reader smoke test with Narrator or NVDA.
 
 ## 19. Verify Consumer Compatibility
 
