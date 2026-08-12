@@ -1,6 +1,6 @@
 {
   "name": "@ntustray/react-datetime-range-picker",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "An accessible React date-time range picker for timestamp-based chart filters.",
   "type": "module",
   "license": "MIT",
@@ -37,6 +37,9 @@
   "sideEffects": [
     "**/*.css"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsdown",
     "demo": "vite demo --host 127.0.0.1",

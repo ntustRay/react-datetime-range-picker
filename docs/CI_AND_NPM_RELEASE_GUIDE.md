@@ -326,6 +326,9 @@ Do not publish merely because CI is green. Complete the open audit in
 
 ## Phase 4: Choose Version `0.1.0`
 
+The first public version is `0.1.0`. This deliberately communicates that the
+library is usable while its public API may still evolve before `1.0.0`.
+
 `0.1.0` is appropriate only if the project intentionally describes the public
 API as still evolving. SemVer identifies `0.y.z` as initial development and
 `1.0.0` as the point where the public API is defined
@@ -366,6 +369,27 @@ npm.cmd login
 npm.cmd whoami
 npm.cmd publish --access public
 ```
+
+Before that final command, confirm all of the following from a clean `main`:
+
+```powershell
+git status -sb
+git tag --list v0.1.0
+npm.cmd view @ntustray/react-datetime-range-picker@0.1.0 version
+npm.cmd run check
+npm.cmd run test:e2e
+npm.cmd run test:visual
+npm.cmd run test:consumers
+npm.cmd pack --dry-run --json
+```
+
+The expected pre-publication registry result is `E404`. Stop if the version or
+tag already exists, the worktree is dirty, or any verification fails. Publish
+`0.1.0` before creating its tag and GitHub Release so an authentication or
+registry failure cannot leave an official release pointing to an absent npm
+artifact. Immediately after publishing, run the post-publish checks below,
+then create the annotated tag and GitHub Release from the exact published
+commit.
 
 This is an externally visible, effectively irreversible action. Codex can
 prepare and verify it, but the owner should execute or explicitly authorize it.
