@@ -1,6 +1,6 @@
 # Pre-release audit
 
-Audit date: 2026-08-09
+Audit date: 2026-08-12
 
 This audit covers the `0.0.0` release candidate before npm publication. The
 library gates pass, but publication remains deferred until the version, npm
@@ -22,36 +22,37 @@ scope access, trusted publishing, provenance, and release tag work in Section
 
 ## Behavior evidence
 
-- 94 unit and component tests cover normalization, every validation error,
+- 95 unit and component tests cover normalization, every validation error,
   deterministic DST behavior, calendar and keyboard behavior, controlled draft
   behavior, public types, and SSR rendering.
-- 23 Playwright E2E tests cover complete pointer and keyboard workflows,
-  invalid text, non-increasing ranges, minimum and maximum timestamps, maximum
-  duration, stepped time fields, required mode, DST guidance, stable test IDs,
-  and focus restoration.
+- 33 Playwright E2E tests pass in each of Chromium, Firefox, and WebKit. They
+  cover complete pointer and keyboard workflows, invalid text, non-increasing
+  ranges, minimum and maximum timestamps, maximum duration, stepped time
+  fields, required mode, DST guidance, stable test IDs, responsive layouts,
+  zoom, reduced motion, and focus restoration. WebKit uses one worker so
+  independent pages do not compete for browser-level focus during these tests.
 - 20 exact visual comparisons cover desktop and mobile layouts, themes,
   precision modes, period views, constraints, invalid ranges, and DST states.
   Local Windows and GitHub Windows baselines remain separate because their font
   rasterization differs.
-- React 18 and React 19 packed consumers compile the README example and render
-  the installed tarball with `react-dom/server` in a Node environment.
+- React 18 and React 19 packed consumers compile the README example, resolve a
+  single matching React copy, and render the installed tarball with
+  `react-dom/server` in a Node environment. The React 19 consumer also builds
+  with Vite, imports the public CSS export, and verifies utility tree-shaking.
 
 ## Package evidence
 
-`npm pack` contains only these eight files:
+`npm pack --dry-run --json` reports 50 intended files: `LICENSE`, `README.md`,
+`package.json`, the public ESM and declaration entries, unbundled ESM modules,
+declarations, source maps with packaged source content, and
+`dist/styles.css`. The build emits 47 files totaling 253.45 kB; CSS is 15.54
+kB (3.34 kB gzip). The tarball is 60,294 bytes compressed and 261,525 bytes
+unpacked.
 
-- `LICENSE`
-- `README.md`
-- `dist/index.d.mts`
-- `dist/index.d.mts.map`
-- `dist/index.mjs`
-- `dist/index.mjs.map`
-- `dist/style.css`
-- `package.json`
-
-The audited production build is 71.94 kB JavaScript (15.33 kB gzip) and 15.48
-kB CSS (3.33 kB gzip). The tarball is 55,360 bytes compressed and 252,710
-bytes unpacked. React and React DOM are not bundled.
+Unbundling keeps internal modules tree-shakeable. A Vite consumer that imports
+only `normalizeTimestamp` emits 5.03 kB JavaScript (1.48 kB gzip) without React
+or picker UI code. React and React DOM remain external peer dependencies and
+are not bundled.
 
 The npm registry returned `E404` for
 `@ntustray/react-datetime-range-picker` during this audit, so no public package
