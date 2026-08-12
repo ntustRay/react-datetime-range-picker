@@ -549,16 +549,16 @@ the current clock when a deterministic relative preset requires it.
 - [x] Create a clean React 19 consumer fixture.
 - [x] Install the packed tarball into the React 19 fixture.
 - [x] Typecheck and render the React 19 fixture.
-- [ ] Verify the package in a Vite consumer.
+- [x] Verify the package in a Vite consumer.
 - [x] Verify the package in an SSR-capable React consumer.
-- [ ] Verify CSS can be imported from the documented export.
-- [ ] Verify tree shaking removes unused public utilities.
-- [ ] Verify no duplicate React copy is installed.
-- [ ] Verify package types under `moduleResolution: "bundler"`.
-- [ ] Verify package types under `moduleResolution: "nodenext"`.
-- [ ] Verify no CommonJS entry is advertised.
-- [ ] Verify source maps point to useful sources.
-- [ ] Verify the package works without optional polyfills in supported browsers.
+- [x] Verify CSS can be imported from the documented export.
+- [x] Verify tree shaking removes unused public utilities.
+- [x] Verify no duplicate React copy is installed.
+- [x] Verify package types under `moduleResolution: "bundler"`.
+- [x] Verify package types under `moduleResolution: "nodenext"`.
+- [x] Verify no CommonJS entry is advertised.
+- [x] Verify source maps point to useful sources.
+- [x] Verify the package works without optional polyfills in supported browsers.
 
 ## 20. Documentation
 

@@ -1,8 +1,14 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/");
 });
+
+async function enterText(input: Locator, text: string): Promise<void> {
+  await input.focus();
+  await input.fill(text);
+  await input.press("Tab");
+}
 
 test("default IDs support opening, resetting, and cancelling", async ({
   page,
@@ -49,10 +55,8 @@ test("visible time scrollbar updates the selected hour", async ({ page }) => {
 
 test("text entry and Apply update the committed filter", async ({ page }) => {
   const stage = page.locator(".picker-stage");
-  await stage.getByTestId("dtrp-start-input").fill("2026/08/09 12:00:00");
-  await stage.getByTestId("dtrp-start-input").blur();
-  await stage.getByTestId("dtrp-end-input").fill("2026/08/09 13:00:00");
-  await stage.getByTestId("dtrp-end-input").blur();
+  await enterText(stage.getByTestId("dtrp-start-input"), "2026/08/09 12:00:00");
+  await enterText(stage.getByTestId("dtrp-end-input"), "2026/08/09 13:00:00");
   await stage.getByTestId("dtrp-apply").click();
   await expect(page.getByText(/Committed chart filter/)).toBeVisible();
 });
@@ -182,17 +186,14 @@ test("invalid text and a non-increasing range cannot commit", async ({
   const startInput = stage.getByTestId("dtrp-start-input");
   const endInput = stage.getByTestId("dtrp-end-input");
 
-  await startInput.fill("not a date");
-  await startInput.blur();
+  await enterText(startInput, "not a date");
   await expect(stage.getByTestId("dtrp-validation")).toContainText(
     "請輸入有效的日期與時間。",
   );
   await expect(stage.getByTestId("dtrp-next")).toBeDisabled();
 
-  await startInput.fill("2026/08/09 12:00:00");
-  await startInput.blur();
-  await endInput.fill("2026/08/09 12:00:00");
-  await endInput.blur();
+  await enterText(startInput, "2026/08/09 12:00:00");
+  await enterText(endInput, "2026/08/09 12:00:00");
   await expect(stage.getByTestId("dtrp-validation")).toContainText(
     "結束時間必須晚於開始時間。",
   );
@@ -211,29 +212,24 @@ test("constraint violations remain visible and cannot commit", async ({
   const endInput = scenario.getByTestId("dtrp-end-input");
   const validation = scenario.getByTestId("dtrp-validation");
 
-  await startInput.fill("2025/12/31 23:59:50");
-  await startInput.blur();
+  await enterText(startInput, "2025/12/31 23:59:50");
   await expect(validation).toContainText("The value is before the minimum.");
 
-  await startInput.fill("2026/01/01 00:00:00");
-  await startInput.blur();
-  await endInput.fill("2027/01/02 00:00:00");
-  await endInput.blur();
+  await enterText(startInput, "2026/01/01 00:00:00");
+  await enterText(endInput, "2027/01/02 00:00:00");
   await expect(validation).toContainText("The value is after the maximum.");
 
-  await endInput.fill("2026/01/09 00:00:00");
-  await endInput.blur();
+  await enterText(endInput, "2026/01/09 00:00:00");
   await expect(validation).toContainText("The range is longer than allowed.");
 
-  await startInput.fill("2026/01/01 00:01:01");
-  await startInput.blur();
+  await enterText(startInput, "2026/01/01 00:01:01");
   await expect(validation).toContainText(
     "The minute does not match the required step.",
   );
   await expect(validation).toContainText(
     "The second does not match the required step.",
   );
-  await expect(scenario.getByTestId("dtrp-next")).toBeDisabled();
+  await expect(scenario.getByTestId("dtrp-apply")).toBeDisabled();
 });
 
 test("keyboard-only range selection commits and Escape restores focus", async ({

@@ -5,6 +5,7 @@ export default defineConfig({
   format: "esm",
   dts: true,
   sourcemap: true,
+  unbundle: true,
   clean: true,
   deps: {
     neverBundle: ["react", "react-dom"],
