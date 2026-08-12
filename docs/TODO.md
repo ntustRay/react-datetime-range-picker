@@ -195,7 +195,7 @@ the current clock when a deterministic relative preset requires it.
 - [x] Unit-test a DST fall-back overlap.
 - [x] Unit-test a zone with a non-hour offset.
 - [x] Unit-test an invalid IANA zone.
-- [ ] Verify behavior against modern browser `Intl` implementations.
+- [x] Verify behavior against modern browser `Intl` implementations.
 
 ## 5. Develop Range Validation in Vertical Slices
 
@@ -493,7 +493,7 @@ the current clock when a deterministic relative preset requires it.
 - [x] Add an E2E test for opening and closing the popover.
 - [x] Add an E2E test for pointer range selection.
 - [x] Add an E2E test for keyboard-only range selection.
-- [ ] Add an E2E test for a cross-month range.
+- [x] Add an E2E test for a cross-month range.
 - [x] Add an E2E test for text entry and Apply.
 - [x] Add an E2E test proving invalid text cannot commit.
 - [x] Add an E2E test proving `end <= start` cannot commit.
@@ -508,11 +508,12 @@ the current clock when a deterministic relative preset requires it.
 - [x] Add an E2E test for required mode.
 - [x] Add an E2E test for a DST gap.
 - [x] Add an E2E test for resolving a DST overlap.
-- [ ] Add an E2E test for changing display time zone without changing values.
+- [x] Add an E2E test for changing display time zone without changing values.
 - [x] Add an E2E test for default test IDs.
 - [x] Add an E2E test for overridden test IDs.
 - [x] Add an E2E test for focus restoration.
-- [ ] Add an E2E test for one- and two-month responsive layouts.
+- [x] Add an E2E test that the one-month panel remains usable at narrow and
+      wide viewport widths.
 - [x] Run E2E only after building the current source.
 
 ## 18. Verify Accessibility

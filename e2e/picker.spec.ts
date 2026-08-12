@@ -43,6 +43,29 @@ test("pointer calendar selection works in the production demo", async ({
   await expect(page.getByTestId("dtrp-apply")).toBeVisible();
 });
 
+test("a pointer range can cross into the next month", async ({ page }) => {
+  await page.clock.setFixedTime(new Date("2026-08-09T00:00:00.000Z"));
+  await page.getByLabel("Locale").selectOption("en-US");
+  const stage = page.locator(".picker-stage");
+
+  await stage.getByTestId("dtrp-trigger").click();
+  await stage
+    .getByRole("grid", { name: "August 2026" })
+    .getByRole("gridcell", { name: "Monday, August 31, 2026" })
+    .click();
+  await stage.getByTestId("dtrp-next").click();
+  await stage.getByTestId("dtrp-next-month").click();
+  await stage
+    .getByRole("grid", { name: "September 2026" })
+    .getByRole("gridcell", { name: "Tuesday, September 1, 2026" })
+    .click();
+  await stage.getByTestId("dtrp-apply").click();
+
+  await expect(stage.locator(".state-readout > div").nth(1)).not.toContainText(
+    "No complete range",
+  );
+});
+
 test("visible time scrollbar updates the selected hour", async ({ page }) => {
   const stage = page.locator(".picker-stage");
   await stage.getByTestId("dtrp-trigger").click();
@@ -59,6 +82,23 @@ test("text entry and Apply update the committed filter", async ({ page }) => {
   await enterText(stage.getByTestId("dtrp-end-input"), "2026/08/09 13:00:00");
   await stage.getByTestId("dtrp-apply").click();
   await expect(page.getByText(/Committed chart filter/)).toBeVisible();
+});
+
+test("changing the display time zone preserves range timestamps", async ({
+  page,
+}) => {
+  const stage = page.locator(".picker-stage");
+  await enterText(stage.getByTestId("dtrp-start-input"), "2026/08/09 12:00:00");
+  await enterText(stage.getByTestId("dtrp-end-input"), "2026/08/09 13:00:00");
+  const draftValue = stage.locator(".state-readout code").first();
+  const timestamps = await draftValue.textContent();
+
+  await stage
+    .getByRole("combobox", { name: "時區" })
+    .selectOption("Asia/Taipei");
+
+  await expect(draftValue).toHaveText(timestamps ?? "");
+  await expect(stage.locator(".stage-label")).toContainText("Asia/Taipei");
 });
 
 test("disabled and read-only examples cannot open", async ({ page }) => {
@@ -159,6 +199,22 @@ for (const zoom of [200, 400] as const) {
     await expect(
       stage.locator(".state-readout > div").nth(1),
     ).not.toContainText("No complete range");
+  });
+}
+
+for (const width of [320, 1280] as const) {
+  test(`${width}px viewport keeps one usable calendar panel`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 720 });
+    const stage = page.locator(".picker-stage");
+    await stage.getByTestId("dtrp-trigger").click();
+
+    await expect(stage.getByTestId("dtrp-calendar")).toHaveCount(1);
+    const bounds = await stage.getByTestId("dtrp-popover").boundingBox();
+    expect(bounds).not.toBeNull();
+    expect(bounds?.x).toBeGreaterThanOrEqual(0);
+    expect((bounds?.x ?? 0) + (bounds?.width ?? 0)).toBeLessThanOrEqual(width);
   });
 }
 

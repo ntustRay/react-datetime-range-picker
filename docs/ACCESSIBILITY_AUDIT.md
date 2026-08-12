@@ -3,7 +3,8 @@
 Audit date: 2026-08-11
 
 This audit covers the first-release picker against the accessibility checks in
-[TODO.md](TODO.md). Automated checks use Chromium and the production demo.
+[TODO.md](TODO.md). Automated browser checks use Chromium, Firefox, WebKit,
+and the production demo.
 
 ## Verified behavior
 
@@ -28,7 +29,8 @@ This audit covers the first-release picker against the accessibility checks in
 ## Evidence
 
 - `npm run test`: 95 unit and component tests.
-- `npm run test:e2e`: 29 browser workflow tests.
+- `npm run test:e2e`: 33 browser workflow tests in each of Chromium, Firefox,
+  and WebKit.
 - `npm run test:visual`: 20 exact screenshot comparisons, including desktop,
   mobile, dark, and forced-colors states.
 - Desktop, mobile, dark, and forced-colors baselines were visually inspected
