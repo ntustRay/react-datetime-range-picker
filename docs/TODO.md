@@ -641,11 +641,11 @@ Local Windows build and packed-consumer commands are documented in
 
 ## 23. Deferred npm Publication
 
-- [ ] Decide the first public version number.
-- [ ] Add a changelog policy.
-- [ ] Decide how release notes are generated.
+- [x] Decide the first public version number.
+- [x] Add a changelog policy.
+- [x] Decide how release notes are generated.
 - [ ] Create the package under the `@ntustray` npm scope.
-- [ ] Confirm the package is configured for public access.
+- [x] Confirm the package is configured for public access.
 - [ ] Configure npm trusted publishing for this GitHub repository.
 - [ ] Add a release workflow with minimal permissions.
 - [ ] Enable npm provenance.
