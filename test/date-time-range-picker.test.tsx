@@ -151,6 +151,28 @@ describe("DateTimeRangePicker", () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
+  test("validation announcements remain mounted before errors appear", () => {
+    render(
+      <DateTimeRangePicker
+        value={{ startTimestamp: null, endTimestamp: null }}
+        onChange={vi.fn()}
+        onCommit={vi.fn()}
+      />,
+    );
+
+    fireEvent.focus(screen.getByRole("textbox", { name: "Start" }));
+    const validation = screen.getByTestId("dtrp-validation");
+    expect(validation.getAttribute("aria-live")).toBe("polite");
+    expect(validation.getAttribute("aria-atomic")).toBe("true");
+    expect(validation.textContent).toBe("");
+
+    const start = screen.getByRole("textbox", { name: "Start" });
+    fireEvent.change(start, { target: { value: "not a date" } });
+    fireEvent.blur(start);
+
+    expect(validation.textContent).toContain("Enter a valid date and time.");
+  });
+
   test("Next keeps the popover open, switches to End, then Apply commits", async () => {
     const user = userEvent.setup();
     const onCommit = vi.fn();

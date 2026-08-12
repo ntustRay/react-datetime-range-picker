@@ -506,6 +506,10 @@
   background: color-mix(in srgb, var(--dtrp-error) 9%, transparent);
   color: var(--dtrp-error);
 }
+.dtrp-validation:empty {
+  margin: 0;
+  padding: 0;
+}
 .dtrp-presets {
   display: flex;
   flex-wrap: wrap;

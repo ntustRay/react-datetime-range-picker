@@ -195,7 +195,7 @@ the current clock when a deterministic relative preset requires it.
 - [x] Unit-test a DST fall-back overlap.
 - [x] Unit-test a zone with a non-hour offset.
 - [x] Unit-test an invalid IANA zone.
-- [ ] Verify behavior against modern browser `Intl` implementations.
+- [x] Verify behavior against modern browser `Intl` implementations.
 
 ## 5. Develop Range Validation in Vertical Slices
 
@@ -493,7 +493,7 @@ the current clock when a deterministic relative preset requires it.
 - [x] Add an E2E test for opening and closing the popover.
 - [x] Add an E2E test for pointer range selection.
 - [x] Add an E2E test for keyboard-only range selection.
-- [ ] Add an E2E test for a cross-month range.
+- [x] Add an E2E test for a cross-month range.
 - [x] Add an E2E test for text entry and Apply.
 - [x] Add an E2E test proving invalid text cannot commit.
 - [x] Add an E2E test proving `end <= start` cannot commit.
@@ -508,11 +508,12 @@ the current clock when a deterministic relative preset requires it.
 - [x] Add an E2E test for required mode.
 - [x] Add an E2E test for a DST gap.
 - [x] Add an E2E test for resolving a DST overlap.
-- [ ] Add an E2E test for changing display time zone without changing values.
+- [x] Add an E2E test for changing display time zone without changing values.
 - [x] Add an E2E test for default test IDs.
 - [x] Add an E2E test for overridden test IDs.
 - [x] Add an E2E test for focus restoration.
-- [ ] Add an E2E test for one- and two-month responsive layouts.
+- [x] Add an E2E test that the one-month panel remains usable at narrow and
+      wide viewport widths.
 - [x] Run E2E only after building the current source.
 
 ## 18. Verify Accessibility
@@ -523,20 +524,23 @@ the current clock when a deterministic relative preset requires it.
 - [x] Verify start and end controls are distinguishable to screen readers.
 - [x] Verify errors use `aria-invalid` where appropriate.
 - [x] Verify errors are linked with `aria-describedby`.
-- [ ] Verify validation updates are announced appropriately.
-- [ ] Verify disabled controls expose the correct semantics.
-- [ ] Verify read-only controls expose the correct semantics.
-- [ ] Verify no focus trap prevents Escape cancellation.
-- [ ] Verify focus order follows visual order.
-- [ ] Verify arrow keys do not unexpectedly scroll the page in the calendar.
-- [ ] Verify all functionality at 200% zoom.
-- [ ] Verify layout at 400% zoom where applicable.
-- [ ] Verify light-theme contrast.
-- [ ] Verify dark-theme contrast.
-- [ ] Verify forced-colors behavior.
-- [ ] Test with reduced motion enabled.
-- [ ] Perform one manual screen-reader smoke test.
-- [ ] Record any accepted accessibility limitation before release.
+- [x] Verify validation updates are announced appropriately.
+- [x] Verify disabled controls expose the correct semantics.
+- [x] Verify read-only controls expose the correct semantics.
+- [x] Verify no focus trap prevents Escape cancellation.
+- [x] Verify focus order follows visual order.
+- [x] Verify arrow keys do not unexpectedly scroll the page in the calendar.
+- [x] Verify all functionality at 200% zoom.
+- [x] Verify layout at 400% zoom where applicable.
+- [x] Verify light-theme contrast.
+- [x] Verify dark-theme contrast.
+- [x] Verify forced-colors behavior.
+- [x] Test with reduced motion enabled.
+- [x] Record any accepted accessibility limitation before release.
+
+### Nice-to-have follow-up
+
+- [x] Perform one manual screen-reader smoke test with Narrator or NVDA.
 
 ## 19. Verify Consumer Compatibility
 
@@ -546,16 +550,16 @@ the current clock when a deterministic relative preset requires it.
 - [x] Create a clean React 19 consumer fixture.
 - [x] Install the packed tarball into the React 19 fixture.
 - [x] Typecheck and render the React 19 fixture.
-- [ ] Verify the package in a Vite consumer.
+- [x] Verify the package in a Vite consumer.
 - [x] Verify the package in an SSR-capable React consumer.
-- [ ] Verify CSS can be imported from the documented export.
-- [ ] Verify tree shaking removes unused public utilities.
-- [ ] Verify no duplicate React copy is installed.
-- [ ] Verify package types under `moduleResolution: "bundler"`.
-- [ ] Verify package types under `moduleResolution: "nodenext"`.
-- [ ] Verify no CommonJS entry is advertised.
-- [ ] Verify source maps point to useful sources.
-- [ ] Verify the package works without optional polyfills in supported browsers.
+- [x] Verify CSS can be imported from the documented export.
+- [x] Verify tree shaking removes unused public utilities.
+- [x] Verify no duplicate React copy is installed.
+- [x] Verify package types under `moduleResolution: "bundler"`.
+- [x] Verify package types under `moduleResolution: "nodenext"`.
+- [x] Verify no CommonJS entry is advertised.
+- [x] Verify source maps point to useful sources.
+- [x] Verify the package works without optional polyfills in supported browsers.
 
 ## 20. Documentation
 

@@ -40,8 +40,8 @@ jobs:
       - run: npm ci
       - name: Build current package before browser tests
         run: npm run build
-      - name: Install the browser required by this repository
-        run: npm exec -- playwright install chromium
+      - name: Install the browsers required by this repository
+        run: npm exec -- playwright install chromium firefox webkit
       - run: npm run test:e2e
       - run: npm run test:visual
       - name: Upload Playwright diagnostics
@@ -77,36 +77,4 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - name: Pack the exact artifact
-        id: pack
-        shell: bash
-        run: |
-          mkdir package-artifacts
-          filename="$(npm pack --pack-destination package-artifacts --json | node -e "let input=''; process.stdin.on('data', chunk => input += chunk); process.stdin.on('end', () => process.stdout.write(JSON.parse(input)[0].filename));")"
-          echo "tarball=$GITHUB_WORKSPACE/package-artifacts/$filename" >> "$GITHUB_OUTPUT"
-      - name: Verify React 18 consumer
-        env:
-          TARBALL: ${{ steps.pack.outputs.tarball }}
-        run: |
-          fixture="$(mktemp -d "$RUNNER_TEMP/react18.XXXXXX")"
-          cp -R fixtures/react18/. "$fixture"
-          cp fixtures/ssr-smoke.mjs "$fixture"
-          cd "$fixture"
-          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); p.dependencies['@ntustray/react-datetime-range-picker']='file:' + process.env.TARBALL; fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\n');"
-          rm package-lock.json
-          npm install
-          npm run typecheck
-          node ssr-smoke.mjs
-      - name: Verify React 19 consumer
-        env:
-          TARBALL: ${{ steps.pack.outputs.tarball }}
-        run: |
-          fixture="$(mktemp -d "$RUNNER_TEMP/react19.XXXXXX")"
-          cp -R fixtures/react19/. "$fixture"
-          cp fixtures/ssr-smoke.mjs "$fixture"
-          cd "$fixture"
-          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); p.dependencies['@ntustray/react-datetime-range-picker']='file:' + process.env.TARBALL; fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\n');"
-          rm package-lock.json
-          npm install
-          npm run typecheck
-          node ssr-smoke.mjs
+      - run: npm run test:consumers
