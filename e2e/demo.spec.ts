@@ -84,6 +84,15 @@ test("playground exposes every public precision and controls the timezone", asyn
     "second",
     "millisecond",
   ]);
+  await expect(page.locator(".state-readout code").first()).toContainText(
+    "startTimestamp=1786276800000",
+  );
+  await expect(page.locator(".state-readout code").first()).toContainText(
+    "endTimestamp=1786282200000",
+  );
+  await expect(page.locator(".state-readout code").first()).toContainText(
+    "[start, end)",
+  );
 
   await page.getByTestId("dtrp-trigger").first().click();
   await page.getByTestId("dtrp-timezone").selectOption("Asia/Taipei");
@@ -197,6 +206,7 @@ test("playground reports required validation and invalid case explains failure",
   page,
 }) => {
   await page.goto("/");
+  await page.getByRole("button", { name: "Clear draft timestamps" }).click();
   await page.getByLabel("Required").check();
   await page.getByTestId("dtrp-trigger").first().click();
   await expect(page.getByTestId("dtrp-validation").first()).toContainText(

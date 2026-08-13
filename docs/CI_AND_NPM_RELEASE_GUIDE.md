@@ -1,8 +1,8 @@
 # CI and npm Release Guide
 
-This guide describes how to add continuous integration and publish
-`@ntustray/react-datetime-range-picker` safely. It is a plan and operating
-manual, not a record of completed setup.
+This guide describes the continuous integration and release process for
+`@ntustray/react-datetime-range-picker`. It is an operating manual; release
+history belongs in [CHANGELOG.md](../CHANGELOG.md) and GitHub Releases.
 
 For local installation, library/demo builds, browser checks, tarball inspection,
 and React 18/19 consumer verification, use the
@@ -15,43 +15,41 @@ and React 18/19 consumer verification, use the
 如果你想先在自己的 Windows 電腦完整重建一次，請直接照
 [手動建置手冊](MANUAL_BUILD_GUIDE.md) 執行；手動建置不會發布套件。
 
-1. 你說「開始做 CI」，Codex 建立並驗證 `ci.yml`、相關 scripts 與 packed
-   consumer 測試，再 commit/push。
-2. 你到 GitHub Actions 確認第一次 CI 全綠。
-3. 你到 GitHub repository settings，把三個 CI jobs 設成 `main` 的 required
-   checks；這是 repository owner 才能決定的保護規則。
-4. 你說「開始 pre-release audit」，Codex 依 `TODO.md` 完成檢查、修正問題並
-   提交報告。
-5. 你確認第一版使用 `0.1.0`，並在 npm 帳號開啟 2FA、確認自己擁有
-   `@ntustray` scope。
-6. 第一次建立 npm package 時，由你執行或明確授權
-   `npm publish --access public`；這一步會公開且不能重用相同版本。
-7. Codex 建立完整 `release.yml`；你在 GitHub 建立受保護的 `npm`
-   environment，並在 npm package settings 設定 Trusted Publishing。
-8. 之後每次 release，Codex 可以準備 version、changelog、tag 與 GitHub
-   Release；你只需要確認版本並核准 `npm` environment。
+1. 在 npm 帳號改用獨立的開源維護信箱並開啟 2FA。
+2. 在 GitHub 建立受保護的 `npm` environment，指定 required reviewer。
+3. 在 npm package settings 設定 Trusted Publishing：repository 使用
+   `ntustRay/react-datetime-range-picker`、workflow 使用 `release.yml`、
+   environment 使用 `npm`。
+4. 在 GitHub Pages settings 選擇 GitHub Actions 作為來源。
+5. 準備版本、changelog 日期與 immutable `vX.Y.Z` tag；不要先建立 GitHub
+   Release。
+6. tag workflow 通過完整檢查後，owner 核准 `npm` environment。
+7. workflow 依序 publish npm、部署相同版本的 Pages demo、建立 GitHub
+   Release。
 
 一般 repository 程式與 workflow 工作 Codex 都能做；npm 2FA、scope
 ownership、GitHub 保護規則及最後的公開發布授權必須由你決定。
 
 ## Current Repository State
 
-As of 2026-08-09:
+As of 2026-08-13:
 
-- `package.json` is still version `0.0.0`.
-- A registry lookup on 2026-08-09 returned `E404` for the package name. Recheck
-  immediately before publishing because availability can change.
+- npm `latest` is `0.1.0`; `0.1.1` is prepared but must not be tagged until the
+  release changes are merged and the owner approves publication.
 - `.node-version` pins Node `24.19.0`, and `package.json` pins npm `11.17.0`.
-- There is no `.github/workflows/` directory yet.
+- `ci.yml` checks Node 22 compatibility and runs the primary Node 24 quality,
+  browser, visual, and packed-consumer gates.
+- The protected `npm` environment, npm Trusted Publisher, and GitHub Pages
+  workflow source were configured on 2026-08-13. `release.yml` must be merged
+  before the `v0.1.1` tag is created.
 - `npm run check` runs ESLint, Prettier checking, TypeScript, Vitest, and the
   package build, in that order.
 - Playwright E2E and visual tests are separate scripts. Both configurations
   build the demo before starting its preview server.
 - The committed visual baselines were generated on Windows.
-- React 18 and React 19 consumer fixtures exist under `fixtures/`, but CI does
-  not yet prove them against a packed tarball.
-- npm publication and Trusted Publishing remain unchecked in
-  [`TODO.md`](TODO.md).
+- React 18 and React 19 consumer fixtures verify the packed tarball in CI.
+- No `v0.1.1` tag or GitHub Release should exist before owner configuration and
+  release approval.
 
 ## Who Does What
 
@@ -112,7 +110,9 @@ Use the version in `.node-version` rather than a floating Node version.
 global package data rather than `node_modules`
 ([setup-node README](https://github.com/actions/setup-node/blob/main/README.md)).
 
-The recommended shape is three independently named required jobs:
+The recommended shape is three primary required jobs plus an independently
+named Node 22 compatibility job. Keep the primary names stable so branch
+protection does not lose its configured checks:
 
 ```yaml
 name: CI
@@ -131,6 +131,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  node-22:
+    name: Node 22 Compatibility
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22.18.0
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+
   quality:
     name: Quality
     runs-on: ubuntu-latest
@@ -321,12 +333,13 @@ Do not publish merely because CI is green. Complete the open audit in
 
 `npm pack --dry-run` reports what would enter the tarball
 ([npm pack](https://docs.npmjs.com/cli/v11/commands/npm-pack/)). The current
-`package.json.files` allowlist should result in only `dist`, `README.md`,
-`LICENSE`, and npm-required metadata.
+`package.json.files` allowlist should result in only `dist`, the public preview
+under `assets`, `docs/PUBLIC_API.md`, `README.md`, `LICENSE`, and npm-required
+metadata.
 
-## Phase 4: Choose Version `0.1.0`
+## Phase 4: Version the Release
 
-The first public version is `0.1.0`. This deliberately communicates that the
+The first public version was `0.1.0`. This deliberately communicates that the
 library is usable while its public API may still evolve before `1.0.0`.
 
 `0.1.0` is appropriate only if the project intentionally describes the public
@@ -337,69 +350,34 @@ often recommends `1.0.0` for a first product release, so choosing `0.1.0` should
 be a deliberate stability signal, not an accident
 ([npm semantic versioning](https://docs.npmjs.com/about-semantic-versioning/)).
 
-After the audit is accepted:
+For a later patch release such as `0.1.1`:
 
 ```powershell
-npm.cmd version 0.1.0 --no-git-tag-version
+npm.cmd version 0.1.1 --no-git-tag-version
 npm.cmd run check
 npm.cmd run build
 npm.cmd pack --dry-run
 git diff -- package.json package-lock.json
 ```
 
-Commit the version change before creating `v0.1.0`. Never publish from a dirty
-worktree or reuse a version already published to npm.
+Commit the version change and dated changelog entry before creating `v0.1.1`.
+Never publish from a dirty worktree or reuse a version already published to
+npm.
 
-## Phase 5: Bootstrap the npm Package Safely
+## Phase 5: Bootstrap History
 
 `@ntustray/react-datetime-range-picker` is scoped. A scoped package must be
 published with public access explicitly
 ([npm scoped public packages](https://docs.npmjs.com/creating-and-publishing-scoped-public-packages/)).
 
-There is an important bootstrap boundary: npm's documented Trusted Publisher
-configuration starts from an existing package's settings, and `npm trust`
-requires the package to exist. Do not assume OIDC can create a package that does
-not exist.
+The package was bootstrapped manually as `0.1.0` on 2026-08-12. Do not rerun the
+bootstrap commands or attempt to overwrite that immutable version.
 
-If the package does not exist, the owner must perform the first direct publish
-after reviewing the tarball and authenticating with 2FA:
-
-```powershell
-npm.cmd login
-npm.cmd whoami
-npm.cmd publish --access public
-```
-
-Before that final command, confirm all of the following from a clean `main`:
-
-```powershell
-git status -sb
-git tag --list v0.1.0
-npm.cmd view @ntustray/react-datetime-range-picker@0.1.0 version
-npm.cmd run check
-npm.cmd run test:e2e
-npm.cmd run test:visual
-npm.cmd run test:consumers
-npm.cmd pack --dry-run --json
-```
-
-The expected pre-publication registry result is `E404`. Stop if the version or
-tag already exists, the worktree is dirty, or any verification fails. Publish
-`0.1.0` before creating its tag and GitHub Release so an authentication or
-registry failure cannot leave an official release pointing to an absent npm
-artifact. Immediately after publishing, run the post-publish checks below,
-then create the annotated tag and GitHub Release from the exact published
-commit.
-
-This is an externally visible, effectively irreversible action. Codex can
-prepare and verify it, but the owner should execute or explicitly authorize it.
-The simplest policy is to make `0.1.0` the manual bootstrap release and use OIDC
-from the next version onward. If provenance on the very first release is a hard
-requirement, stop and confirm an npm-supported bootstrap route instead of
-inventing one.
-
-After the first publish, verify the package page, public visibility, owner, and
-contents before configuring automation.
+The historical boundary remains important for new packages: npm Trusted
+Publishing is configured from an existing package's settings, so a package may
+need one carefully reviewed interactive publish before OIDC can take over. This
+package has crossed that boundary; every release after `0.1.0` uses the tag
+workflow in Phase 7.
 
 ## Phase 6: Configure Trusted Publishing
 
@@ -410,7 +388,7 @@ The npm owner performs these steps on npmjs.com:
 3. Enter the exact GitHub organization/user and repository.
 4. Enter only the exact workflow filename, for example `release.yml`, including
    the extension.
-5. Optionally enter a protected GitHub environment name such as `npm`.
+5. Enter the protected GitHub environment name `npm`.
 6. Allow `npm publish` (or use stage-only publishing if owner approval through
    npm staged publishing is preferred).
 7. Save and double-check every case-sensitive value. npm does not validate the
@@ -433,12 +411,13 @@ After one OIDC release succeeds:
 Do not disable tokens before the Trusted Publisher has been proven, or a
 configuration typo can leave the release path unavailable.
 
-## Phase 7: Add the Release Workflow
+## Phase 7: Release Workflow
 
-Create `.github/workflows/release.yml`. A `release: published` trigger gives the
-owner one final opportunity to review the tag and release notes before npm
-publication. GitHub documents release creation and management separately from
-the workflow itself
+`.github/workflows/release.yml` runs from an immutable `vX.Y.Z` tag. The
+protected `npm` environment provides the final owner approval before npm
+publication. GitHub Release creation deliberately happens last so it cannot
+point to a missing npm package or demo. GitHub documents release creation and
+management separately from the workflow itself
 ([GitHub releases](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository)).
 
 The workflow should:
@@ -449,55 +428,16 @@ The workflow should:
 - rerun `npm ci`, `npm run check`, E2E, visual, tarball, and React 18/19 fixture
   gates before publish;
 - verify `vX.Y.Z` exactly matches `package.json.version`;
-- grant `id-token: write` only to the final publish job;
+- verify the tagged commit belongs to `main`;
+- grant `id-token: write` only to npm publishing and Pages deployment;
 - disable package-manager caching in the privileged publish job;
-- run `npm publish --access public` without `NODE_AUTH_TOKEN`.
+- run `npm publish --access public --provenance` without `NODE_AUTH_TOKEN`;
+- deploy `demo/dist` to GitHub Pages only after npm succeeds;
+- create release notes from the matching dated changelog section only after
+  Pages succeeds.
 
-Final publish-job excerpt (not a standalone workflow):
-
-```yaml
-name: Release
-
-on:
-  release:
-    types: [published]
-
-permissions:
-  contents: read
-
-concurrency:
-  group: npm-release
-
-jobs:
-  # Add verification jobs equivalent to CI: quality, browser, and consumers.
-
-  publish:
-    name: Publish npm
-    needs: [quality, browser, consumers]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: .node-version
-          registry-url: https://registry.npmjs.org
-          package-manager-cache: false
-      - run: npm ci
-      - run: npm run check
-      - name: Verify tag matches package version
-        shell: bash
-        run: |
-          package_version="$(node -p "require('./package.json').version")"
-          test "${GITHUB_REF_NAME}" = "v${package_version}"
-      - run: npm publish --access public
-```
-
-Do not copy the comment as an incomplete production workflow: implement the
-three verification jobs before enabling publication. For maximum workflow
-supply-chain protection, replace major action tags with verified full SHAs.
+The committed workflow uses full action SHAs. Do not replace them with floating
+branches or unreviewed third-party actions.
 
 Trusted Publishing automatically creates provenance for a public package built
 from a public repository; `--provenance` is not required
@@ -513,11 +453,13 @@ For the first OIDC-enabled release after bootstrap:
 2. Choose the next unused version and update `package.json` plus lockfile.
 3. Complete the audit and packed-consumer verification.
 4. Commit and merge through protected `main`.
-5. Create an annotated `vX.Y.Z` tag pointing at that exact commit.
-6. Create and publish a GitHub Release for that tag.
-7. If configured, approve the protected `npm` environment.
-8. Watch every release verification job; do not retry publication blindly.
-9. Verify npm metadata, tarball, exports, CSS, dist-tag, and provenance.
+5. Create and push an annotated `vX.Y.Z` tag pointing at that exact commit.
+6. Approve the protected `npm` environment after all verification jobs pass.
+7. Let the workflow publish npm, deploy Pages, and create the GitHub Release in
+   that order.
+8. Watch every release job; do not retry publication blindly.
+9. Verify npm metadata, tarball, exports, CSS, dist-tag, provenance, Pages, and
+   the GitHub Release.
 
 Example post-publish checks:
 

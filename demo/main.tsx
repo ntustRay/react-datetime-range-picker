@@ -20,6 +20,11 @@ const EMPTY_RANGE: DateTimeRangeValue = {
   endTimestamp: null,
 };
 
+const SAMPLE_TIMESTAMP_RANGE: DateTimeRangeValue = {
+  startTimestamp: 1_786_276_800_000,
+  endTimestamp: 1_786_282_200_000,
+};
+
 const PRECISIONS: readonly Precision[] = [
   "year",
   "month",
@@ -76,8 +81,8 @@ function formatValue(value: DateTimeRangeValue): string {
   if (value.startTimestamp === null || value.endTimestamp === null) {
     return "No complete range";
   }
-  const durationHours = (value.endTimestamp - value.startTimestamp) / 3_600_000;
-  return `${durationHours.toLocaleString()} hours · ${value.startTimestamp} → ${value.endTimestamp}`;
+  const durationMilliseconds = value.endTimestamp - value.startTimestamp;
+  return `startTimestamp=${value.startTimestamp} · endTimestamp=${value.endTimestamp} · duration=${durationMilliseconds}ms · [start, end)`;
 }
 
 function Scenario(props: ScenarioProps): React.JSX.Element {
@@ -103,16 +108,17 @@ function Hero(): React.JSX.Element {
       </nav>
       <div className="hero-copy">
         <p className="demo-eyebrow">
-          React component · ESM · zero runtime dependencies
+          React timestamp range picker · ESM · zero runtime dependencies
         </p>
         <h1>
-          Time ranges,
+          Timestamps in.
           <br />
-          without time traps.
+          Timestamps out.
         </h1>
         <p className="demo-intro">
-          An accessible controlled picker for timestamp-based chart filters,
-          with explicit timezone, precision, and validation behavior.
+          A timestamp-first controlled picker for analytics and chart filters.
+          Edit in an IANA timezone while your application keeps Unix epoch
+          milliseconds.
         </p>
         <div className="install-command" aria-label="Install command">
           <span aria-hidden="true">$</span>
@@ -127,7 +133,7 @@ function Hero(): React.JSX.Element {
       <dl className="package-facts">
         <div>
           <dt>Value</dt>
-          <dd>Epoch milliseconds</dd>
+          <dd>Unix epoch milliseconds</dd>
         </div>
         <div>
           <dt>Range</dt>
@@ -143,8 +149,12 @@ function Hero(): React.JSX.Element {
 }
 
 function Playground(): React.JSX.Element {
-  const [value, setValue] = useState<DateTimeRangeValue>(EMPTY_RANGE);
-  const [committed, setCommitted] = useState<DateTimeRangeValue>(EMPTY_RANGE);
+  const [value, setValue] = useState<DateTimeRangeValue>(
+    SAMPLE_TIMESTAMP_RANGE,
+  );
+  const [committed, setCommitted] = useState<DateTimeRangeValue>(
+    SAMPLE_TIMESTAMP_RANGE,
+  );
   const [precision, setPrecision] = useState<Precision>("second");
   const [timezone, setTimezone] = useState<Timezone>("UTC");
   const [hourCycle, setHourCycle] = useState<HourCycle>("h24");
@@ -163,10 +173,11 @@ function Playground(): React.JSX.Element {
       <div className="section-heading">
         <div>
           <p className="section-kicker">Interactive playground</p>
-          <h2 id="playground-title">Try the complete workflow</h2>
+          <h2 id="playground-title">Edit the time. Keep the timestamps.</h2>
         </div>
         <p>
-          Change the product settings, pick a range, then Apply to commit it.
+          Change the display settings, pick a range, then Apply the exact epoch
+          millisecond filter.
         </p>
       </div>
 
@@ -263,9 +274,14 @@ function Playground(): React.JSX.Element {
         <div className="picker-stage">
           <div className="stage-label">
             <span>Live component</span>
-            <span>
-              {timezone} · {colorScheme}
-            </span>
+            <div>
+              <span>
+                {timezone} · {colorScheme}
+              </span>
+              <button type="button" onClick={() => setValue(EMPTY_RANGE)}>
+                Clear draft timestamps
+              </button>
+            </div>
           </div>
           <DateTimeRangePicker
             value={value}
@@ -287,11 +303,11 @@ function Playground(): React.JSX.Element {
           />
           <div className="state-readout" aria-live="polite">
             <div>
-              <span>Draft · {validation.status}</span>
+              <span>Draft timestamps · {validation.status}</span>
               <code>{formatValue(value)}</code>
             </div>
             <div>
-              <span>Committed chart filter</span>
+              <span>Committed timestamps</span>
               <code>{formatValue(committed)}</code>
             </div>
           </div>

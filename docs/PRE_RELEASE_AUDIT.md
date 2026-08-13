@@ -2,10 +2,12 @@
 
 Audit date: 2026-08-12
 
-This audit covers the `0.1.0` release candidate before npm publication. The
-library gates pass, but publication remains deferred until the version, npm
-scope access, trusted publishing, provenance, and release tag work in Section
-23 of [TODO.md](TODO.md) is complete.
+> Historical snapshot: this document records evidence gathered before `0.1.0`
+> was published on 2026-08-12. It is not the current release status. Use
+> [CHANGELOG.md](../CHANGELOG.md) and GitHub Releases for current versions.
+
+This audit covered the `0.1.0` release candidate before npm publication. The
+statements below intentionally preserve what was known at audit time.
 
 ## Source and API review
 

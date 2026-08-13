@@ -24,6 +24,7 @@ test("default IDs support opening, resetting, and cancelling", async ({
 test("keyboard calendar selection works in the production demo", async ({
   page,
 }) => {
+  await page.getByRole("button", { name: "Clear draft timestamps" }).click();
   await page.getByTestId("dtrp-trigger").first().click();
   const cells = page.locator('[data-testid^="dtrp-date-"]:visible');
   await cells.first().press("Enter");
@@ -35,6 +36,7 @@ test("keyboard calendar selection works in the production demo", async ({
 test("pointer calendar selection works in the production demo", async ({
   page,
 }) => {
+  await page.getByRole("button", { name: "Clear draft timestamps" }).click();
   await page.getByTestId("dtrp-trigger").first().click();
   const cells = page.locator('[data-testid^="dtrp-date-"]:visible');
   await cells.nth(10).click();
@@ -48,6 +50,7 @@ test("a pointer range can cross into the next month", async ({ page }) => {
   await page.getByLabel("Locale").selectOption("en-US");
   const stage = page.locator(".picker-stage");
 
+  await page.getByRole("button", { name: "Clear draft timestamps" }).click();
   await stage.getByTestId("dtrp-trigger").click();
   await stage
     .getByRole("grid", { name: "August 2026" })
@@ -68,12 +71,14 @@ test("a pointer range can cross into the next month", async ({ page }) => {
 
 test("visible time scrollbar updates the selected hour", async ({ page }) => {
   const stage = page.locator(".picker-stage");
+  await page.getByRole("button", { name: "Clear draft timestamps" }).click();
   await stage.getByTestId("dtrp-trigger").click();
   await page.locator('[data-testid^="dtrp-date-"]:visible').nth(10).click();
   const scrollbar = stage.locator("[data-time-scrollbar]").first();
+  const startInput = stage.getByTestId("dtrp-start-input");
   await expect(scrollbar).toBeVisible();
-  await scrollbar.click({ position: { x: 4, y: 126 } });
-  await expect(stage.getByTestId("dtrp-start-input")).toHaveValue(/ 11:00:00$/);
+  await scrollbar.click({ position: { x: 4, y: 230 } });
+  await expect(startInput).toHaveValue(/ 23:00:00$/);
 });
 
 test("text entry and Apply update the committed filter", async ({ page }) => {
@@ -81,7 +86,7 @@ test("text entry and Apply update the committed filter", async ({ page }) => {
   await enterText(stage.getByTestId("dtrp-start-input"), "2026/08/09 12:00:00");
   await enterText(stage.getByTestId("dtrp-end-input"), "2026/08/09 13:00:00");
   await stage.getByTestId("dtrp-apply").click();
-  await expect(page.getByText(/Committed chart filter/)).toBeVisible();
+  await expect(page.getByText(/Committed timestamps/)).toBeVisible();
 });
 
 test("changing the display time zone preserves range timestamps", async ({
@@ -182,6 +187,7 @@ for (const zoom of [200, 400] as const) {
   }) => {
     await page.setViewportSize({ width: 1280 / (zoom / 100), height: 720 });
     const stage = page.locator(".picker-stage");
+    await page.getByRole("button", { name: "Clear draft timestamps" }).click();
     await stage.getByTestId("dtrp-trigger").click();
     const popover = stage.getByTestId("dtrp-popover");
     const bounds = await popover.boundingBox();
@@ -242,6 +248,8 @@ test("invalid text and a non-increasing range cannot commit", async ({
   const startInput = stage.getByTestId("dtrp-start-input");
   const endInput = stage.getByTestId("dtrp-end-input");
 
+  await page.getByRole("button", { name: "Clear draft timestamps" }).click();
+
   await enterText(startInput, "not a date");
   await expect(stage.getByTestId("dtrp-validation")).toContainText(
     "請輸入有效的日期與時間。",
@@ -254,8 +262,10 @@ test("invalid text and a non-increasing range cannot commit", async ({
     "結束時間必須晚於開始時間。",
   );
   await expect(stage.getByTestId("dtrp-apply")).toBeDisabled();
-  await expect(page.getByText(/Committed chart filter/)).toBeVisible();
-  await expect(page.getByText("No complete range").last()).toBeVisible();
+  await expect(page.getByText(/Committed timestamps/)).toBeVisible();
+  await expect(stage.locator(".state-readout code").last()).toContainText(
+    "startTimestamp=1786276800000",
+  );
 });
 
 test("constraint violations remain visible and cannot commit", async ({
@@ -294,6 +304,7 @@ test("keyboard-only range selection commits and Escape restores focus", async ({
   const stage = page.locator(".picker-stage");
   const trigger = stage.getByTestId("dtrp-trigger");
 
+  await page.getByRole("button", { name: "Clear draft timestamps" }).click();
   await trigger.press("Enter");
   const dialog = stage.getByTestId("dtrp-popover");
   await expect(dialog).toBeFocused();
@@ -322,6 +333,7 @@ test("day, year, and month grids expose every keyboard navigation path", async (
   const stage = page.locator(".picker-stage");
   const trigger = stage.getByTestId("dtrp-trigger");
 
+  await page.getByRole("button", { name: "Clear draft timestamps" }).click();
   await trigger.press("Enter");
   let grid = stage.getByRole("grid", { name: "August 2026" });
   let focusedCell = grid.locator('[role="gridcell"][tabindex="0"]');

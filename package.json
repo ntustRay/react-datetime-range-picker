@@ -1,7 +1,7 @@
 {
   "name": "@ntustray/react-datetime-range-picker",
-  "version": "0.1.0",
-  "description": "An accessible React date-time range picker for timestamp-based chart filters.",
+  "version": "0.1.1",
+  "description": "A timestamp-first React date-time range picker for analytics and chart filters.",
   "type": "module",
   "license": "MIT",
   "author": "ntustRay",
@@ -15,6 +15,12 @@
   },
   "keywords": [
     "react",
+    "timestamp-picker",
+    "timestamp-range",
+    "epoch-milliseconds",
+    "time-range",
+    "analytics",
+    "chart-filter",
     "date-time-picker",
     "date-range-picker",
     "accessibility",
@@ -22,6 +28,8 @@
   ],
   "files": [
     "dist",
+    "assets",
+    "docs/PUBLIC_API.md",
     "README.md",
     "LICENSE"
   ],
@@ -83,7 +91,7 @@
     "vitest": "^4.1.10"
   },
   "engines": {
-    "node": ">=22.18.0 <23 || >=24.11.0"
+    "node": ">=22.18.0"
   },
   "packageManager": "npm@11.17.0"
 }
