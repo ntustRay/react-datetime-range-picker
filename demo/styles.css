@@ -241,6 +241,26 @@ h1 {
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
+.stage-label div {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+.stage-label button {
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid currentcolor;
+  background: transparent;
+  color: #4d4785;
+  font: inherit;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  cursor: pointer;
+}
+.stage-label button:focus-visible {
+  outline: 2px solid #5f54c7;
+  outline-offset: 3px;
+}
 .picker-stage > .dtrp-root > .dtrp-trigger {
   width: 100%;
 }
@@ -490,6 +510,11 @@ footer {
   .control-panel,
   .state-readout {
     grid-template-columns: 1fr;
+  }
+  .stage-label,
+  .stage-label div {
+    align-items: flex-start;
+    flex-direction: column;
   }
   .toggle-row {
     grid-column: auto;

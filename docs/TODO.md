@@ -644,18 +644,18 @@ Local Windows build and packed-consumer commands are documented in
 - [x] Decide the first public version number.
 - [x] Add a changelog policy.
 - [x] Decide how release notes are generated.
-- [ ] Create the package under the `@ntustray` npm scope.
+- [x] Create the package under the `@ntustray` npm scope.
 - [x] Confirm the package is configured for public access.
-- [ ] Configure npm trusted publishing for this GitHub repository.
-- [ ] Add a release workflow with minimal permissions.
+- [x] Configure npm trusted publishing for this GitHub repository.
+- [x] Add a release workflow with minimal permissions.
 - [ ] Enable npm provenance.
-- [ ] Require all verification gates before publish.
+- [x] Require all verification gates before publish.
 - [ ] Publish from an immutable version tag or GitHub release.
-- [ ] Verify the published package metadata on npm.
+- [x] Verify the published package metadata on npm.
 - [ ] Install the published package into a clean consumer project.
 - [ ] Verify types, JavaScript, and CSS from the registry package.
 - [ ] Create a GitHub release matching the npm version.
-- [ ] Document the release and rollback procedure.
+- [x] Document the release and rollback procedure.
 
 ## Definition of Done for Version 1
 

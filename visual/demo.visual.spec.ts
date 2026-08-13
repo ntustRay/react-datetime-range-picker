@@ -35,6 +35,16 @@ test("mobile demo page", async ({ page }) => {
   });
 });
 
+test("timestamp-first npm hero", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await openStableDemo(page);
+
+  await expect(page.locator(".picker-stage")).toHaveScreenshot(
+    "npm-timestamp-picker.png",
+    { animations: "disabled" },
+  );
+});
+
 test("highlighted quick start code", async ({ page }) => {
   await page.setViewportSize({ width: 1000, height: 800 });
   await openStableDemo(page);
@@ -72,6 +82,7 @@ test("mobile picker open", async ({ page }) => {
 test("desktop selected range", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await openStableDemo(page);
+  await page.getByRole("button", { name: "Clear draft timestamps" }).click();
   await page.getByTestId("dtrp-trigger").first().click();
   const cells = page.locator('[data-testid^="dtrp-date-"]:visible');
   await cells.nth(10).click();
@@ -88,6 +99,7 @@ test("desktop selected range", async ({ page }) => {
 test("End target keeps the selected Start marker", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await openStableDemo(page);
+  await page.getByRole("button", { name: "Clear draft timestamps" }).click();
   await page.getByTestId("dtrp-trigger").first().click();
   await page.locator('[data-testid^="dtrp-date-"]:visible').nth(10).click();
   await page.getByTestId("dtrp-next").click();
@@ -102,6 +114,7 @@ test("End target keeps the selected Start marker", async ({ page }) => {
 test("mobile selected range", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openStableDemo(page);
+  await page.getByRole("button", { name: "Clear draft timestamps" }).click();
   await page.getByTestId("dtrp-trigger").first().click();
   const cells = page.locator('[data-testid^="dtrp-date-"]:visible');
   await cells.nth(10).click();
@@ -276,6 +289,7 @@ test("DST overlap validation", async ({ page }) => {
 test("year selection view", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await openStableDemo(page);
+  await page.getByRole("button", { name: "Clear draft timestamps" }).click();
   await page.getByTestId("dtrp-trigger").first().click();
   await page.getByRole("button", { name: /選擇年份/ }).click();
   await clearPointerHover(page);
@@ -288,6 +302,7 @@ test("year selection view", async ({ page }) => {
 test("month selection view", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await openStableDemo(page);
+  await page.getByRole("button", { name: "Clear draft timestamps" }).click();
   await page.getByTestId("dtrp-trigger").first().click();
   await page.getByRole("button", { name: /選擇月份/ }).click();
   await clearPointerHover(page);

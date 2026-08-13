@@ -11,6 +11,25 @@ and known limitations from the pre-release audit.
 
 ## Unreleased
 
+## 0.1.1 - 2026-08-13
+
+### Added
+
+- Timestamp-first npm documentation, search metadata, live-demo positioning,
+  and a packaged desktop preview.
+- Protected tag release automation for npm Trusted Publishing, provenance,
+  release-only GitHub Pages deployment, and GitHub Release creation.
+- Node 22 compatibility coverage alongside the pinned Node 24 toolchain.
+
+### Changed
+
+- The interactive demo now starts with a fixed epoch-millisecond range and
+  exposes the exact draft, committed, duration, and half-open range values.
+- Consumer Node metadata now accepts Node `>=22.18.0` without excluding odd
+  releases for development-tooling reasons.
+- The npm tarball includes the public API contract while maintainer-only
+  documentation uses durable GitHub links.
+
 ## 0.1.0 - 2026-08-12
 
 ### Added
@@ -26,4 +45,5 @@ and known limitations from the pre-release audit.
 - Verified React 18 and React 19 consumers, Chromium, Firefox, WebKit, and
   desktop and mobile visual baselines.
 
-[Unreleased]: https://github.com/ntustRay/react-datetime-range-picker/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/ntustRay/react-datetime-range-picker/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/ntustRay/react-datetime-range-picker/compare/v0.1.0...v0.1.1

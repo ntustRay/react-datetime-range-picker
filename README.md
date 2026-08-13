@@ -1,10 +1,35 @@
-# React DateTime Range Picker
+# Timestamp-first React date-time range picker
 
+[![npm version](https://img.shields.io/npm/v/@ntustray/react-datetime-range-picker)](https://www.npmjs.com/package/@ntustray/react-datetime-range-picker)
 [![CI](https://github.com/ntustRay/react-datetime-range-picker/actions/workflows/ci.yml/badge.svg)](https://github.com/ntustRay/react-datetime-range-picker/actions/workflows/ci.yml)
+[![license](https://img.shields.io/npm/l/@ntustray/react-datetime-range-picker)](LICENSE)
+![React 18 and 19](https://img.shields.io/badge/React-18%20%7C%2019-149eca)
 
-An accessible controlled React date-time range picker for timestamp-based
-chart filters. Values are Unix epoch milliseconds, displayed in a selectable
-IANA timezone, with UTC as the default.
+A controlled React range picker for analytics, charts, logs, and event filters.
+It accepts and returns **Unix epoch milliseconds** while an IANA timezone
+controls display and editing only.
+
+[Live demo](https://ntustray.github.io/react-datetime-range-picker/) ·
+[Public API](docs/PUBLIC_API.md) ·
+[Changelog](https://github.com/ntustRay/react-datetime-range-picker/blob/main/CHANGELOG.md) ·
+[Issues](https://github.com/ntustRay/react-datetime-range-picker/issues)
+
+![Timestamp range picker showing epoch-millisecond draft and committed values](assets/timestamp-picker.png)
+
+## Why timestamp-first?
+
+- **Milliseconds in, milliseconds out.** No `Date`, ISO string, or mixed-unit
+  public API to normalize in application code.
+- **Display timezone is not stored data.** Change the IANA timezone without
+  changing the represented instants.
+- **Analytics-friendly ranges.** Half-open `[start, end)` semantics avoid
+  double-counting boundary events.
+- **Draft and commit are distinct.** `onChange` reports valid edits;
+  `onCommit` runs only when the user applies a complete range.
+- **Accessible and controlled.** Keyboard workflows, validation announcements,
+  focus restoration, localization, light/dark themes, and React 18/19 support
+  are built in.
+- **Zero runtime dependencies.** React and React DOM remain peer dependencies.
 
 ## Install
 
@@ -18,7 +43,7 @@ Import the stylesheet once:
 import "@ntustray/react-datetime-range-picker/styles.css";
 ```
 
-## Minimal controlled example
+## Quick start
 
 ```tsx
 import { useState } from "react";
@@ -28,14 +53,14 @@ import {
 } from "@ntustray/react-datetime-range-picker";
 import "@ntustray/react-datetime-range-picker/styles.css";
 
-const emptyRange: DateTimeRangeValue = {
-  startTimestamp: null,
-  endTimestamp: null,
+const initialRange: DateTimeRangeValue = {
+  startTimestamp: 1_786_276_800_000,
+  endTimestamp: 1_786_282_200_000,
 };
 
-export function FilterControl(): React.JSX.Element {
-  const [draft, setDraft] = useState(emptyRange);
-  const [, setCommitted] = useState(emptyRange);
+export function AnalyticsFilter(): React.JSX.Element {
+  const [draft, setDraft] = useState(initialRange);
+  const [committed, setCommitted] = useState(initialRange);
 
   return (
     <DateTimeRangePicker
@@ -48,74 +73,88 @@ export function FilterControl(): React.JSX.Element {
 }
 ```
 
-The Start and End fields accept local text in `YYYY/MM/DD HH:mm:ss` format and
-parse 300 ms after typing stops. Start opens first; Next switches the same
-single-panel popover to End; Apply then accepts a complete range. The year and
-month header controls switch that panel to direct year or month selection.
-`onChange`
-receives valid draft edits, while `onCommit` is Apply-only. Ranges use half-open semantics:
-`startTimestamp <= timestamp < endTimestamp`. Clearing produces two explicit
-`null` fields.
+`DateTimeRangeValue` always contains both fields. An empty controlled value is
+explicit rather than omitted:
 
-The complete picker floats over surrounding content by default. Set
-`popoverMode="inline"` when it should expand in normal document flow instead.
-Click an already-open year or month heading to return without selecting.
-
-Formatting and wording are separate. Pass a BCP 47 tag through `locale`, and
-replace any UI wording key through `localeText`; omitted wording keys keep the
-English defaults:
-
-```tsx
-<DateTimeRangePicker
-  locale="zh-TW"
-  localeText={{ calendarButtonLabel: "開啟日曆", applyButtonLabel: "套用" }}
-  // value, onChange, and onCommit omitted here for brevity
-/>
+```ts
+const emptyRange: DateTimeRangeValue = {
+  startTimestamp: null,
+  endTimestamp: null,
+};
 ```
 
-The default display timezone is UTC. Changing the controlled timezone changes
-display and editing only; it does not change represented instants. Precision
-defaults to seconds and supports year, month, day, hour, minute, second, and
-millisecond. Units below the selected precision normalize to zero.
-The controlled `hourCycle` prop accepts `"h12"` or `"h24"`; omitted values
-default to 24-hour text and columns.
-Set `colorScheme` to `"light"` or `"dark"` for an explicit component theme;
-the default is always `"light"`.
+## Core controls
 
-Constraints, steps, presets, localization, validation formatting, stable test
-IDs, feature visibility, and disabled/read-only/required behavior are documented
-in [docs/PUBLIC_API.md](docs/PUBLIC_API.md). The product and accessibility
-contract is in [docs/CONTEXT.md](docs/CONTEXT.md).
-CI ownership, pre-release auditing, and npm publication are covered by the
-[CI and npm release guide](docs/CI_AND_NPM_RELEASE_GUIDE.md).
-The latest evidence is recorded in the
-[pre-release audit](docs/PRE_RELEASE_AUDIT.md).
-For a local Windows build without publishing, follow the
-[manual build guide](docs/MANUAL_BUILD_GUIDE.md).
+| Prop          | Purpose                                                    |
+| ------------- | ---------------------------------------------------------- |
+| `value`       | Controlled epoch-millisecond draft range                   |
+| `onChange`    | Receives each valid draft edit                             |
+| `onCommit`    | Receives a complete range when Apply is used               |
+| `timezone`    | IANA display/editing timezone; defaults to `"UTC"`         |
+| `precision`   | `year` through `millisecond`; defaults to `second`         |
+| `constraints` | Minimum, maximum, duration, and step rules                 |
+| `presets`     | Consumer-supplied timestamp ranges                         |
+| `locale`      | BCP 47 formatting locale                                   |
+| `localeText`  | Partial replacement for visible and accessible wording     |
+| `popoverMode` | Floating by default, or `"inline"` in normal document flow |
+| `colorScheme` | Explicit `"light"` or `"dark"` component theme             |
 
-## Development
+Text fields use `YYYY/MM/DD HH:mm:ss` by default. The picker supports precision
+from year through millisecond, 12/24-hour controls, supplied timezone lists,
+presets, localized wording, stable test IDs, and configurable feature
+visibility. See the [complete public API contract](docs/PUBLIC_API.md).
 
-```sh
-npm run lint          # ESLint with zero warnings allowed
-npm run format        # format supported files with Prettier
-npm run format:check  # verify Prettier formatting without writing
-npm run check         # lint, format check, typecheck, tests, and package build
-npm run demo:build    # build the Vite demo
-npm run demo          # serve the demo locally
-```
+The package also exports `normalizeTimestamp` and `validateDateTimeRange` for
+timestamp logic outside React.
 
-The package is ESM-only, has no runtime dependencies, and supports React 18
-and React 19 as peer dependencies. Date calculations avoid direct browser
-globals so server-side React rendering remains safe.
+## Range contract
+
+- Values are Unix epoch milliseconds.
+- A complete range requires `startTimestamp < endTimestamp`.
+- Filtering uses `startTimestamp <= timestamp < endTimestamp`.
+- UTC is the default display timezone.
+- Changing the display timezone never changes the stored timestamps.
+- Units below the selected precision normalize to zero.
+
+## Compatibility
+
+- React 18 and React 19
+- Modern Chrome, Edge, Firefox, and Safari
+- ESM and TypeScript declarations
+- Server-side rendering-safe imports
+- Node `>=22.18.0` for package tooling and Node-based consumers
 
 ## Known limitations
 
 - The package is ESM-only and does not provide native HTML form serialization.
-- The calendar displays one month at a time; navigation replaces that panel.
+- The calendar displays one month at a time.
 - Presentation can be floating or inline, but is not modal or headless.
 - Presets and timezone option lists are supplied by the consumer.
-- Browser support targets modern Chrome, Edge, Firefox, and Safari, not
-  Internet Explorer.
+- The public API intentionally does not accept `Date` objects or ISO strings.
+
+## Development and release documentation
+
+Repository contributors can use the
+[manual build guide](https://github.com/ntustRay/react-datetime-range-picker/blob/main/docs/MANUAL_BUILD_GUIDE.md),
+[visual testing guide](https://github.com/ntustRay/react-datetime-range-picker/blob/main/docs/VISUAL_TESTING.md),
+and
+[CI and npm release guide](https://github.com/ntustRay/react-datetime-range-picker/blob/main/docs/CI_AND_NPM_RELEASE_GUIDE.md).
+The
+[pre-release audit](https://github.com/ntustRay/react-datetime-range-picker/blob/main/docs/PRE_RELEASE_AUDIT.md)
+is the historical evidence snapshot for `0.1.0`, not current release status.
+
+```sh
+npm run check
+npm run test:e2e
+npm run test:visual
+npm run test:consumers
+```
+
+## Support
+
+Report defects and request features through
+[GitHub Issues](https://github.com/ntustRay/react-datetime-range-picker/issues).
+That is the supported public contact channel for this package.
 
 ## License
 
