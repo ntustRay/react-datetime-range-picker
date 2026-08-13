@@ -63,6 +63,7 @@ function TimeColumn(props: TimeColumnProps): React.JSX.Element {
   const listRef = useRef<HTMLDivElement>(null);
   const scrollbarRef = useRef<HTMLDivElement>(null);
   const scrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const programmaticScrollTopRef = useRef<number | null>(null);
   const selectedIndex = Math.max(
     0,
     props.options.findIndex((option) => option.value === props.value),
@@ -71,12 +72,18 @@ function TimeColumn(props: TimeColumnProps): React.JSX.Element {
   useEffect(() => {
     const list = listRef.current;
     if (list === null) return;
+    if (scrollTimerRef.current !== null) {
+      clearTimeout(scrollTimerRef.current);
+      scrollTimerRef.current = null;
+    }
     const scrollTop = selectedIndex * ITEM_HEIGHT_PIXELS;
+    programmaticScrollTopRef.current = scrollTop;
     if (typeof list.scrollTo === "function") {
       list.scrollTo({ top: scrollTop, behavior: "instant" });
     } else {
       list.scrollTop = scrollTop;
     }
+    programmaticScrollTopRef.current = list.scrollTop;
   }, [selectedIndex]);
 
   useEffect(() => {
@@ -144,6 +151,15 @@ function TimeColumn(props: TimeColumnProps): React.JSX.Element {
           data-testid={props.testId}
           onKeyDown={handleKeyDown}
           onScroll={(event) => {
+            const programmaticScrollTop = programmaticScrollTopRef.current;
+            if (
+              programmaticScrollTop !== null &&
+              Math.abs(event.currentTarget.scrollTop - programmaticScrollTop) <
+                1
+            ) {
+              return;
+            }
+            programmaticScrollTopRef.current = null;
             if (props.disabled) return;
             if (scrollTimerRef.current !== null) {
               clearTimeout(scrollTimerRef.current);

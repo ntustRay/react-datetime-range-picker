@@ -93,12 +93,10 @@ test("changing the display time zone preserves range timestamps", async ({
   page,
 }) => {
   const stage = page.locator(".picker-stage");
-  await page.getByRole("button", { name: "Clear draft timestamps" }).click();
-  await enterText(stage.getByTestId("dtrp-start-input"), "2026/08/09 12:00:00");
-  await enterText(stage.getByTestId("dtrp-end-input"), "2026/08/09 13:00:00");
+  await stage.getByTestId("dtrp-trigger").click();
   const draftValue = stage.locator(".state-readout code").first();
   await expect(draftValue).toContainText("startTimestamp=1786276800000");
-  await expect(draftValue).toContainText("endTimestamp=1786280400000");
+  await expect(draftValue).toContainText("endTimestamp=1786282200000");
   const timestamps = await draftValue.textContent();
 
   await stage
