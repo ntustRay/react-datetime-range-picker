@@ -99,11 +99,15 @@ _Avoid_: Built-in range
   light rather than inheriting the operating-system preference.
 - The first weekday follows the locale by default and can be overridden with a
   weekday name such as `"monday"`.
-- Locale defaults to English and can be set to a BCP 47 language tag such as
-  `"zh-TW"`.
-- `locale` controls date formatting and locale-derived weekdays only.
-- `localeText` independently replaces visible wording, accessible names, range
-  statuses, and validation messages; omitted keys use English defaults.
+- Locale defaults to `"en-US"` and can be set to any valid BCP 47 language tag.
+- `locale` controls date formatting and locale-derived weekdays, and selects
+  built-in interface wording for English, Traditional Chinese, Simplified
+  Chinese, Japanese, Korean, Spanish, French, German, Brazilian Portuguese, and
+  Russian. Supported regional variants use the matching built-in language;
+  other valid languages retain their `Intl` formatting and use English wording.
+- `localeText` partially overrides visible wording, accessible names, range
+  statuses, and validation messages; omitted keys use the wording selected by
+  `locale`.
 
 ## Validation Contract
 

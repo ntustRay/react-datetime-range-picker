@@ -8,6 +8,18 @@ export type ColorScheme = "light" | "dark";
 
 export type PopoverMode = "floating" | "inline";
 
+export type BuiltInLocale =
+  | "en-US"
+  | "zh-TW"
+  | "zh-CN"
+  | "ja-JP"
+  | "ko-KR"
+  | "es-ES"
+  | "fr-FR"
+  | "de-DE"
+  | "pt-BR"
+  | "ru-RU";
+
 export interface DateTimeRangeValue {
   startTimestamp: Timestamp | null;
   endTimestamp: Timestamp | null;

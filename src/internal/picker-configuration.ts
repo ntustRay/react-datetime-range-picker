@@ -1,4 +1,5 @@
 import { resolveLocaleText } from "./locale-text.js";
+import { resolveFormattingLocale } from "../locales.js";
 import type {
   DateTimeRangeConstraints,
   DateTimeRangeLocaleText,
@@ -61,6 +62,7 @@ export function resolvePickerConfiguration(
   const precision = props.precision ?? "second";
   const hourCycle = props.hourCycle ?? "h24";
   const calendarEnabled = props.features?.calendar !== false;
+  const locale = resolveFormattingLocale(props.locale ?? "en-US");
 
   return {
     timezone,
@@ -68,8 +70,13 @@ export function resolvePickerConfiguration(
     colorScheme: props.colorScheme ?? "light",
     popoverMode: props.popoverMode ?? "floating",
     precision,
-    locale: props.locale ?? "en",
-    localeText: resolveLocaleText(props.localeText, precision, hourCycle),
+    locale,
+    localeText: resolveLocaleText(
+      locale,
+      props.localeText,
+      precision,
+      hourCycle,
+    ),
     firstWeekday: props.firstWeekday ?? null,
     constraints: props.constraints ?? DEFAULT_CONSTRAINTS,
     steps: props.steps ?? DEFAULT_STEPS,

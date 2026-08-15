@@ -1,5 +1,108 @@
 import { expect, test } from "@playwright/test";
 
+interface LocaleExpectation {
+  locale: string;
+  calendarButton: string;
+  calendar: string;
+  previousMonth: string;
+  start: string;
+  next: string;
+  cancel: string;
+}
+
+const LOCALE_EXPECTATIONS: readonly LocaleExpectation[] = [
+  {
+    locale: "en-US",
+    calendarButton: "Open calendar",
+    calendar: "Calendar",
+    previousMonth: "Previous month",
+    start: "Start",
+    next: "Next",
+    cancel: "Cancel",
+  },
+  {
+    locale: "zh-TW",
+    calendarButton: "開啟日曆",
+    calendar: "日曆",
+    previousMonth: "上個月",
+    start: "開始",
+    next: "下一步",
+    cancel: "取消",
+  },
+  {
+    locale: "zh-CN",
+    calendarButton: "打开日历",
+    calendar: "日历",
+    previousMonth: "上个月",
+    start: "开始",
+    next: "下一步",
+    cancel: "取消",
+  },
+  {
+    locale: "ja-JP",
+    calendarButton: "カレンダーを開く",
+    calendar: "カレンダー",
+    previousMonth: "前の月",
+    start: "開始",
+    next: "次へ",
+    cancel: "キャンセル",
+  },
+  {
+    locale: "ko-KR",
+    calendarButton: "달력 열기",
+    calendar: "달력",
+    previousMonth: "이전 달",
+    start: "시작",
+    next: "다음",
+    cancel: "취소",
+  },
+  {
+    locale: "es-ES",
+    calendarButton: "Abrir calendario",
+    calendar: "Calendario",
+    previousMonth: "Mes anterior",
+    start: "Inicio",
+    next: "Siguiente",
+    cancel: "Cancelar",
+  },
+  {
+    locale: "fr-FR",
+    calendarButton: "Ouvrir le calendrier",
+    calendar: "Calendrier",
+    previousMonth: "Mois précédent",
+    start: "Début",
+    next: "Suivant",
+    cancel: "Annuler",
+  },
+  {
+    locale: "de-DE",
+    calendarButton: "Kalender öffnen",
+    calendar: "Kalender",
+    previousMonth: "Vorheriger Monat",
+    start: "Start",
+    next: "Weiter",
+    cancel: "Abbrechen",
+  },
+  {
+    locale: "pt-BR",
+    calendarButton: "Abrir calendário",
+    calendar: "Calendário",
+    previousMonth: "Mês anterior",
+    start: "Início",
+    next: "Próximo",
+    cancel: "Cancelar",
+  },
+  {
+    locale: "ru-RU",
+    calendarButton: "Открыть календарь",
+    calendar: "Календарь",
+    previousMonth: "Предыдущий месяц",
+    start: "Начало",
+    next: "Далее",
+    cancel: "Отмена",
+  },
+];
+
 test("opens the picker and exposes exactly one calendar month", async ({
   page,
 }) => {
@@ -107,19 +210,74 @@ test("playground exposes every public precision and controls the timezone", asyn
   );
 });
 
-test("demo language selection supplies Japanese formatting and wording", async ({
+test("demo language selection supplies all built-in interface languages", async ({
   page,
 }) => {
   await page.goto("/");
-  await page.getByLabel("Locale").selectOption("ja-JP");
+  const playground = page.getByRole("region", {
+    name: "Edit the time. Keep the timestamps.",
+  });
 
-  await page.getByRole("button", { name: "カレンダーを開く" }).click();
+  for (const expectation of LOCALE_EXPECTATIONS) {
+    await playground.getByLabel("Locale").selectOption(expectation.locale);
+    await playground
+      .getByRole("button", { name: expectation.calendarButton })
+      .click();
 
-  await expect(page.getByRole("region", { name: "カレンダー" })).toBeVisible();
-  await expect(
-    page.getByRole("textbox", { name: "開始", exact: true }),
-  ).toBeVisible();
-  await expect(page.getByRole("button", { name: "次へ" })).toBeVisible();
+    await expect(
+      playground.getByRole("region", { name: expectation.calendar }),
+    ).toBeVisible();
+    await expect(
+      playground.getByTestId("dtrp-previous-month"),
+    ).toHaveAccessibleName(expectation.previousMonth);
+    await expect(
+      playground.getByRole("textbox", {
+        name: expectation.start,
+        exact: true,
+      }),
+    ).toBeVisible();
+    await expect(
+      playground.getByRole("button", {
+        name: expectation.next,
+        exact: true,
+      }),
+    ).toBeVisible();
+
+    await playground.getByRole("button", { name: expectation.cancel }).click();
+  }
+});
+
+test("long built-in labels remain inside a narrow picker", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto("/");
+  const playground = page.getByRole("region", {
+    name: "Edit the time. Keep the timestamps.",
+  });
+
+  for (const locale of ["de-DE", "fr-FR", "ru-RU"]) {
+    const expectation = LOCALE_EXPECTATIONS.find(
+      (candidate) => candidate.locale === locale,
+    );
+    expect(expectation).toBeDefined();
+    if (expectation === undefined) continue;
+
+    await playground.getByLabel("Locale").selectOption(locale);
+    await playground
+      .getByRole("button", { name: expectation.calendarButton })
+      .click();
+
+    const popover = playground.getByTestId("dtrp-popover");
+    await expect(popover).toBeVisible();
+    const overflow = await popover.evaluate((element) => ({
+      horizontal: element.scrollWidth > element.clientWidth,
+      clippedLabels: Array.from(element.querySelectorAll("button, label")).some(
+        (label) => label.scrollWidth > label.clientWidth,
+      ),
+    }));
+    expect(overflow).toEqual({ horizontal: false, clippedLabels: false });
+
+    await playground.getByRole("button", { name: expectation.cancel }).click();
+  }
 });
 
 test("public CSS custom properties remain available to consumers", async ({
@@ -244,6 +402,6 @@ test("DST examples expose gap and overlap guidance", async ({ page }) => {
     .fill("2024/11/03 01:30:00");
   await overlapScenario.getByTestId("dtrp-start-input").blur();
   await expect(
-    dialog.getByRole("combobox", { name: "Start offset" }),
+    dialog.getByRole("combobox", { name: "Start UTC offset" }),
   ).toBeVisible();
 });

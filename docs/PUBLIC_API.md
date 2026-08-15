@@ -17,6 +17,20 @@ export type ColorScheme = "light" | "dark";
 
 export type PopoverMode = "floating" | "inline";
 
+export type BuiltInLocale =
+  | "en-US"
+  | "zh-TW"
+  | "zh-CN"
+  | "ja-JP"
+  | "ko-KR"
+  | "es-ES"
+  | "fr-FR"
+  | "de-DE"
+  | "pt-BR"
+  | "ru-RU";
+
+export declare const BUILT_IN_LOCALES: readonly BuiltInLocale[];
+
 export interface DateTimeRangeValue {
   startTimestamp: Timestamp | null;
   endTimestamp: Timestamp | null;
@@ -215,12 +229,15 @@ export interface DateTimeRangeTestIds {
 }
 ```
 
-`locale` controls only `Intl` date formatting. `localeText` controls only UI
-wording, including visible labels, accessible names, range statuses, and
-validation messages. It is a partial override: every omitted key independently
-falls back to the package's English default. This keeps formatting locale and
-product wording separate while allowing consumers to provide either a complete
-language mapping or a single replacement:
+`locale` controls `Intl` date formatting and selects built-in UI wording.
+The default is `en-US`; the ten built-in locales are listed in the
+[localization guide](LOCALIZATION.md). Regional variants match their built-in
+language, and unsupported languages use English wording while retaining their
+requested `Intl` formatting locale.
+
+`localeText` is a partial override for visible labels, accessible names, range
+statuses, and validation messages. Every omitted key falls back to the wording
+selected by `locale`:
 
 ```tsx
 <DateTimeRangePicker
@@ -276,11 +293,10 @@ export declare function DateTimeRangePicker(
 ```
 
 Omitted optional props select documented defaults; they do not represent
-missing domain fields. Defaults are UTC, second precision, English locale and
-English locale text, 24-hour time, explicit light color scheme, a floating
-popover,
-locale-derived first weekday, no constraints, unit steps of `1`, no presets,
-and enabled Reset. The range remains controlled. `onChange` reports draft
+missing domain fields. Defaults are UTC, second precision, `en-US` formatting
+and interface text, 24-hour time, explicit light color scheme, a floating
+popover, locale-derived first weekday, no constraints, unit steps of `1`, no
+presets, and enabled Reset. The range remains controlled. `onChange` reports draft
 edits, while `onCommit` fires only after Apply accepts a complete valid range.
 The hour cycle is controlled separately and changes formatting without changing
 the timestamps. `colorScheme` is an explicit presentation choice and does not
@@ -325,8 +341,9 @@ management, and individual UI elements remain internal.
 The former `labels` and `formatValidationMessage` props were replaced by the
 single `localeText` wording interface. Rename label keys to their explicit
 `*Label` counterparts and move validation strings to the corresponding
-`validation*` keys. `locale` remains unchanged and never selects wording by
-itself.
+`validation*` keys. Starting in `0.2.0`, `locale` also selects built-in
+interface wording; an explicit `localeText` value remains authoritative for
+each overridden key.
 
 ## Initial CSS Contract
 
