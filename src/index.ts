@@ -1,9 +1,11 @@
 export { DateTimeRangePicker } from "./date-time-range-picker.js";
 export { normalizeTimestamp } from "./normalize-timestamp.js";
 export { validateDateTimeRange } from "./validate-date-time-range.js";
+export { BUILT_IN_LOCALES } from "./locales.js";
 
 export type {
   DateTimeRangeChangeHandler,
+  BuiltInLocale,
   ColorScheme,
   DateTimeRangeCommitHandler,
   DateTimeRangeConstraints,

@@ -1,6 +1,6 @@
 {
   "name": "@ntustray/react-datetime-range-picker",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A timestamp-first React date-time range picker for analytics and chart filters.",
   "type": "module",
   "license": "MIT",
@@ -29,6 +29,9 @@
   "files": [
     "dist",
     "assets",
+    "docs/LOCALIZATION.md",
+    "docs/LOCALIZATION_REFERENCE_RESEARCH.md",
+    "docs/V0.2.0_LOCALIZATION_MILESTONE.md",
     "docs/PUBLIC_API.md",
     "README.md",
     "LICENSE"

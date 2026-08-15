@@ -11,6 +11,8 @@ controls display and editing only.
 
 [Live demo](https://ntustray.github.io/react-datetime-range-picker/) ·
 [Public API](docs/PUBLIC_API.md) ·
+[Localization](docs/LOCALIZATION.md) ·
+[v0.2.0 milestone](docs/V0.2.0_LOCALIZATION_MILESTONE.md) ·
 [Changelog](https://github.com/ntustRay/react-datetime-range-picker/blob/main/CHANGELOG.md) ·
 [Issues](https://github.com/ntustRay/react-datetime-range-picker/issues)
 
@@ -85,24 +87,37 @@ const emptyRange: DateTimeRangeValue = {
 
 ## Core controls
 
-| Prop          | Purpose                                                    |
-| ------------- | ---------------------------------------------------------- |
-| `value`       | Controlled epoch-millisecond draft range                   |
-| `onChange`    | Receives each valid draft edit                             |
-| `onCommit`    | Receives a complete range when Apply is used               |
-| `timezone`    | IANA display/editing timezone; defaults to `"UTC"`         |
-| `precision`   | `year` through `millisecond`; defaults to `second`         |
-| `constraints` | Minimum, maximum, duration, and step rules                 |
-| `presets`     | Consumer-supplied timestamp ranges                         |
-| `locale`      | BCP 47 formatting locale                                   |
-| `localeText`  | Partial replacement for visible and accessible wording     |
-| `popoverMode` | Floating by default, or `"inline"` in normal document flow |
-| `colorScheme` | Explicit `"light"` or `"dark"` component theme             |
+| Prop          | Purpose                                                     |
+| ------------- | ----------------------------------------------------------- |
+| `value`       | Controlled epoch-millisecond draft range                    |
+| `onChange`    | Receives each valid draft edit                              |
+| `onCommit`    | Receives a complete range when Apply is used                |
+| `timezone`    | IANA display/editing timezone; defaults to `"UTC"`          |
+| `precision`   | `year` through `millisecond`; defaults to `second`          |
+| `constraints` | Minimum, maximum, duration, and step rules                  |
+| `presets`     | Consumer-supplied timestamp ranges                          |
+| `locale`      | BCP 47 locale for formatting and built-in interface wording |
+| `localeText`  | Partial override for visible and accessible wording         |
+| `popoverMode` | Floating by default, or `"inline"` in normal document flow  |
+| `colorScheme` | Explicit `"light"` or `"dark"` component theme              |
 
 Text fields use `YYYY/MM/DD HH:mm:ss` by default. The picker supports precision
 from year through millisecond, 12/24-hour controls, supplied timezone lists,
 presets, localized wording, stable test IDs, and configurable feature
 visibility. See the [complete public API contract](docs/PUBLIC_API.md).
+
+The picker includes English, Traditional Chinese, Simplified Chinese,
+Japanese, Korean, Spanish, French, German, Brazilian Portuguese, and Russian.
+It defaults to `"en-US"`. See the [localization guide](docs/LOCALIZATION.md) for
+fixed-language and runtime language-switching examples.
+
+## Localization release candidate
+
+The proposed `v0.2.0` localization implementation is complete but has not been
+published. Native-language review and the committed Windows visual baselines
+remain release gates. Follow the
+[milestone](docs/V0.2.0_LOCALIZATION_MILESTONE.md) for current evidence and the
+release decision.
 
 The package also exports `normalizeTimestamp` and `validateDateTimeRange` for
 timestamp logic outside React.

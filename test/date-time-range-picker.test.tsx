@@ -92,6 +92,104 @@ describe("DateTimeRangePicker", () => {
     expect(screen.getByRole("button", { name: "Cancel" })).not.toBeNull();
   });
 
+  test.each([
+    ["en-US", "Open calendar"],
+    ["zh-TW", "開啟日曆"],
+    ["zh-CN", "打开日历"],
+    ["ja-JP", "カレンダーを開く"],
+    ["ko-KR", "달력 열기"],
+    ["es-ES", "Abrir calendario"],
+    ["fr-FR", "Ouvrir le calendrier"],
+    ["de-DE", "Kalender öffnen"],
+    ["pt-BR", "Abrir calendário"],
+    ["ru-RU", "Открыть календарь"],
+  ])("uses built-in interface text for %s", (locale, calendarButtonLabel) => {
+    render(
+      <DateTimeRangePicker
+        value={COMPLETE_RANGE}
+        locale={locale}
+        onChange={vi.fn()}
+        onCommit={vi.fn()}
+      />,
+    );
+
+    expect(
+      screen.getByRole("button", { name: calendarButtonLabel }),
+    ).not.toBeNull();
+  });
+
+  test("matches regional locales and keeps localeText as a partial override", () => {
+    render(
+      <DateTimeRangePicker
+        value={COMPLETE_RANGE}
+        locale="fr-CA"
+        localeText={{ startLabel: "Départ" }}
+        onChange={vi.fn()}
+        onCommit={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole("textbox", { name: "Départ" })).not.toBeNull();
+    expect(
+      screen.getByRole("button", { name: "Ouvrir le calendrier" }),
+    ).not.toBeNull();
+  });
+
+  test.each([
+    ["zh-Hant-HK", "開啟日曆"],
+    ["zh-Hans-SG", "打开日历"],
+    ["ja", "カレンダーを開く"],
+    ["ko", "달력 열기"],
+    ["es-MX", "Abrir calendario"],
+    ["de-AT", "Kalender öffnen"],
+    ["pt", "Abrir calendário"],
+    ["ru", "Открыть календарь"],
+  ])("matches the regional locale %s", (locale, calendarButtonLabel) => {
+    render(
+      <DateTimeRangePicker
+        value={COMPLETE_RANGE}
+        locale={locale}
+        onChange={vi.fn()}
+        onCommit={vi.fn()}
+      />,
+    );
+
+    expect(
+      screen.getByRole("button", { name: calendarButtonLabel }),
+    ).not.toBeNull();
+  });
+
+  test("falls back to English wording for unsupported formatting locales", () => {
+    render(
+      <DateTimeRangePicker
+        value={COMPLETE_RANGE}
+        locale="it-IT"
+        onChange={vi.fn()}
+        onCommit={vi.fn()}
+      />,
+    );
+
+    expect(
+      screen.getByRole("button", { name: "Open calendar" }),
+    ).not.toBeNull();
+  });
+
+  test("falls back to a valid English locale when the locale tag is invalid", async () => {
+    const user = userEvent.setup();
+    render(
+      <DateTimeRangePicker
+        value={COMPLETE_RANGE}
+        locale="not_a_locale"
+        onChange={vi.fn()}
+        onCommit={vi.fn()}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Open calendar" }));
+
+    expect(screen.getByRole("grid", { name: "August 2026" })).not.toBeNull();
+  });
+
   test("focus chooses one active target and the icon remembers it", async () => {
     const user = userEvent.setup();
     render(

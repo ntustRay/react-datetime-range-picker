@@ -8,7 +8,7 @@ export default defineConfig({
   },
   webServer: {
     command:
-      "npm.cmd run demo:build && npm.cmd exec -- vite preview demo --host 127.0.0.1 --port 4173",
+      "npm run demo:build && npm exec -- vite preview demo --host 127.0.0.1 --port 4173",
     url: "http://127.0.0.1:4173",
     reuseExistingServer: true,
   },

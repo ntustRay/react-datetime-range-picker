@@ -11,6 +11,26 @@ and known limitations from the pre-release audit.
 
 ## Unreleased
 
+### Added
+
+- Ten built-in interface locales with automatic language matching and English
+  fallback: English, Traditional Chinese, Simplified Chinese, Japanese, Korean,
+  Spanish, French, German, Brazilian Portuguese, and Russian.
+- Localization documentation for fixed locales, runtime language switching,
+  regional fallback behavior, and per-label overrides.
+
+### Changed
+
+- `locale` now selects built-in visible and accessible wording in addition to
+  controlling `Intl` date formatting; `localeText` remains a partial override.
+- Refined hour-cycle, AM/PM, UTC-offset, and Russian range terminology after a
+  primary-source locale comparison.
+
+### Fixed
+
+- Prevented calendar and footer controls from overflowing narrow picker
+  containers with long translated labels.
+
 ## 0.1.1 - 2026-08-13
 
 ### Added

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   DateTimeRangePicker,
+  type BuiltInLocale,
   type ColorScheme,
   type DateTimeRangeChangeHandler,
   type DateTimeRangeValidationResult,
@@ -12,7 +13,7 @@ import {
   type Weekday,
 } from "@ntustray/react-datetime-range-picker";
 import "@ntustray/react-datetime-range-picker/styles.css";
-import { LOCALE_OPTIONS, LOCALE_TEXT, type DemoLocale } from "./locale-text.js";
+import { isDemoLocale, LOCALE_OPTIONS } from "./locale-text.js";
 import "./styles.css";
 
 const EMPTY_RANGE: DateTimeRangeValue = {
@@ -67,10 +68,6 @@ function isPrecision(value: string): value is Precision {
 
 function isWeekday(value: string): value is Weekday {
   return WEEKDAYS.some((weekday) => weekday === value);
-}
-
-function isDemoLocale(value: string): value is DemoLocale {
-  return LOCALE_OPTIONS.some((option) => option.value === value);
 }
 
 function isColorScheme(value: string): value is ColorScheme {
@@ -159,7 +156,7 @@ function Playground(): React.JSX.Element {
   const [timezone, setTimezone] = useState<Timezone>("UTC");
   const [hourCycle, setHourCycle] = useState<HourCycle>("h24");
   const [colorScheme, setColorScheme] = useState<ColorScheme>("light");
-  const [locale, setLocale] = useState<DemoLocale>("zh-TW");
+  const [locale, setLocale] = useState<BuiltInLocale>("zh-TW");
   const [firstWeekday, setFirstWeekday] = useState<Weekday>("sunday");
   const [required, setRequired] = useState(false);
   const [clearable, setClearable] = useState(true);
@@ -295,7 +292,6 @@ function Playground(): React.JSX.Element {
             onHourCycleChange={setHourCycle}
             colorScheme={colorScheme}
             locale={locale}
-            localeText={LOCALE_TEXT[locale]}
             firstWeekday={firstWeekday}
             required={required}
             clearable={clearable}
