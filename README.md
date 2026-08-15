@@ -111,13 +111,12 @@ Japanese, Korean, Spanish, French, German, Brazilian Portuguese, and Russian.
 It defaults to `"en-US"`. See the [localization guide](docs/LOCALIZATION.md) for
 fixed-language and runtime language-switching examples.
 
-## Localization release candidate
+## Localization status
 
-The proposed `v0.2.0` localization implementation is complete but has not been
-published. Native-language review and the committed Windows visual baselines
-remain release gates. Follow the
-[milestone](docs/V0.2.0_LOCALIZATION_MILESTONE.md) for current evidence and the
-release decision.
+Built-in localization is available in `v0.2.0`. The
+[localization milestone](docs/V0.2.0_LOCALIZATION_MILESTONE.md) records the
+translation terminology, responsive-layout review, package audit, and browser
+verification behind the release.
 
 The package also exports `normalizeTimestamp` and `validateDateTimeRange` for
 timestamp logic outside React.

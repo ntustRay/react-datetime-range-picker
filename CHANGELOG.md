@@ -11,6 +11,8 @@ and known limitations from the pre-release audit.
 
 ## Unreleased
 
+## 0.2.0 - 2026-08-15
+
 ### Added
 
 - Ten built-in interface locales with automatic language matching and English
@@ -65,5 +67,6 @@ and known limitations from the pre-release audit.
 - Verified React 18 and React 19 consumers, Chromium, Firefox, WebKit, and
   desktop and mobile visual baselines.
 
-[Unreleased]: https://github.com/ntustRay/react-datetime-range-picker/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/ntustRay/react-datetime-range-picker/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/ntustRay/react-datetime-range-picker/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/ntustRay/react-datetime-range-picker/compare/v0.1.0...v0.1.1
