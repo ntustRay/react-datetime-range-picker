@@ -5,6 +5,7 @@ const REFERENCE_NOW = new Date("2026-08-09T00:00:00.000Z");
 async function openStableDemo(page: Page): Promise<void> {
   await page.clock.setFixedTime(REFERENCE_NOW);
   await page.goto("/");
+  await page.evaluate(() => document.fonts.ready);
 }
 
 async function clearPointerHover(page: Page): Promise<void> {

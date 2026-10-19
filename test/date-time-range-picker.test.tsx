@@ -271,6 +271,62 @@ describe("DateTimeRangePicker", () => {
     expect(validation.textContent).toContain("Enter a valid date and time.");
   });
 
+  test("range validation marks both inputs invalid and clears after a controlled correction", () => {
+    const props = { onChange: vi.fn(), onCommit: vi.fn() };
+    const { rerender } = render(
+      <DateTimeRangePicker
+        {...props}
+        value={{
+          startTimestamp: COMPLETE_RANGE.startTimestamp,
+          endTimestamp: COMPLETE_RANGE.startTimestamp,
+        }}
+      />,
+    );
+    const start = screen.getByRole("textbox", { name: "Start" });
+    const end = screen.getByRole("textbox", { name: "End" });
+    fireEvent.focus(end);
+
+    for (const input of [start, end]) {
+      expect(input.getAttribute("aria-invalid")).toBe("true");
+      const descriptionId = input.getAttribute("aria-describedby");
+      expect(document.getElementById(descriptionId ?? "")?.textContent).toBe(
+        "End must be after start.",
+      );
+    }
+
+    rerender(<DateTimeRangePicker {...props} value={COMPLETE_RANGE} />);
+    for (const input of [start, end]) {
+      expect(input.hasAttribute("aria-invalid")).toBe(false);
+      expect(input.hasAttribute("aria-describedby")).toBe(false);
+    }
+  });
+
+  test("a minimum constraint marks only the affected input invalid", () => {
+    render(
+      <DateTimeRangePicker
+        value={COMPLETE_RANGE}
+        constraints={{
+          minTimestamp: Date.UTC(2026, 7, 9, 13),
+          maxTimestamp: null,
+          maxDurationMilliseconds: null,
+        }}
+        onChange={vi.fn()}
+        onCommit={vi.fn()}
+      />,
+    );
+    const start = screen.getByRole("textbox", { name: "Start" });
+    const end = screen.getByRole("textbox", { name: "End" });
+    fireEvent.focus(start);
+
+    expect(start.getAttribute("aria-invalid")).toBe("true");
+    const descriptionId = start.getAttribute("aria-describedby");
+    expect(document.getElementById(descriptionId ?? "")?.textContent).toBe(
+      "The value is before the minimum.",
+    );
+    expect(end.hasAttribute("aria-invalid")).toBe(false);
+    expect(end.hasAttribute("aria-describedby")).toBe(false);
+  });
+
   test("Next keeps the popover open, switches to End, then Apply commits", async () => {
     const user = userEvent.setup();
     const onCommit = vi.fn();

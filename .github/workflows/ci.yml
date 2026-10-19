@@ -23,6 +23,7 @@ jobs:
         with:
           node-version: 22.18.0
           cache: npm
+      - run: npm install --global npm@11.17.0
       - run: npm ci
       - run: npm run check
 
@@ -35,13 +36,14 @@ jobs:
         with:
           node-version-file: .node-version
           cache: npm
+      - run: npm install --global npm@11.17.0
       - run: npm ci
       - run: npm run check
       - run: npm pack --dry-run
 
   browser:
     name: Browser and Visual
-    runs-on: windows-latest
+    runs-on: windows-2025
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -49,33 +51,35 @@ jobs:
         with:
           node-version-file: .node-version
           cache: npm
+      - run: npm install --global npm@11.17.0
       - run: npm ci
       - name: Build current package before browser tests
         run: npm run build
       - name: Install the browsers required by this repository
+        id: browsers
         run: npm exec -- playwright install chromium firefox webkit
+      - name: Record browser environment
+        shell: pwsh
+        run: |
+          "ImageOS=$env:ImageOS`nImageVersion=$env:ImageVersion`nSHA=$env:GITHUB_SHA" | Out-File browser-environment.txt
+          node --version | Out-File browser-environment.txt -Append
+          npm --version | Out-File browser-environment.txt -Append
+          npm exec -- playwright --version | Out-File browser-environment.txt -Append
+          Get-FileHash "$env:WINDIR/Fonts/segoeui.ttf", "$env:WINDIR/Fonts/consola.ttf" | Format-List | Out-File browser-environment.txt -Append
       - run: npm run test:e2e
-      - run: npm run test:visual
-      - name: Upload Playwright diagnostics
-        if: ${{ failure() }}
+      - name: Visual comparisons
+        if: ${{ !cancelled() && steps.browsers.outcome == 'success' }}
+        run: npm run test:visual
+      - name: Upload browser reports and screenshots
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: playwright-diagnostics-${{ github.run_id }}
+          name: playwright-${{ github.sha }}-${{ github.run_attempt }}
           path: |
             playwright-report/
             test-results/
+            browser-environment.txt
           if-no-files-found: ignore
-          retention-days: 7
-      - name: Generate GitHub Windows baseline candidates
-        if: ${{ failure() }}
-        run: npm run test:visual:update
-      - name: Upload GitHub Windows baseline candidates
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: visual-baseline-candidates-${{ github.run_id }}
-          path: visual/snapshots/github-windows/
-          if-no-files-found: error
           retention-days: 7
 
   consumers:
@@ -87,6 +91,7 @@ jobs:
         with:
           node-version-file: .node-version
           cache: npm
+      - run: npm install --global npm@11.17.0
       - run: npm ci
       - run: npm run build
       - run: npm run test:consumers

@@ -262,11 +262,22 @@ test("invalid text and a non-increasing range cannot commit", async ({
   await expect(stage.getByTestId("dtrp-validation")).toContainText(
     "結束時間必須晚於開始時間。",
   );
+  await expect(startInput).toHaveAttribute("aria-invalid", "true");
+  await expect(endInput).toHaveAttribute("aria-invalid", "true");
+  await expect(endInput).toHaveAccessibleDescription(
+    "結束時間必須晚於開始時間。",
+  );
   await expect(stage.getByTestId("dtrp-apply")).toBeDisabled();
   await expect(page.getByText(/Committed timestamps/)).toBeVisible();
   await expect(stage.locator(".state-readout code").last()).toContainText(
     "startTimestamp=1786276800000",
   );
+
+  await enterText(endInput, "2026/08/09 13:00:00");
+  await expect(startInput).not.toHaveAttribute("aria-invalid");
+  await expect(endInput).not.toHaveAttribute("aria-invalid");
+  await expect(endInput).not.toHaveAttribute("aria-describedby");
+  await expect(stage.getByTestId("dtrp-apply")).toBeEnabled();
 });
 
 test("constraint violations remain visible and cannot commit", async ({
@@ -281,10 +292,16 @@ test("constraint violations remain visible and cannot commit", async ({
 
   await enterText(startInput, "2025/12/31 23:59:50");
   await expect(validation).toContainText("The value is before the minimum.");
+  await expect(startInput).toHaveAttribute("aria-invalid", "true");
+  await expect(startInput).toHaveAccessibleDescription(
+    "The value is before the minimum. The minute does not match the required step.",
+  );
+  await expect(endInput).not.toHaveAttribute("aria-invalid");
 
   await enterText(startInput, "2026/01/01 00:00:00");
   await enterText(endInput, "2027/01/02 00:00:00");
   await expect(validation).toContainText("The value is after the maximum.");
+  await expect(endInput).toHaveAttribute("aria-invalid", "true");
 
   await enterText(endInput, "2026/01/09 00:00:00");
   await expect(validation).toContainText("The range is longer than allowed.");

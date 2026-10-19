@@ -148,6 +148,10 @@ timestamp logic outside React.
 
 ## Development and release documentation
 
+GitHub Actions preserves separate E2E and Visual HTML reports, screenshots,
+and failure traces for each candidate SHA. Visual release evidence uses the
+reviewed GitHub-hosted baseline; a contributor workstation is not a prerequisite.
+
 Repository contributors can use the
 [manual build guide](https://github.com/ntustRay/react-datetime-range-picker/blob/main/docs/MANUAL_BUILD_GUIDE.md),
 [visual testing guide](https://github.com/ntustRay/react-datetime-range-picker/blob/main/docs/VISUAL_TESTING.md),
