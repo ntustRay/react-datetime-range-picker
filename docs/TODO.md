@@ -9,6 +9,45 @@ Every behavior is delivered as a vertical slice: one failing test through an
 agreed public seam, the smallest implementation that makes it pass, then a
 review/refactor step. Keep each commit focused on one coherent behavior.
 
+## Current Iteration — 2026-10-19
+
+Candidate: `0.2.1`. Registry `latest` was verified as `0.2.0` before work.
+The baseline `main` SHA was `3208c0ee7c95af23e507af3929205cba8019b4e0`;
+its CI and release succeeded. No open issue or overlapping PR was found.
+Historical checked items below are a coverage inventory, not current-run proof.
+
+- [x] Reproduce missing `aria-invalid` for a non-increasing controlled range
+      through the rendered public picker (expected `true`, received `null`).
+- [x] Derive input invalidity from the same targeted validation errors used by
+      its accessible description; verify correction and unaffected endpoints.
+- [x] Verify regression operations in Chromium, Firefox, and WebKit (102 E2E
+      tests passed locally; 34 per browser).
+- [ ] Verify hosted visual comparisons and inspect current desktop/mobile/DST
+      screenshots without unrelated baseline churn.
+- [x] Run full quality (118 tests), packed React 18/19 consumers, and
+      package-content checks (59 intended tarball files).
+- [ ] Push the reviewed candidate and verify checks on its exact SHA.
+- [ ] Publish the patch through the immutable tag workflow and verify the
+      precise registry version in clean consumers.
+
+### Next TODO (priority order)
+
+1. **Isolate validation descriptions across picker instances.** Current error
+   IDs are shared strings. Acceptance: render two invalid pickers with different
+   messages; each input resolves only its own description, including in E2E.
+2. **Investigate interrupted text edits during controlled updates.** Check
+   whether editing one endpoint overwrites invalid text on the other.
+   Acceptance: a rendered controlled regression preserves or explicitly rejects
+   that draft according to CONTEXT; external updates retain their contract.
+3. **Close isolated validation-code coverage gaps.** Section 5 still has an
+   unchecked aggregate despite Section 22 claiming all rules are covered.
+   Acceptance: map every public validation code to independently passing public
+   seam tests and reconcile the ledger using actual evidence.
+4. **Automate registry-consumer verification after publish.** Reuse the existing
+   packed-consumer verifier rather than creating another fixture stack.
+   Acceptance: clean React 18/19 consumers install the exact registry version,
+   check JS/SSR, TypeScript, CSS exports, and confirm `latest` and provenance.
+
 ## TDD Execution Rules
 
 - [x] Agree on the test seams before writing the first behavioral test.
@@ -596,7 +635,7 @@ the current clock when a deterministic relative preset requires it.
 
 Follow the owner/agent runbook in
 [CI_AND_NPM_RELEASE_GUIDE.md](CI_AND_NPM_RELEASE_GUIDE.md).
-Local Windows build and packed-consumer commands are documented in
+Repository-relative build and packed-consumer commands are documented in
 [MANUAL_BUILD_GUIDE.md](MANUAL_BUILD_GUIDE.md).
 
 - [x] Add a GitHub Actions CI workflow.

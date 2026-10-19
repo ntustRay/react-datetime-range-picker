@@ -51,6 +51,7 @@ function RangeInput(input: RangeInputProps): React.JSX.Element {
     input.target === "start"
       ? input.props.testIds.startInput
       : input.props.testIds.endInput;
+  const descriptionIds = input.props.getDescriptionIds(input.target);
 
   return (
     <input
@@ -61,10 +62,8 @@ function RangeInput(input: RangeInputProps): React.JSX.Element {
       aria-expanded={
         input.props.isOpen && input.props.activeTarget === input.target
       }
-      aria-invalid={input.field.error === null ? undefined : true}
-      aria-describedby={
-        input.props.getDescriptionIds(input.target) || undefined
-      }
+      aria-invalid={descriptionIds.length > 0 ? true : undefined}
+      aria-describedby={descriptionIds || undefined}
       placeholder={placeholder}
       value={input.field.text}
       disabled={

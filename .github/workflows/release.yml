@@ -27,6 +27,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           cache: npm
+      - run: npm install --global npm@11.17.0
       - run: npm ci
       - name: Verify immutable release inputs
         shell: bash
@@ -39,7 +40,7 @@ jobs:
 
   browser:
     name: Release Browser and Visual
-    runs-on: windows-latest
+    runs-on: windows-2025
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -47,19 +48,33 @@ jobs:
         with:
           node-version-file: .node-version
           cache: npm
+      - run: npm install --global npm@11.17.0
       - run: npm ci
       - run: npm run build
-      - run: npm exec -- playwright install chromium firefox webkit
+      - name: Install the browsers required by this repository
+        id: browsers
+        run: npm exec -- playwright install chromium firefox webkit
+      - name: Record browser environment
+        shell: pwsh
+        run: |
+          "ImageOS=$env:ImageOS`nImageVersion=$env:ImageVersion`nSHA=$env:GITHUB_SHA" | Out-File browser-environment.txt
+          node --version | Out-File browser-environment.txt -Append
+          npm --version | Out-File browser-environment.txt -Append
+          npm exec -- playwright --version | Out-File browser-environment.txt -Append
+          Get-FileHash "$env:WINDIR/Fonts/segoeui.ttf", "$env:WINDIR/Fonts/consola.ttf" | Format-List | Out-File browser-environment.txt -Append
       - run: npm run test:e2e
-      - run: npm run test:visual
-      - name: Upload Playwright diagnostics
-        if: ${{ failure() }}
+      - name: Visual comparisons
+        if: ${{ !cancelled() && steps.browsers.outcome == 'success' }}
+        run: npm run test:visual
+      - name: Upload browser reports and screenshots
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: release-playwright-diagnostics-${{ github.run_id }}
+          name: release-playwright-${{ github.sha }}-${{ github.run_attempt }}
           path: |
             playwright-report/
             test-results/
+            browser-environment.txt
           if-no-files-found: ignore
           retention-days: 7
 
@@ -72,6 +87,7 @@ jobs:
         with:
           node-version-file: .node-version
           cache: npm
+      - run: npm install --global npm@11.17.0
       - run: npm ci
       - run: npm run build
       - run: npm run test:consumers
@@ -91,6 +107,7 @@ jobs:
           node-version-file: .node-version
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
+      - run: npm install --global npm@11.17.0
       - run: npm ci
       - run: npm run build
       - run: npm publish --access public --provenance
@@ -112,6 +129,7 @@ jobs:
         with:
           node-version-file: .node-version
           cache: npm
+      - run: npm install --global npm@11.17.0
       - run: npm ci
       - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
       - run: npm run build

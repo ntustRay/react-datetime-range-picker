@@ -11,6 +11,23 @@ and known limitations from the pre-release audit.
 
 ## Unreleased
 
+## 0.2.1 - 2026-10-19
+
+### Fixed
+
+- Expose range and constraint validation failures through `aria-invalid` on
+  the affected Start/End inputs, and clear the state after correction.
+
+### Changed
+
+- Use one authoritative GitHub-hosted visual baseline with a fixed runner
+  family, browser locale/timezone, clock, and font readiness.
+- Preserve separate E2E/Visual reports, screenshots, failure traces, and
+  renderer/font metadata on every CI and release run. Failed comparisons no
+  longer regenerate baseline candidates automatically.
+- Align CI/release npm with the declared version and replace machine-specific
+  build instructions with repository-relative commands.
+
 ## 0.2.0 - 2026-08-15
 
 ### Added
@@ -67,6 +84,7 @@ and known limitations from the pre-release audit.
 - Verified React 18 and React 19 consumers, Chromium, Firefox, WebKit, and
   desktop and mobile visual baselines.
 
-[Unreleased]: https://github.com/ntustRay/react-datetime-range-picker/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/ntustRay/react-datetime-range-picker/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/ntustRay/react-datetime-range-picker/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/ntustRay/react-datetime-range-picker/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/ntustRay/react-datetime-range-picker/compare/v0.1.0...v0.1.1
