@@ -63,10 +63,10 @@ function copyFixture(name) {
   return target;
 }
 
-function pointFixtureAtTarball(fixture, tarball) {
+function pointFixtureAtPackage(fixture, packageSpecifier) {
   const packagePath = join(fixture, "package.json");
   const manifest = readJson(packagePath);
-  manifest.dependencies[packageName] = `file:${tarball.replaceAll("\\", "/")}`;
+  manifest.dependencies[packageName] = packageSpecifier;
   writeFileSync(packagePath, `${JSON.stringify(manifest, null, 2)}\n`);
 }
 
@@ -164,14 +164,25 @@ function verifyTreeShakenUtility(fixture) {
   }
 }
 
-const tarball = createTarball();
+const registryVersion = process.argv[2];
+if (registryVersion !== undefined && !/^\d+\.\d+\.\d+$/.test(registryVersion)) {
+  throw new Error(
+    "Supply an exact stable registry version, for example 0.2.1.",
+  );
+}
+const tarball = registryVersion === undefined ? createTarball() : null;
 
 for (const fixtureDefinition of [
   { name: "react18", major: 18, vite: false },
   { name: "react19", major: 19, vite: true },
 ]) {
   const fixture = copyFixture(fixtureDefinition.name);
-  pointFixtureAtTarball(fixture, tarball);
+  pointFixtureAtPackage(
+    fixture,
+    tarball === null
+      ? registryVersion
+      : `file:${tarball.replaceAll("\\", "/")}`,
+  );
   runNpm(["install"], fixture);
   runNpm(["run", "typecheck"], fixture);
   execFileSync(process.execPath, ["ssr-smoke.mjs"], {
@@ -180,6 +191,16 @@ for (const fixtureDefinition of [
   });
   verifySingleReactCopy(fixture, fixtureDefinition.major);
   verifyPackageSurface(fixture);
+  if (registryVersion !== undefined) {
+    const installed = readJson(
+      join(fixture, "node_modules", packageName, "package.json"),
+    );
+    if (installed.version !== registryVersion) {
+      throw new Error(
+        `Expected registry version ${registryVersion}, received ${installed.version}.`,
+      );
+    }
+  }
   if (fixtureDefinition.vite) {
     runNpm(["run", "build"], fixture);
     verifyViteOutput(fixture);
@@ -189,5 +210,5 @@ for (const fixtureDefinition of [
 }
 
 console.log(
-  `Packed consumer verification passed. Scratch files: ${scratchRoot}`,
+  `Consumer verification passed (${registryVersion ?? "packed"}). Scratch files: ${scratchRoot}`,
 );
