@@ -9,6 +9,38 @@ Every behavior is delivered as a vertical slice: one failing test through an
 agreed public seam, the smallest implementation that makes it pass, then a
 review/refactor step. Keep each commit focused on one coherent behavior.
 
+## Current Iteration — 2026-10-24
+
+Repository main/tag: `9ff6b75731ee9abbce96353263f9793f87442a52` / `v0.2.1`.
+No open issues or PRs were present at inspection. Release run `39275578245`
+passed quality, browser/visual, packed consumers, npm publish, and demo deploy.
+Only GitHub Release creation failed: HTTP 422, `Release.tag_name already exists`.
+The already-published GitHub Release was independently verified.
+
+- [x] Confirm registry `0.2.1`, `latest`, tarball metadata and provenance metadata.
+- [x] Install exact registry `0.2.1` in clean React 18/19 consumers; pass JS/SSR,
+      TypeScript, CSS, Vite output, single React copy and utility tree shaking.
+- [x] Reuse the existing consumer verifier with an optional exact version.
+- [x] Add the exact registry consumer check after npm publication.
+- [x] Accept an already-published GitHub Release without duplicate creation;
+      keep draft and authentication/create failures as errors.
+- [ ] Verify this tooling-only candidate in hosted CI; no package files or
+      runtime behavior changed, so keep the published version at `0.2.1`.
+
+### Next TODO (priority order)
+
+1. **Isolate validation descriptions across picker instances.** Acceptance:
+   two invalid pickers each resolve only their own error messages in component
+   and three-browser E2E tests.
+2. **Controlled editing regression.** Acceptance: editing one endpoint does
+   not discard the other endpoint's invalid text contrary to CONTEXT; external
+   updates remain covered by a public component test.
+3. **Reconcile validation coverage.** Acceptance: every public validation code
+   maps to a passing public-seam test and the historical ledger matches it.
+4. **Verify post-publish gates in the next real patch.** Acceptance: the exact
+   new registry package passes both React consumers, and existing-release
+   handling completes without HTTP 422. Do not publish merely to test tooling.
+
 ## Current Iteration — 2026-10-19
 
 Candidate: `0.2.1`. Registry `latest` was verified as `0.2.0` before work.

@@ -74,6 +74,9 @@ manual environment approval blocks publication, report that state explicitly.
 9. Verify the exact registry version, tarball, provenance, and `latest`, then
    install that registry version into clean React 18/19 consumers and check
    JS/SSR, declarations, and CSS exports. A local `npm pack` is not this check.
+   Run `npm run test:consumers -- X.Y.Z` to reuse the clean React 18/19 fixtures
+   against that exact registry version. The publish job now runs this check
+   after `npm publish`; a consumer failure stops downstream deployment.
 10. Track the subsequent Pages deployment and GitHub Release separately.
     Release notes come from the matching dated changelog section. A failed demo
     or GitHub Release does not imply that npm publication failed.
@@ -113,3 +116,11 @@ References: [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/)
 [Playwright snapshots](https://playwright.dev/docs/test-snapshots),
 [Playwright browsers](https://playwright.dev/docs/browsers), and
 [SemVer](https://semver.org/).
+
+## Existing GitHub Releases
+
+Creating the tag through the GitHub Release UI can leave a published release
+before the tag workflow finishes. The final job accepts an existing published
+release for that tag rather than attempting a duplicate create (HTTP 422).
+An existing draft fails the gate; lookup/create errors still fail the job.
+This changes no npm environment or verification protections.
