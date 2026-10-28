@@ -110,7 +110,7 @@ export function PickerPopover(props: PickerPopoverProps): React.JSX.Element {
         {props.draft.validation.errors.map((item) => (
           <li
             key={`${item.code}-${item.target}`}
-            id={`dtrp-${item.target}-${item.code}-error`}
+            id={`${props.dialog.id}-${item.target}-${item.code}-error`}
           >
             {validationMessage(item)}
           </li>
