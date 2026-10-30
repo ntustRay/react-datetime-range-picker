@@ -427,7 +427,9 @@ test("multiple invalid pickers resolve only their own validation descriptions", 
 }) => {
   for (const title of ["Spring-forward gap", "Fall-back overlap"]) {
     const scenario = page.locator(".scenario-card").filter({ hasText: title });
-    await scenario.getByRole("button", { name: "Open calendar" }).press("Enter");
+    await scenario
+      .getByRole("button", { name: "Open calendar" })
+      .press("Enter");
     await enterText(scenario.getByTestId("dtrp-start-input"), "invalid");
     await expect(scenario.getByTestId("dtrp-start-input")).toHaveAttribute(
       "aria-invalid",
