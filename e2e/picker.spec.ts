@@ -435,7 +435,9 @@ test("multiple invalid pickers resolve only their own validation descriptions", 
     );
   }
   const descriptions = await page
-    .locator(".edge-cases input[aria-invalid='true']")
+    .locator(".scenario-card")
+    .filter({ hasText: /Spring-forward gap|Fall-back overlap/ })
+    .locator("input[aria-invalid='true']")
     .evaluateAll((inputs) =>
       inputs.map((input) => {
         const ids = input.getAttribute("aria-describedby")?.split(" ") ?? [];
@@ -453,6 +455,6 @@ test("multiple invalid pickers resolve only their own validation descriptions", 
         );
       }),
     );
-  expect(descriptions.length).toBeGreaterThanOrEqual(2);
+  expect(descriptions).toHaveLength(2);
   expect(descriptions.every(Boolean)).toBe(true);
 });
