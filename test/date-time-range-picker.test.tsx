@@ -14,6 +14,40 @@ const COMPLETE_RANGE: DateTimeRangeValue = {
 afterEach(() => vi.useRealTimers());
 
 describe("DateTimeRangePicker", () => {
+  test("isolates validation descriptions between open picker instances", () => {
+    const props = {
+      value: {
+        startTimestamp: COMPLETE_RANGE.endTimestamp,
+        endTimestamp: COMPLETE_RANGE.startTimestamp,
+      },
+      onChange: vi.fn(),
+      onCommit: vi.fn(),
+      popoverMode: "inline" as const,
+    };
+    const { container } = render(
+      <>
+        <DateTimeRangePicker {...props} />
+        <DateTimeRangePicker {...props} />
+      </>,
+    );
+    for (const button of screen.getAllByRole("button", {
+      name: "Open calendar",
+    }))
+      fireEvent.click(button);
+    for (const input of container.querySelectorAll("input[aria-describedby]")) {
+      const ids = input.getAttribute("aria-describedby")?.split(" ") ?? [];
+      for (const id of ids) {
+        const matches = Array.from(container.querySelectorAll("[id]")).filter(
+          (element) => element.id === id,
+        );
+        expect(matches).toHaveLength(1);
+        expect(input.closest(".dtrp-root")?.contains(matches[0] ?? null)).toBe(
+          true,
+        );
+      }
+    }
+  });
+
   test("defaults to light and supports an explicit dark color scheme", () => {
     const props = {
       value: COMPLETE_RANGE,

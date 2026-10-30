@@ -9,6 +9,28 @@ Every behavior is delivered as a vertical slice: one failing test through an
 agreed public seam, the smallest implementation that makes it pass, then a
 review/refactor step. Keep each commit focused on one coherent behavior.
 
+## Current Iteration — 2026-10-30
+
+- [x] Reproduce duplicate validation IDs with two open invalid picker instances.
+- [x] Prefix error IDs and aria-describedby references with the existing useId.
+- [x] Pass local quality checks: 119 tests, lint, format, typecheck and build.
+- [x] Add a Playwright regression to the existing three-browser suite.
+- [x] Submit PR #14 through protected-branch workflow.
+- [ ] Pass hosted E2E, Visual and consumer gates on the final candidate SHA.
+- [ ] Inspect hosted screenshots before merge and patch publication.
+
+### Next TODO (priority order)
+
+1. Complete validation isolation delivery. Acceptance: final PR SHA passes all
+   hosted gates; inspect screenshots; publish compatible patch and verify exact
+   registry package in React 18/19 consumers.
+2. Controlled editing regression. Acceptance: invalid text on one endpoint
+   survives edits to the other as specified in CONTEXT, with component coverage.
+3. Reconcile validation coverage. Acceptance: map each public error code to an
+   independently passing public-seam test and correct the historical checklist.
+4. Verify release post-publish gates. Acceptance: new exact registry version
+   passes consumers and GitHub Release completes without duplicate-tag HTTP 422.
+
 ## Current Iteration — 2026-10-24
 
 Repository main/tag: `9ff6b75731ee9abbce96353263f9793f87442a52` / `v0.2.1`.

@@ -421,3 +421,42 @@ test("day, year, and month grids expose every keyboard navigation path", async (
       .getByRole("gridcell", { name: "August" }),
   ).toBeFocused();
 });
+
+test("multiple invalid pickers resolve only their own validation descriptions", async ({
+  page,
+}) => {
+  for (const title of ["Spring-forward gap", "Fall-back overlap"]) {
+    const scenario = page.locator(".scenario-card").filter({ hasText: title });
+    await scenario
+      .getByRole("button", { name: "Open calendar" })
+      .press("Enter");
+    await enterText(scenario.getByTestId("dtrp-start-input"), "invalid");
+    await expect(scenario.getByTestId("dtrp-start-input")).toHaveAttribute(
+      "aria-invalid",
+      "true",
+    );
+  }
+  const descriptions = await page
+    .locator(".scenario-card")
+    .filter({ hasText: /Spring-forward gap|Fall-back overlap/ })
+    .locator("input[aria-invalid='true']")
+    .evaluateAll((inputs) =>
+      inputs.map((input) => {
+        const ids = input.getAttribute("aria-describedby")?.split(" ") ?? [];
+        return (
+          ids.length > 0 &&
+          ids.every((id) => {
+            const matches = Array.from(
+              document.querySelectorAll("[id]"),
+            ).filter((element) => element.id === id);
+            return (
+              matches.length === 1 &&
+              input.closest(".dtrp-root")?.contains(matches[0] ?? null)
+            );
+          })
+        );
+      }),
+    );
+  expect(descriptions).toHaveLength(2);
+  expect(descriptions.every(Boolean)).toBe(true);
+});

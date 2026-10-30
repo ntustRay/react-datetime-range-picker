@@ -139,7 +139,7 @@ export function DateTimeRangePicker(
   const validationDescriptionIds = (target: DateTimeRangeDraftTarget): string =>
     draft.validation.errors
       .filter((error) => error.target === target || error.target === "range")
-      .map((error) => `dtrp-${error.target}-${error.code}-error`)
+      .map((error) => `${dialogId}-${error.target}-${error.code}-error`)
       .join(" ");
 
   useEffect(() => {
