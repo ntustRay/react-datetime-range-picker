@@ -11,6 +11,12 @@ and known limitations from the pre-release audit.
 
 ## Unreleased
 
+## 0.2.2 - 2026-10-30
+
+### Fixed
+
+- Isolate validation description IDs between picker instances.
+
 ## 0.2.1 - 2026-10-19
 
 ### Fixed
