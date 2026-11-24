@@ -65,7 +65,14 @@ manual environment approval blocks publication, report that state explicitly.
    through the permitted branch/PR flow. Verify all required checks on the exact
    candidate. After merging, verify the resulting main SHA as well.
 6. Create a new annotated `vX.Y.Z` tag at that verified main SHA and normally
-   push it. Never reuse or move an existing tag.
+   push it. Never reuse or move an existing tag. A merge or version bump alone
+   does not trigger Release. For example, once the candidate SHA has passed CI:
+
+   ```sh
+   git fetch origin main --tags
+   git tag -a vX.Y.Z <verified-main-sha> -m "Release vX.Y.Z"
+   git push origin refs/tags/vX.Y.Z
+   ```
 7. Follow `release.yml` through quality, browser/visual, and consumers. It checks
    that the tag matches `package.json.version` and belongs to main.
 8. The protected `npm` job publishes using OIDC Trusted Publishing and
@@ -75,8 +82,9 @@ manual environment approval blocks publication, report that state explicitly.
    install that registry version into clean React 18/19 consumers and check
    JS/SSR, declarations, and CSS exports. A local `npm pack` is not this check.
    Run `npm run test:consumers -- X.Y.Z` to reuse the clean React 18/19 fixtures
-   against that exact registry version. The publish job now runs this check
-   after `npm publish`; a consumer failure stops downstream deployment.
+   against that exact registry version. The **Verify published npm package**
+   job checks registry metadata and runs the React fixtures. A verification
+   failure blocks demo deployment and can be retried without uploading again.
 10. Track the subsequent Pages deployment and GitHub Release separately.
     Release notes come from the matching dated changelog section. A failed demo
     or GitHub Release does not imply that npm publication failed.
@@ -101,6 +109,8 @@ iteration report and reconcile `docs/TODO.md` only with actual evidence.
 - For publish authentication, check the exact repository, `release.yml`, `npm`
   environment, `id-token: write`, and existing Trusted Publisher. Keep protection
   intact and report permission/manual approval blockers.
+- If **Publish npm** passed and a later job failed, use **Re-run failed jobs**.
+  Check the npm version before deciding whether an upload needs a retry.
 - For a transient publish failure, first inspect registry metadata and logs. If
   the exact version already exists, verify it instead of publishing again. Do
   not bump merely to retry a network failure.
