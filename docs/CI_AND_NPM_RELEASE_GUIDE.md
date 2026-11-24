@@ -73,6 +73,7 @@ manual environment approval blocks publication, report that state explicitly.
    git tag -a vX.Y.Z <verified-main-sha> -m "Release vX.Y.Z"
    git push origin refs/tags/vX.Y.Z
    ```
+
 7. Follow `release.yml` through quality, browser/visual, and consumers. It checks
    that the tag matches `package.json.version` and belongs to main.
 8. The protected `npm` job publishes using OIDC Trusted Publishing and
