@@ -1,0 +1,50 @@
+name: Verify npm retry fixtures
+on:
+  push:
+    branches: [codex/qa-picker-registry-verification]
+permissions:
+  contents: read
+jobs:
+  retry:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Simulate registry propagation and persistent E404
+        shell: bash
+        run: |
+          set -euo pipefail
+          fixture="${RUNNER_TEMP}/verify-picker-registry.sh"
+          awk '/- name: Check the exact version in the public registry/{ step=1; next } step && /^      - name:/{ exit } step && /^        run: \|$/{ script=1; next } script { sub(/^          /, ""); print }' .github/workflows/release.yml > "$fixture"
+          bash -n "$fixture"
+          test -s "$fixture"
+          run_fixture() (
+            export GITHUB_REF_NAME=v0.2.2 GITHUB_STEP_SUMMARY=/dev/null
+            success_at=$1 calls=0 pauses=0 bad_delay=0
+            npm() {
+              [[ "$*" = 'view --prefer-online --fetch-retries=0 @ntustray/react-datetime-range-picker@0.2.2 version dist.tarball dist.integrity dist.attestations --json' ]] || return 99
+              (( ++calls ))
+              if (( calls < success_at )); then
+                echo 'mock E404'
+                return 1
+              fi
+              echo 'mock exact version found'
+            }
+            sleep() {
+              (( ++pauses ))
+              [[ "$1" = "$(( pauses * 5 ))" ]] || bad_delay=1
+            }
+            source "$fixture"
+            [[ $calls -eq $success_at && $pauses -eq $(( success_at - 1 )) && $bad_delay -eq 0 ]]
+          )
+          run_fixture 1
+          run_fixture 3
+          if run_fixture 9 > "$RUNNER_TEMP/registry-failure.log"; then
+            echo 'Expected persistent E404 to fail the job'
+            exit 1
+          fi
+          cat "$RUNNER_TEMP/registry-failure.log"
+          test "$(grep -c '^mock E404$' "$RUNNER_TEMP/registry-failure.log")" -eq 8
+          grep -q '^::error::.*is still unavailable' "$RUNNER_TEMP/registry-failure.log"
+          echo 'Immediate availability, propagation retry, and bounded permanent failure verified.'
