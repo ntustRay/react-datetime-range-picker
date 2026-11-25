@@ -40,6 +40,8 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm pack --dry-run
+      - name: Test npm release preparation in isolation
+        run: bash scripts/test-prepare-release.sh
 
   browser:
     name: Browser and Visual
