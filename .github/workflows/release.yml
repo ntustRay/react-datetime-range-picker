@@ -131,11 +131,25 @@ jobs:
           package-manager-cache: false
       - run: npm install --global npm@11.17.0
       - name: Check the exact version in the public registry
+        timeout-minutes: 4
         shell: bash
         run: |
           package="@ntustray/react-datetime-range-picker"
           version="${GITHUB_REF_NAME#v}"
-          npm view "${package}@${version}" version dist.tarball dist.integrity dist.attestations --json
+          for attempt in {1..8}; do
+            if npm view --prefer-online --fetch-retries=0 "${package}@${version}" version dist.tarball dist.integrity dist.attestations --json; then
+              break
+            fi
+
+            if (( attempt == 8 )); then
+              echo "::error::${package}@${version} is still unavailable from the npm registry after eight checks."
+              exit 1
+            fi
+
+            delay=$((attempt * 5))
+            echo "Waiting ${delay}s before checking npm registry metadata again (${attempt}/8)."
+            sleep "$delay"
+          done
           echo "Published package: [${package}@${version}](https://www.npmjs.com/package/${package}/v/${version})" >> "$GITHUB_STEP_SUMMARY"
       - name: Test the registry package with React 18 and 19
         shell: bash
