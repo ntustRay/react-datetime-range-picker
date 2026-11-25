@@ -64,21 +64,16 @@ manual environment approval blocks publication, report that state explicitly.
 5. Review the complete diff, commit only this iteration, and normally push
    through the permitted branch/PR flow. Verify all required checks on the exact
    candidate. After merging, verify the resulting main SHA as well.
-6. Create a new annotated `vX.Y.Z` tag at that verified main SHA and normally
-   push it. Never reuse or move an existing tag. A merge or version bump alone
-   does not trigger Release. For example, once the candidate SHA has passed CI:
-
-   ```sh
-   git fetch origin main --tags
-   git tag -a vX.Y.Z <verified-main-sha> -m "Release vX.Y.Z"
-   git push origin refs/tags/vX.Y.Z
-   ```
-
+6. Merge the version bump into `main`. The Release workflow checks the public
+   registry, creates the immutable `vX.Y.Z` tag on that commit, and dispatches
+   `release.yml` on that tag. An existing tag must point to the same commit.
+   An unchanged, prerelease, or already-published version is skipped.
 7. Follow `release.yml` through quality, browser/visual, and consumers. It checks
    that the tag matches `package.json.version` and belongs to main.
 8. The protected `npm` job publishes using OIDC Trusted Publishing and
-   `npm publish --access public --provenance`. Do not add an `NPM_TOKEN` or
-   substitute direct interactive publication.
+   `npm publish` with public access and provenance. On retry, an existing npm
+   version must match the integrity of the tarball built from the tag. Do not
+   add an `NPM_TOKEN` or substitute direct interactive publication.
 9. Verify the exact registry version, tarball, provenance, and `latest`, then
    install that registry version into clean React 18/19 consumers and check
    JS/SSR, declarations, and CSS exports. A local `npm pack` is not this check.
