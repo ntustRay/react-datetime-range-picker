@@ -2,50 +2,85 @@ name: Release
 
 on:
   push:
+    branches: [main]
     tags:
       - "v*.*.*"
+    paths:
+      - package.json
+      - .github/scripts/prepare-release.sh
+      - .github/workflows/release.yml
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: npm-release
-  cancel-in-progress: false
+  group: ${{ github.ref_type == 'tag' && 'npm-release' || 'prepare-npm-release' }}
+  queue: max
 
 jobs:
+  prepare:
+    name: Prepare immutable release tag
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Dispatch the release for an unpublished version
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          GH_TOKEN: ${{ github.token }}
+        run: bash .github/scripts/prepare-release.sh
+
+  release-ref:
+    name: Verify immutable release inputs
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify tag, version and main ancestry
+        shell: bash
+        run: |
+          package_version="$(jq -er '.version' package.json)"
+          stable='^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$'
+          if [[ ! "$GITHUB_REF_NAME" =~ $stable || "$GITHUB_REF_NAME" != "v$package_version" ]]; then
+            echo "::error::Tag $GITHUB_REF_NAME must be stable and match package.json version v$package_version."
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" refs/remotes/origin/main; then
+            echo "::error::Tag $GITHUB_REF_NAME must point to a commit on main."
+            exit 1
+          fi
+
   quality:
     name: Release Quality (Node ${{ matrix.node }})
+    needs: release-ref
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node: [22.18.0, 24.19.0]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ matrix.node }}
           cache: npm
       - run: npm install --global npm@11.17.0
       - run: npm ci
-      - name: Verify immutable release inputs
-        shell: bash
-        run: |
-          package_version="$(node -p "require('./package.json').version")"
-          if [[ "${GITHUB_REF_NAME}" != "v${package_version}" ]]; then
-            echo "::error::Tag ${GITHUB_REF_NAME} must match package.json version v${package_version}."
-            exit 1
-          fi
-          if ! git merge-base --is-ancestor "${GITHUB_SHA}" origin/main; then
-            echo "::error::Tag ${GITHUB_REF_NAME} must point to a commit on main."
-            exit 1
-          fi
       - run: npm run check
       - run: npm pack --dry-run
 
   browser:
     name: Release Browser and Visual
+    needs: release-ref
     runs-on: windows-2025
     timeout-minutes: 30
     steps:
@@ -86,6 +121,7 @@ jobs:
 
   consumers:
     name: Release Packed React Consumers
+    needs: release-ref
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -100,6 +136,7 @@ jobs:
 
   publish:
     name: Publish npm
+    if: github.ref_type == 'tag'
     needs: [quality, browser, consumers]
     runs-on: ubuntu-latest
     environment: npm
@@ -117,7 +154,27 @@ jobs:
       - run: npm ci
       - run: npm run build
       - name: Publish package with Trusted Publishing
-        run: npm publish --access public --provenance
+        shell: bash
+        run: |
+          package="$(jq -er '.name' package.json)"
+          version="${GITHUB_REF_NAME#v}"
+          endpoint="https://registry.npmjs.org/@ntustray%2freact-datetime-range-picker/$version"
+          npm pack --ignore-scripts --json > "$RUNNER_TEMP/pack-result.json"
+          archive=$(jq -er '.[0].filename' "$RUNNER_TEMP/pack-result.json")
+          integrity=$(jq -er '.[0].integrity' "$RUNNER_TEMP/pack-result.json")
+          status=$(curl --silent --show-error --retry 3 --connect-timeout 10 --max-time 20 \
+            --output "$RUNNER_TEMP/npm-version.json" --write-out '%{http_code}' "$endpoint")
+          case "$status" in
+            200)
+              if [[ "$(jq -er '.dist.integrity' "$RUNNER_TEMP/npm-version.json")" != "$integrity" ]]; then
+                echo "::error::$package@$version exists but differs from the tagged build."
+                exit 1
+              fi
+              echo "$package@$version was already published with the same integrity."
+              ;;
+            404) npm publish "./$archive" --access public --provenance --ignore-scripts ;;
+            *) echo "::error::npm registry returned HTTP $status."; exit 1 ;;
+          esac
 
   verify-npm:
     name: Verify published npm package
