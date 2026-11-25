@@ -568,6 +568,13 @@ function Footer(): React.JSX.Element {
       <a href="https://github.com/ntustRay/react-datetime-range-picker">
         View source on GitHub ↗
       </a>
+      {location.origin === "https://ntustray.github.io" &&
+      location.pathname === "/react-datetime-range-picker/" ? (
+        <p>
+          This demo uses Google Analytics to count page visits. Date inputs are
+          not sent to Analytics.
+        </p>
+      ) : null}
     </footer>
   );
 }
